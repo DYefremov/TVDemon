@@ -1,0 +1,379 @@
+# Portuguese translation for linuxmint
+# Copyright (c) 2020 Rosetta Contributors and Canonical Ltd 2020
+# This file is distributed under the same license as the linuxmint package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: linuxmint\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2021-11-23 12:21+0000\n"
+"PO-Revision-Date: 2022-07-03 11:57+0000\n"
+"Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
+"Language-Team: Portuguese <pt@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Launchpad-Export-Date: 2022-07-24 09:43+0000\n"
+"X-Generator: Launchpad (build 025a39fd866a641b6ae33074cda0d02a2c712d38)\n"
+
+#: usr/lib/tvdemon/app.py:119 usr/lib/tvdemon/app.py:696
+#: usr/lib/tvdemon/app.py:1214 generate_desktop_files:25
+#: usr/share/tvdemon/app.ui.h:1
+msgid "TVDemon"
+msgstr "TVDemon"
+
+#: usr/lib/tvdemon/app.py:238 usr/share/tvdemon/shortcuts.ui.h:6
+msgid "Keyboard Shortcuts"
+msgstr "Teclas de atalho"
+
+#: usr/lib/tvdemon/app.py:245 usr/share/tvdemon/app.ui.h:35
+#: usr/share/tvdemon/shortcuts.ui.h:3
+msgid "Stream Information"
+msgstr "Informação de transmissão"
+
+#: usr/lib/tvdemon/app.py:253 usr/lib/tvdemon/app.py:1213
+#: usr/share/tvdemon/shortcuts.ui.h:2
+msgid "About"
+msgstr "Acerca"
+
+#: usr/lib/tvdemon/app.py:258 usr/share/tvdemon/shortcuts.ui.h:8
+msgid "Quit"
+msgstr "Sair"
+
+#: usr/lib/tvdemon/app.py:271
+msgid "M3U URL"
+msgstr "URL M3U"
+
+#: usr/lib/tvdemon/app.py:272
+msgid "Local M3U File"
+msgstr "Ficheiro local M3U"
+
+#: usr/lib/tvdemon/app.py:273
+msgid "Xtream API"
+msgstr "Xtream API"
+
+#: usr/lib/tvdemon/app.py:451
+#, python-format
+msgid "Season %s"
+msgstr "Temporada %s"
+
+#: usr/lib/tvdemon/app.py:461
+#, python-format
+msgid "Episode %s"
+msgstr "Episódio %s"
+
+#: usr/lib/tvdemon/app.py:601
+msgid "No provider selected"
+msgstr "Nenhum fornecedor selecionado"
+
+#: usr/lib/tvdemon/app.py:623 usr/lib/tvdemon/app.py:636
+msgid "TV Channels"
+msgstr "Canais de TV"
+
+#: usr/lib/tvdemon/app.py:626 usr/lib/tvdemon/app.py:651
+msgid "Movies"
+msgstr "Filmes"
+
+#: usr/lib/tvdemon/app.py:628 usr/lib/tvdemon/app.py:658
+msgid "Series"
+msgstr "Séries"
+
+#: usr/lib/tvdemon/app.py:639
+#, python-format
+msgid "TV Channels > %s"
+msgstr "Canais de TV > %s"
+
+#: usr/lib/tvdemon/app.py:654
+#, python-format
+msgid "Movies > %s"
+msgstr "Filmes > %s"
+
+#: usr/lib/tvdemon/app.py:661
+#, python-format
+msgid "Series > %s"
+msgstr "Séries > %s"
+
+#: usr/lib/tvdemon/app.py:669 usr/share/tvdemon/app.ui.h:6
+msgid "Preferences"
+msgstr "Preferências"
+
+#: usr/lib/tvdemon/app.py:673 usr/share/tvdemon/app.ui.h:5
+msgid "Providers"
+msgstr "Fornecedores"
+
+#: usr/lib/tvdemon/app.py:678
+#, python-format
+msgid "Edit %s"
+msgstr "Editar %s"
+
+#: usr/lib/tvdemon/app.py:680
+msgid "Add a new provider"
+msgstr "Adicionar um novo fornecedor"
+
+#: usr/lib/tvdemon/app.py:684
+#, python-format
+msgid "Delete %s"
+msgstr "Eliminar %s"
+
+#: usr/lib/tvdemon/app.py:688
+msgid "Reset providers"
+msgstr "Repor fornecedores"
+
+#: usr/lib/tvdemon/app.py:726 usr/lib/tvdemon/app.py:730
+#: usr/lib/tvdemon/app.py:782 usr/lib/tvdemon/app.py:784
+#: usr/lib/tvdemon/app.py:791 usr/lib/tvdemon/app.py:794
+#: usr/lib/tvdemon/app.py:806 usr/lib/tvdemon/app.py:819
+#: usr/lib/tvdemon/app.py:824 usr/lib/tvdemon/app.py:832
+#: usr/lib/tvdemon/app.py:1166 usr/lib/tvdemon/app.py:1168
+#: usr/lib/tvdemon/app.py:1193 usr/lib/tvdemon/app.py:1197
+#: usr/share/tvdemon/app.ui.h:36
+msgid "General"
+msgstr "Geral"
+
+#: usr/lib/tvdemon/app.py:727 usr/lib/tvdemon/app.py:796
+#: usr/lib/tvdemon/app.py:798 usr/lib/tvdemon/app.py:800
+#: usr/lib/tvdemon/app.py:1167 usr/share/tvdemon/app.ui.h:38
+msgid "Color"
+msgstr "Cor"
+
+#: usr/lib/tvdemon/app.py:731 usr/lib/tvdemon/app.py:816
+#: usr/lib/tvdemon/app.py:826 usr/lib/tvdemon/app.py:1169
+#: usr/share/tvdemon/app.ui.h:40
+msgid "Layout"
+msgstr "Esquema"
+
+#: usr/lib/tvdemon/app.py:767 usr/lib/tvdemon/app.py:768
+#: usr/lib/tvdemon/app.py:782 usr/lib/tvdemon/app.py:784
+#: usr/lib/tvdemon/app.py:1189 usr/lib/tvdemon/app.py:1190
+#: usr/lib/tvdemon/app.py:1193 usr/lib/tvdemon/app.py:1197
+#: usr/share/tvdemon/app.ui.h:37
+msgid "Average Bitrate"
+msgstr "Taxa de dados média"
+
+#: usr/lib/tvdemon/app.py:791
+msgid "Dimensions"
+msgstr "Dimensões"
+
+#: usr/lib/tvdemon/app.py:794
+msgid "Aspect"
+msgstr "Aspeto"
+
+#: usr/lib/tvdemon/app.py:796
+msgid "Pixel Format"
+msgstr "Formato de pixel"
+
+#: usr/lib/tvdemon/app.py:798
+msgid "Gamma"
+msgstr "Gama"
+
+#: usr/lib/tvdemon/app.py:800
+msgid "Bits Per Pixel"
+msgstr "Bits por pixel"
+
+#: usr/lib/tvdemon/app.py:806 usr/lib/tvdemon/app.py:832
+msgid "Codec"
+msgstr "Codec"
+
+#: usr/lib/tvdemon/app.py:815
+msgid "surround sound"
+msgstr "som ambiente"
+
+#: usr/lib/tvdemon/app.py:816
+msgid "Channels"
+msgstr "Canais"
+
+#: usr/lib/tvdemon/app.py:819
+msgid "Sample Rate"
+msgstr "Taxa de amostra"
+
+#: usr/lib/tvdemon/app.py:824
+msgid "Format"
+msgstr "Formato"
+
+#: usr/lib/tvdemon/app.py:826
+msgid "Channel Count"
+msgstr "Contagem de canais"
+
+#: usr/lib/tvdemon/app.py:920
+#, python-format
+msgid "%d TV channel"
+msgid_plural "%d TV channels"
+msgstr[0] "%d Canal de TV"
+msgstr[1] "%d Canais de TV"
+
+#: usr/lib/tvdemon/app.py:925
+#, python-format
+msgid "%d movie"
+msgid_plural "%d movies"
+msgstr[0] "%d filme"
+msgstr[1] "%d filmes"
+
+#: usr/lib/tvdemon/app.py:930
+#, python-format
+msgid "%d series"
+msgid_plural "%d series"
+msgstr[0] "%d série"
+msgstr[1] "%d séries"
+
+#: usr/lib/tvdemon/app.py:950
+msgid "Edit"
+msgstr "Editar"
+
+#: usr/lib/tvdemon/app.py:960
+msgid "Remove"
+msgstr "Remover"
+
+#: usr/lib/tvdemon/app.py:1053
+msgid "M3U Playlists"
+msgstr "Listas de reprodução M3U"
+
+#: usr/lib/tvdemon/app.py:1215 generate_desktop_files:25
+#: usr/share/tvdemon/app.ui.h:2
+msgid "Watch TV"
+msgstr "Ver TV"
+
+#: usr/share/tvdemon/app.ui.h:3 usr/share/tvdemon/shortcuts.ui.h:5
+msgid "Search"
+msgstr "Procurar"
+
+#: usr/share/tvdemon/app.ui.h:4
+msgid "Fullscreen"
+msgstr "Ecrã inteiro"
+
+#: usr/share/tvdemon/app.ui.h:7
+msgid "MPV Options"
+msgstr "Opções MPV"
+
+#: usr/share/tvdemon/app.ui.h:8
+msgid "List of MPV options"
+msgstr "Lista de opções MPV"
+
+#: usr/share/tvdemon/app.ui.h:9
+msgid "Playback"
+msgstr "Reprodução"
+
+#: usr/share/tvdemon/app.ui.h:10
+msgid "User Agent"
+msgstr "Agente do utilizador"
+
+#: usr/share/tvdemon/app.ui.h:11
+msgid "Referrer"
+msgstr "Referência"
+
+#: usr/share/tvdemon/app.ui.h:12
+msgid "Network"
+msgstr "Rede"
+
+#: usr/share/tvdemon/app.ui.h:13
+msgid ""
+"This option only works when used with light desktop themes which support "
+"dark mode."
+msgstr ""
+"Esta opção apenas funciona quando usada com temas claros que suportam o modo "
+"escuro."
+
+#: usr/share/tvdemon/app.ui.h:14
+msgid "Prefer dark mode"
+msgstr "Preferir modo escuro"
+
+#: usr/share/tvdemon/app.ui.h:15
+msgid "Add a new provider..."
+msgstr "Adicionar um novo fornecedor..."
+
+#: usr/share/tvdemon/app.ui.h:16
+msgid "Reset to defaults..."
+msgstr "Repor predefinições..."
+
+#: usr/share/tvdemon/app.ui.h:17
+msgid "Name:"
+msgstr "Nome:"
+
+#: usr/share/tvdemon/app.ui.h:18
+msgid "URL:"
+msgstr "URL:"
+
+#: usr/share/tvdemon/app.ui.h:19
+msgid "Path:"
+msgstr "Localização:"
+
+#: usr/share/tvdemon/app.ui.h:20
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: usr/share/tvdemon/app.ui.h:21
+msgid "OK"
+msgstr "Aceitar"
+
+#: usr/share/tvdemon/app.ui.h:22
+msgid "Username:"
+msgstr "Nome de utilizador:"
+
+#: usr/share/tvdemon/app.ui.h:23
+msgid "Password:"
+msgstr "Palavra-passe:"
+
+#: usr/share/tvdemon/app.ui.h:24
+msgid "Browse..."
+msgstr "Explorar..."
+
+#: usr/share/tvdemon/app.ui.h:25
+msgid "EPG:"
+msgstr "EPG:"
+
+#: usr/share/tvdemon/app.ui.h:26
+msgid "Type:"
+msgstr "Tipo:"
+
+#: usr/share/tvdemon/app.ui.h:27
+msgid "Are you sure you want to delete this provider?"
+msgstr "Tem a certeza que deseja eliminar este fornecedor?"
+
+#: usr/share/tvdemon/app.ui.h:28
+msgid "No"
+msgstr "Não"
+
+#: usr/share/tvdemon/app.ui.h:29
+msgid "Yes"
+msgstr "Sim"
+
+#: usr/share/tvdemon/app.ui.h:30
+msgid "Are you sure you want to reset to the default providers?"
+msgstr "Tem a certeza que deseja repor para os fornecedores predefinidos?"
+
+#: usr/share/tvdemon/app.ui.h:31
+msgid "Currently playing:"
+msgstr "Atualmente a reproduzir:"
+
+#: usr/share/tvdemon/app.ui.h:32
+msgid "Show"
+msgstr "Mostrar"
+
+#: usr/share/tvdemon/app.ui.h:33
+msgid "Pause"
+msgstr "Pausa"
+
+#: usr/share/tvdemon/app.ui.h:34
+msgid "Stop"
+msgstr "Parar"
+
+#: usr/share/tvdemon/app.ui.h:39
+msgid "Video"
+msgstr "Vídeo"
+
+#: usr/share/tvdemon/app.ui.h:41
+msgid "Audio"
+msgstr "Áudio"
+
+#: usr/share/tvdemon/shortcuts.ui.h:1
+msgid "Main shortcuts"
+msgstr "Atalhos principais"
+
+#: usr/share/tvdemon/shortcuts.ui.h:4
+msgid "Toggle Fullscreen"
+msgstr "Mudar para ecrã inteiro"
+
+#: usr/share/tvdemon/shortcuts.ui.h:7
+msgid "Reload all providers"
+msgstr "Recarregar todos os fornecedores"

@@ -1,0 +1,5 @@
+#!/bin/bash
+sudo rm -rf /usr/lib/tvdemon
+sudo rm -rf /usr/share/tvdemon
+sudo cp -R usr /
+tvdemon

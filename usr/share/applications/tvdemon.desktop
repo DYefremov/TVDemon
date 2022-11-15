@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=TVDemon
+Comment=Watch TV
+Exec=tvdemon
+Icon=tvdemon
+Terminal=false
+Type=Application
+Encoding=UTF-8
+Categories=AudioVideo;Video;Player;TV;
+Keywords=Television;Stream;
+StartupNotify=false
