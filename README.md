@@ -17,28 +17,22 @@ It can support multiple IPTV providers of the following types:
  * Removed use of [xapp](https://github.com/linuxmint/xapp).
  * Some code improvements and refactoring.
 
-# Requirements
+## Requirements
 
 - libmpv
 - python3-imdbpy (for Older Mint and Debian releases get it from https://packages.ubuntu.com/focal/all/python3-imdbpy/download)
 
-# TV Channels and media content
+## TV Channels and media content
 
 TVDemon does not provide content or TV channels, it is a player application which streams from IPTV providers.
 
 By default, TVDemon is configured with one IPTV provider called Free-TV: https://github.com/Free-TV/IPTV.
 
-This provider was chosen because it satisfied the following criterias:
-
-- It only includes free, legal, publicly available content
-- It groups TV channels by countries
-- It doesn't include adult content
-
 Issues relating to TV channels and media content should be addressed directly to the relevant provider.
 
 Note: Feel free to remove Free-TV from TVDemon if you don't use it, or add any other provider you may have access to or local M3U playlists.
 
-# Wayland compatibility
+## Wayland compatibility
 
 If you're using Wayland go the TVDemon preferences and add the following to the list of MPV options:
 
@@ -48,7 +42,7 @@ Run TVDemon with:
 
 `GDK_BACKEND=x11 tvdemon`
 
-# License
+## License
 
 - Code: GPLv3
 - Flags: https://github.com/linuxmint/flags
