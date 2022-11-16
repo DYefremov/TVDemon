@@ -34,7 +34,7 @@ Dmitriy Yefremov 2022
   <!-- interface-authors Clement Lefebvre 2020\nDmitriy Yefremov 2022\n -->
   <object class="GtkMenu" id="fav_menu">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
   </object>
   <object class="GtkMenu" id="main_menu">
     <property name="visible">True</property>
@@ -1576,60 +1576,63 @@ Dmitriy Yefremov 2022
                               <object class="GtkBox" id="pref_box">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
-                                <property name="spacing">6</property>
+                                <property name="border-width">24</property>
+                                <property name="orientation">vertical</property>
+                                <property name="spacing">12</property>
                                 <child>
-                                  <object class="GtkStackSidebar" id="pref_side_bar">
-                                    <property name="width-request">185</property>
+                                  <object class="GtkFrame" id="pref_playback_frame">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="stack">pref_stack</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkStack" id="pref_stack">
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">False</property>
-                                    <property name="border-width">12</property>
+                                    <property name="label-xalign">0.5</property>
+                                    <property name="shadow-type">in</property>
                                     <child>
-                                      <!-- n-columns=3 n-rows=3 -->
-                                      <object class="GtkGrid" id="pref_playback_grid">
+                                      <object class="GtkBox" id="pref_playback_box">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="valign">start</property>
                                         <property name="border-width">24</property>
-                                        <property name="row-spacing">12</property>
-                                        <property name="column-spacing">12</property>
+                                        <property name="orientation">vertical</property>
+                                        <property name="spacing">6</property>
                                         <child>
-                                          <object class="GtkLabel">
+                                          <!-- n-columns=2 n-rows=1 -->
+                                          <object class="GtkGrid" id="pref_playback_grid">
                                             <property name="visible">True</property>
                                             <property name="can-focus">False</property>
-                                            <property name="halign">start</property>
-                                            <property name="valign">center</property>
-                                            <property name="label" translatable="yes">MPV Options</property>
-                                            <attributes>
-                                              <attribute name="weight" value="bold"/>
-                                            </attributes>
+                                            <property name="valign">start</property>
+                                            <property name="row-spacing">12</property>
+                                            <property name="column-spacing">12</property>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">False</property>
+                                                <property name="halign">start</property>
+                                                <property name="valign">center</property>
+                                                <property name="label" translatable="yes">MPV Options</property>
+                                                <attributes>
+                                                  <attribute name="weight" value="bold"/>
+                                                </attributes>
+                                              </object>
+                                              <packing>
+                                                <property name="left-attach">0</property>
+                                                <property name="top-attach">0</property>
+                                              </packing>
+                                            </child>
+                                            <child>
+                                              <object class="GtkEntry" id="mpv_entry">
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">True</property>
+                                                <property name="valign">center</property>
+                                                <property name="hexpand">True</property>
+                                              </object>
+                                              <packing>
+                                                <property name="left-attach">1</property>
+                                                <property name="top-attach">0</property>
+                                              </packing>
+                                            </child>
                                           </object>
                                           <packing>
-                                            <property name="left-attach">0</property>
-                                            <property name="top-attach">0</property>
-                                          </packing>
-                                        </child>
-                                        <child>
-                                          <object class="GtkEntry" id="mpv_entry">
-                                            <property name="visible">True</property>
-                                            <property name="can-focus">True</property>
-                                            <property name="valign">center</property>
-                                            <property name="hexpand">True</property>
-                                          </object>
-                                          <packing>
-                                            <property name="left-attach">1</property>
-                                            <property name="top-attach">0</property>
+                                            <property name="expand">False</property>
+                                            <property name="fill">True</property>
+                                            <property name="position">0</property>
                                           </packing>
                                         </child>
                                         <child>
@@ -1638,46 +1641,44 @@ Dmitriy Yefremov 2022
                                             <property name="visible">True</property>
                                             <property name="can-focus">True</property>
                                             <property name="receives-default">True</property>
-                                            <property name="halign">start</property>
+                                            <property name="halign">center</property>
                                             <property name="valign">center</property>
                                             <property name="relief">none</property>
                                             <property name="uri">https://mpv.io/manual/master/#options</property>
                                           </object>
                                           <packing>
-                                            <property name="left-attach">1</property>
-                                            <property name="top-attach">1</property>
+                                            <property name="expand">False</property>
+                                            <property name="fill">True</property>
+                                            <property name="position">1</property>
                                           </packing>
                                         </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
                                       </object>
-                                      <packing>
-                                        <property name="title" translatable="yes">Playback</property>
-                                        <property name="icon-name">video-x-generic-symbolic</property>
-                                      </packing>
                                     </child>
+                                    <child type="label">
+                                      <object class="GtkLabel" id="pref_playback_frame_label">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes">Playback</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkFrame" id="pref_network_frame">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="label-xalign">0.5</property>
+                                    <property name="shadow-type">in</property>
                                     <child>
-                                      <!-- n-columns=3 n-rows=3 -->
+                                      <!-- n-columns=2 n-rows=2 -->
                                       <object class="GtkGrid" id="pref_network_grid">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="valign">start</property>
                                         <property name="border-width">24</property>
                                         <property name="row-spacing">12</property>
                                         <property name="column-spacing">12</property>
@@ -1737,75 +1738,20 @@ Dmitriy Yefremov 2022
                                             <property name="top-attach">1</property>
                                           </packing>
                                         </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
                                       </object>
-                                      <packing>
-                                        <property name="title" translatable="yes">Network</property>
-                                        <property name="icon-name">preferences-system-network-symbolic</property>
-                                        <property name="position">1</property>
-                                      </packing>
                                     </child>
-                                    <child>
-                                      <!-- n-columns=3 n-rows=3 -->
-                                      <object class="GtkGrid" id="pref_extra_grid">
+                                    <child type="label">
+                                      <object class="GtkLabel" id="pref_network_frame_label">
+                                        <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="valign">start</property>
-                                        <property name="border-width">24</property>
-                                        <property name="row-spacing">12</property>
-                                        <property name="column-spacing">12</property>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
+                                        <property name="label" translatable="yes">Network</property>
                                       </object>
-                                      <packing>
-                                        <property name="title" translatable="yes">Preferences</property>
-                                        <property name="icon-name">preferences-other-symbolic</property>
-                                        <property name="position">2</property>
-                                      </packing>
                                     </child>
                                   </object>
                                   <packing>
-                                    <property name="expand">True</property>
+                                    <property name="expand">False</property>
                                     <property name="fill">True</property>
-                                    <property name="position">1</property>
+                                    <property name="position">3</property>
                                   </packing>
                                 </child>
                               </object>
