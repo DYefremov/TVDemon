@@ -133,7 +133,7 @@ class Application(Gtk.Application):
         self.content_type = TV_GROUP  # content being browsed
         self.back_page = None  # page to go back to if the back button is pressed
         self.active_channel = None
-        self.full_screen = False
+        self.fullscreen = False
         self.latest_search_bar_text = None
         self.visible_search_results = 0
         self.mpv = None
@@ -1365,7 +1365,7 @@ class Application(Gtk.Application):
         elif event.keyval == Gdk.KEY_F11 or \
                 (event.keyval == Gdk.KEY_f and not ctrl and type(
                     widget.get_focus()) != gi.repository.Gtk.SearchEntry) or \
-                (self.full_screen and event.keyval == Gdk.KEY_Escape):
+                (self.fullscreen and event.keyval == Gdk.KEY_Escape):
             self.toggle_fullscreen()
 
     @async_function
@@ -1516,10 +1516,10 @@ class Application(Gtk.Application):
     def toggle_fullscreen(self):
         if self.stack.get_visible_child_name() == "channels_page":
             # Toggle state
-            self.full_screen = (not self.full_screen)
-            if self.full_screen:
+            self.fullscreen = (not self.fullscreen)
+            if self.fullscreen:
                 # Fullscreen mode
-                self.window.full_screen()
+                self.window.fullscreen()
                 self.sidebar.hide()
                 self.headerbar.hide()
                 self.status_label.hide()
@@ -1534,7 +1534,7 @@ class Application(Gtk.Application):
                 self.channels_box.set_border_width(12)
 
         if self.fav_button.get_active():
-            self.fav_box.set_visible(not self.full_screen)
+            self.fav_box.set_visible(not self.fullscreen)
 
     def on_fullscreen_button_clicked(self, widget):
         self.toggle_fullscreen()
