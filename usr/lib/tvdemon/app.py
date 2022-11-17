@@ -746,6 +746,7 @@ class Application(Gtk.Application):
         window.show()
 
     def play_channel(self, box, row):
+        self.info_bar.hide()
         self.active_channel = row.channel
         self.play_async(row.channel)
 
@@ -755,6 +756,7 @@ class Application(Gtk.Application):
             return
 
         self.mpv.stop()
+
         if channel and channel.url:
             print(f"CHANNEL: '{channel.name}' URL: {channel.url}")
             self.info_menu_item.set_sensitive(False)
@@ -1499,15 +1501,10 @@ class Application(Gtk.Application):
 
         @self.mpv.event_callback(mpv.MpvEventID.END_FILE)
         def on_end(event):
-            event = event.get("event", {})
-            if event.get("reason", mpv.MpvEventEndFile.ERROR) == mpv.MpvEventEndFile.ERROR:
-                error = event.get('error', mpv.ErrorCode.GENERIC)
-                print(f"Stream playback error: {error}")
-                msg = "Can't Playback!"
-                if error == mpv.ErrorCode.LOADING_FAILED:
-                    msg = "Can't open stream!"
-
-                GLib.idle_add(self.emit, "error", _(msg))
+            event = event.as_dict(mpv.strict_decoder)
+            if event.get("reason", None) == "error":
+                error = event.get("file_error", _("Can't Playback!")).capitalize()
+                GLib.idle_add(self.emit, "error", f"{error}.")
 
     def on_mpv_drawing_area_draw(self, widget, cr):
         cr.set_source_rgb(0.0, 0.0, 0.0)
