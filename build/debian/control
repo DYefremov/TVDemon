@@ -1,5 +1,5 @@
 Package: tvdemon
-Version: 1.0.0-Beta
+Version: 1.0.1-Beta
 Section: video
 Priority: optional
 Maintainer: Dmitriy Yefremov <https://github.com/DYefremov>
@@ -9,6 +9,7 @@ Architecture: all
 Standards-Version: 4.1.2
 Depends: python3,
          python3-gi,
+         python3-requests,
          python3-setproctitle,
          python3-unidecode,
          libmpv1,
