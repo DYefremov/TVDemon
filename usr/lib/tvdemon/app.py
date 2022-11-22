@@ -1261,12 +1261,13 @@ class Application(Gtk.Application):
 
     def on_favorites_store(self):
         """ Stores the current favorites list. """
-        try:
-            path = Path(self._fav_store_path)
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(json.dumps([vars(r.channel) for r in self.fav_list_box]))
-        except Exception as e:
-            print("Storing favorites error:", e)
+        if self.fav_list_box.get_realized():
+            try:
+                path = Path(self._fav_store_path)
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(json.dumps([vars(r.channel) for r in self.fav_list_box]))
+            except Exception as e:
+                print("Storing favorites error:", e)
 
     def on_fav_drag_data_get(self, list_box, context, selection, info, d_time):
         indexes = [r.get_index() for r in list_box.get_selected_rows()]
