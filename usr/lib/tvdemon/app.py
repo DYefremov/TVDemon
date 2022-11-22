@@ -717,10 +717,14 @@ class Application(Gtk.Application):
             self.back_page = "landing_page"
             self.headerbar.set_title("TVDemon")
             self.headerbar.set_subtitle(_("Preferences"))
+            if self.active_channel is not None:
+                self.playback_bar.show()
         elif page == "providers_page":
             self.back_page = "landing_page"
             self.headerbar.set_title("TVDemon")
             self.headerbar.set_subtitle(_("Providers"))
+            if self.active_channel is not None:
+                self.playback_bar.show()
         elif page == "add_page":
             self.back_page = "providers_page"
             self.headerbar.set_title("TVDemon")
