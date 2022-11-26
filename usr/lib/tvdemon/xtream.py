@@ -14,7 +14,8 @@ https://github.com/linuxmint/tvdemon
 Author: Claudio Olmi
 Github: superolmo
 
-Some code cleanup by Dmitriy Yefremov .
+Some code cleanup by Dmitriy Yefremov.
+Github: DYefremov
 
 """
 
@@ -92,7 +93,6 @@ class Channel:
 
             elif stream_type == "movie":
                 stream_extension = stream_info['container_extension']
-
             # Required by TVDemon
             self.url = "{}/{}/{}/{}/{}.{}".format(xtream.server, stream_info['stream_type'],
                                                   xtream.authorization['username'],
@@ -149,7 +149,6 @@ class Episode:
     # Required by TVDemon
     title = ""
     name = ""
-
     # XTream
     # This contains the raw JSON data
     raw = ""
@@ -182,7 +181,7 @@ class Episode:
             print(f"{self.name} - Bad URL? `{self.url}`")
 
 
-class Serie():
+class Serie:
     # Required by TVDemon
     name = ""
     logo = ""
@@ -211,19 +210,16 @@ class Serie():
 
         # Check if category_id key is available
         if "series_id" in series_info.keys():
-            self.series_id = int(series_info['series_id'])
-
+            self.series_id = int(series_info["series_id"])
         # Check if plot key is available
         if "plot" in series_info.keys():
-            self.plot = series_info['plot']
-
+            self.plot = series_info["plot"]
         # Check if youtube_trailer key is available
         if "youtube_trailer" in series_info.keys():
-            self.youtube_trailer = series_info['youtube_trailer']
-
+            self.youtube_trailer = series_info["youtube_trailer"]
         # Check if genre key is available
         if "genre" in series_info.keys():
-            self.genre = series_info['genre']
+            self.genre = series_info["genre"]
 
 
 class Season:
@@ -254,13 +250,8 @@ class XTream:
     movies = []
 
     state = {'authenticated': False, 'loaded': False}
-
     hide_adult_content = False
-
-    catch_all_group = Group({
-        "category_id": "9999",
-        "category_name": "xEverythingElse",
-        "parent_id": 0}, "")
+    catch_all_group = Group({"category_id": "9999", "category_name": "xEverythingElse", "parent_id": 0}, "")
     # If the cached JSON file is older than threshold_time_sec then load a new
     # JSON dictionary from the provider
     threshold_time_sec = 60 * 60 * 8
@@ -330,12 +321,12 @@ class XTream:
         else:
             regex = re.compile(keyword)
 
-        print("Checking {} movies".format(len(self.movies)))
+        print(f"Checking {len(self.movies)} movies")
         for stream in self.movies:
             if re.match(regex, stream.name) is not None:
                 search_result.append(stream.export_json())
 
-        print("Checking {} channels".format(len(self.channels)))
+        print(f"Checking {len(self.channels)} channels")
         for stream in self.channels:
             if re.match(regex, stream.name) is not None:
                 search_result.append(stream.export_json())
@@ -381,16 +372,14 @@ class XTream:
         """Convert the Logo URL to a local Logo Path
 
         Args:
-            logoURL (str): The Logo URL
+            logo_url (str): The Logo URL
 
         Returns:
             [type]: The logo path as a string or None
         """
         local_logo_path = None
         if logo_url:
-            if not self._validate_url(logo_url):
-                logo_url = None
-            else:
+            if self._validate_url(logo_url):
                 local_logo_path = osp.join(self.cache_path, "{}-{}".format(
                     self._slugify(self.name),
                     self._slugify(osp.split(logo_url)[-1])))
@@ -420,7 +409,7 @@ class XTream:
                 # If connection refused
                 print(f"{self.name} - Connection refused URL: {self.server}")
 
-    def _load_from_file(self, filename) -> dict:
+    def _load_from_file(self, filename) -> dict | None:
         """Try to load the dictionary from file
 
         Args:
@@ -430,10 +419,7 @@ class XTream:
             dict: Dictionary if found and no errors, None if file does not exists
         """
         # Build the full path
-        full_filename = osp.join(self.cache_path, "{}-{}".format(
-            self._slugify(self.name),
-            filename
-        ))
+        full_filename = osp.join(self.cache_path, f"{self._slugify(self.name)}-{filename}")
 
         if osp.isfile(full_filename):
             my_data = None
@@ -452,8 +438,6 @@ class XTream:
                 except Exception as e:
                     print(f" - Could not load from file `{full_filename}`: e=`{e}`")
             return my_data
-        else:
-            return None
 
     def _save_to_file(self, data_list: dict, filename: str) -> bool:
         """Save a dictionary to file
@@ -468,24 +452,19 @@ class XTream:
             bool: True if successfull, False if error
         """
         if data_list:
-
             # Build the full path
-            full_filename = osp.join(self.cache_path, "{}-{}".format(
-                self._slugify(self.name),
-                filename
-            ))
+            full_filename = osp.join(self.cache_path, f"{self._slugify(self.name)}-{filename}")
             # If the path makes sense, save the file
             json_data = json.dumps(data_list, ensure_ascii=False)
             try:
                 with open(full_filename, mode='wt', encoding='utf-8') as myfile:
                     myfile.write(json_data)
             except Exception as e:
-                print(" - Could not save to file `{}`: e=`{}`".format(full_filename, e))
+                print(f" - Could not save to file `{full_filename}`: e=`{e}`")
                 return False
 
             return True
-        else:
-            return False
+        return False
 
     def load_iptv(self):
         """Load XTream IPTV
@@ -502,10 +481,8 @@ class XTream:
         # If pyxtream has already authenticated the connection and not loaded the data, start loading
         if self.state['authenticated']:
             if not self.state['loaded']:
-
                 for loading_stream_type in (self.live_type, self.vod_type, self.series_type):
                     # Get GROUPS
-
                     # Try loading local file
                     dt = 0
                     all_cat = self._load_from_file("all_groups_{}.json".format(loading_stream_type))
@@ -519,10 +496,8 @@ class XTream:
 
                     # If we got the GROUPS data, show the statistics and load GROUPS
                     if all_cat:
-                        print("Loaded {} {} Groups in {:.3f} seconds".format(len(all_cat), loading_stream_type, dt))
-
+                        print(f"Loaded {len(all_cat)} {loading_stream_type} Groups in {dt:.3f} seconds")
                         # Add GROUPS to dictionaries
-
                         # Add the catch-all-errors group
                         self.groups.append(self.catch_all_group)
 
@@ -533,43 +508,38 @@ class XTream:
                             self.groups.append(new_group)
 
                         # Add the catch-all-errors group
-                        self.groups.append(
-                            Group({"category_id": "9999", "category_name": "xEverythingElse", "parent_id": 0},
-                                  loading_stream_type))
-
+                        grp = Group({"category_id": "9999", "category_name": "xEverythingElse", "parent_id": 0})
+                        self.groups.append(grp, loading_stream_type)
                         # Sort Categories
                         self.groups.sort(key=lambda x: x.name)
                     else:
-                        print(" - Could not load {} Groups".format(loading_stream_type))
+                        print(f" - Could not load {loading_stream_type} Groups")
                         break
 
-                    ## Get Streams
+                    # Get Streams
 
                     # Try loading local file
                     dt = 0
-                    all_streams = self._load_from_file("all_stream_{}.json".format(loading_stream_type))
+                    all_streams = self._load_from_file(f"all_stream_{loading_stream_type}.json")
                     # If file empty or does not exists, download it from remote
                     if all_streams is None:
                         # Load all Streams and save file locally
                         start = timer()
                         all_streams = self._load_streams_from_provider(loading_stream_type)
-                        self._save_to_file(all_streams, "all_stream_{}.json".format(loading_stream_type))
+                        self._save_to_file(all_streams, f"all_stream_{loading_stream_type}.json")
                         dt = timer() - start
 
                     # If we got the STREAMS data, show the statistics and load Streams
                     if all_streams:
-                        print("Loaded {} {} Streams in {:.3f} seconds".format(
-                            len(all_streams), loading_stream_type, dt))
+                        print(f"Loaded {len(all_streams)} {loading_stream_type} Streams in {dt:.3f} seconds")
                         # Add Streams to dictionaries
-
                         skipped_adult_content = 0
                         skipped_no_name_content = 0
 
                         for stream_channel in all_streams:
                             skip_stream = False
-
                             # Skip if the name of the stream is empty
-                            if stream_channel['name'] == "":
+                            if stream_channel["name"] == "":
                                 skip_stream = True
                                 skipped_no_name_content = skipped_no_name_content + 1
                                 self._save_to_file_skipped_streams(stream_channel)
@@ -577,13 +547,12 @@ class XTream:
                             # Skip if the user chose to hide adult streams
                             if self.hide_adult_content and loading_stream_type == self.live_type:
                                 try:
-                                    if stream_channel['is_adult'] == "1":
+                                    if stream_channel["is_adult"] == "1":
                                         skip_stream = True
                                         skipped_adult_content = skipped_adult_content + 1
                                         self._save_to_file_skipped_streams(stream_channel)
                                 except Exception:
-                                    print(" - Stream does not have `is_adult` key:\n\t`{}`".format(
-                                        json.dumps(stream_channel)))
+                                    print(f" - Stream does not have `is_adult` key:\n\t`{json.dumps(stream_channel)}`")
                                     pass
 
                             if not skip_stream:
@@ -600,7 +569,6 @@ class XTream:
                                     (x for x in self.groups if x.group_id == int(stream_channel['category_id'])),
                                     None
                                 )
-
                                 # Set group title
                                 if the_group:
                                     group_title = the_group.name
@@ -622,7 +590,6 @@ class XTream:
                                 if new_channel.group_id == '9999':
                                     print(" - xEverythingElse Channel -> {} - {}".format(new_channel.name,
                                                                                          new_channel.stream_type))
-
                                 # Save the new channel to the local list of channels
                                 if loading_stream_type == self.live_type:
                                     self.channels.append(new_channel)
@@ -656,10 +623,8 @@ class XTream:
             print("Warning, cannot load steams since authorization failed")
 
     def _save_to_file_skipped_streams(self, stream_channel: Channel):
-
         # Build the full path
         full_filename = osp.join(self.cache_path, "skipped_streams.json")
-
         # If the path makes sense, save the file
         json_data = json.dumps(stream_channel, ensure_ascii=False)
         try:
@@ -675,10 +640,7 @@ class XTream:
         Args:
             get_series (dict): Serie dictionary
         """
-        start = timer()
         series_seasons = self._load_series_info_by_id_from_provider(get_series.series_id)
-        dt = timer() - start
-        # print("Loaded in {:.3f} sec".format(dt))
         for series_info in series_seasons["seasons"]:
             season_name = series_info["name"]
             season_key = series_info['season_number']
@@ -687,12 +649,7 @@ class XTream:
             if "episodes" in series_seasons.keys():
                 for series_season in series_seasons["episodes"].keys():
                     for episode_info in series_seasons["episodes"][str(series_season)]:
-                        new_episode_channel = Episode(
-                            self,
-                            series_info,
-                            "Testing",
-                            episode_info
-                        )
+                        new_episode_channel = Episode(self, series_info, "Testing", episode_info)
                         season.episodes[episode_info['title']] = new_episode_channel
 
     def _get_request(self, url: str, timeout: Tuple = (2, 15)):
@@ -712,17 +669,12 @@ class XTream:
 
         except requests.exceptions.ConnectionError:
             print(" - Connection Error")
-
         except requests.exceptions.HTTPError:
             print(" - HTTP Error")
-
         except requests.exceptions.TooManyRedirects:
             print(" - TooManyRedirects")
-
         except requests.exceptions.ReadTimeout as e:
             print(" - Timeout while loading data")
-
-        return None
 
     # GET Stream Categories
     def _load_categories_from_provider(self, stream_type: str):
@@ -825,7 +777,6 @@ class XTream:
         return self._get_request(self.get_all_epg_url())
 
     # URL-builder methods
-
     def get_authenticate_url(self):
         return '%s/player_api.php?username=%s&password=%s' % (self.server, self.username, self.password)
 

@@ -80,8 +80,7 @@ class Provider:
         self.series = []
 
     def get_info(self):
-        return "%s:::%s:::%s:::%s:::%s:::%s" % (self.name, self.type_id, self.url,
-                                                self.username, self.password, self.epg)
+        return f"{self.name}:::{self.type_id}:::{self.url}:::{self.username}:::{self.password}:::{self.epg}"
 
 
 class Group:
@@ -143,14 +142,17 @@ class Channel:
         if self.name is None and "," in info:
             self.name = info.split(",")[-1].strip()
         if self.logo:
-            ext = None
-            for known_ext in [".png", ".jpg", ".gif", ".jpeg"]:
-                if self.logo.lower().endswith(known_ext):
-                    ext = known_ext
-                    break
-            if ext == ".jpeg":
-                ext = ".jpg"
-            self.logo_path = os.path.join(PROVIDERS_PATH, "%s-%s%s" % (slugify(provider.name), slugify(self.name), ext))
+            if self.logo.startswith("file://"):
+                self.logo_path = self.logo[7:]
+            else:
+                ext = None
+                for known_ext in [".png", ".jpg", ".gif", ".jpeg"]:
+                    if self.logo.lower().endswith(known_ext):
+                        ext = known_ext
+                        break
+                if ext == ".jpeg":
+                    ext = ".jpg"
+                self.logo_path = os.path.join(PROVIDERS_PATH, f"{slugify(provider.name)}-{slugify(self.name)}{ext}")
 
     @staticmethod
     def from_dict(data: dict):
@@ -218,7 +220,7 @@ class Manager:
                             # Grab data by block_bytes
                             for data in response.iter_content(block_bytes, decode_unicode=True):
                                 downloaded_bytes += block_bytes
-                                print("{} bytes".format(downloaded_bytes))
+                                print(f"{downloaded_bytes} bytes")
                                 file.write(str(data))
                         if downloaded_bytes < total_content_size:
                             print("The file size is incorrect, deleting")
@@ -228,7 +230,7 @@ class Manager:
                             # self.settings.set_
                             ret_code = True
                     else:
-                        print("HTTP error %d while retrieving from %s!" % (response.status_code, provider.url))
+                        print(f"HTTP error {response.status_code} while retrieving from {provider.url}!")
                 except Exception as e:
                     print(e)
         else:
@@ -244,9 +246,9 @@ class Manager:
                 content = file.read()
                 if "#EXTM3U" in content and "#EXTINF" in content:
                     legit = True
-                    self.debug("Content looks legit: %s" % provider.name)
+                    self.debug(f"Content looks legit: {provider.name}")
                 else:
-                    self.debug("Nope: %s" % provider.path)
+                    self.debug(f"Nope: {provider.path}")
         return legit
 
     def load_channels(self, provider):
