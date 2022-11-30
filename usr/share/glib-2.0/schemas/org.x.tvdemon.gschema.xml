@@ -26,5 +26,10 @@
       <summary>Format: name:::type:::url(or path):::username:::password:::epg</summary>
       <description></description>
     </key>
+    <key type="(ii)" name="main-window-size">
+      <default>(700, 500)</default>
+      <summary>Main app window size</summary>
+      <description></description>
+    </key>
   </schema>
 </schemalist>

@@ -153,6 +153,7 @@ class Application(Gtk.Application):
         self.builder.add_from_file(glade_file)
         self.window = self.builder.get_object("main_window")
         self.window.connect("delete-event", self.on_close_app)
+        self.window.resize(*self.settings.get_value("main-window-size"))
         # The window used to display stream information
         self.info_window = self.builder.get_object("stream_info_window")
 
@@ -1567,6 +1568,11 @@ class Application(Gtk.Application):
         self.info_message_label.set_text(msg)
 
     def on_close_app(self, window=None, event=None):
+        # Saving main window size.
+        width, height = self.window.get_size()
+        w_size = GLib.Variant.new_tuple(GLib.Variant.new_int32(width), GLib.Variant.new_int32(height))
+        self.settings.set_value("main-window-size", w_size)
+        # Saving favorites list.
         self.on_favorites_store()
 
     def on_close_info_window_button_clicked(self, widget):
