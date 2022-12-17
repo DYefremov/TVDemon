@@ -123,7 +123,6 @@ class Application(Gtk.Application):
         self.connect("error", self.on_error)
 
         self.settings = Gio.Settings(schema_id="org.x.tvdemon")
-        self.icon_theme = Gtk.IconTheme.get_default()
         self.manager = Manager(self.settings)
         self.providers = []
         self.active_provider = None
@@ -186,7 +185,7 @@ class Application(Gtk.Application):
                         "video_properties_box", "video_properties_label", "colour_properties_box",
                         "colour_properties_label", "audio_properties_box", "audio_properties_label",
                         "layout_properties_box", "layout_properties_label", "info_bar", "info_message_label",
-                        "fav_button", "fav_box", "fav_list_box", "add_fav_button", "fav_menu")
+                        "fav_button", "fav_box", "fav_list_box", "add_fav_button", "fav_menu", "fav_count_label")
 
         for name in widget_names:
             widget = self.builder.get_object(name)
@@ -309,6 +308,7 @@ class Application(Gtk.Application):
         self.fav_list_box.connect("row-activated", self.play_fav_channel)
         self.add_fav_button.connect("clicked", self.on_add_fav)
         self.fav_button.bind_property("active", self.fav_box, "visible")
+        self.fav_button.bind_property("active", self.fav_count_label, "visible")
         self.fav_button.bind_property("active", self.sidebar, "visible", 4)
         self.fav_list_box.connect("realize", self.on_fav_list_box_realize)
         self.fav_list_box.connect("button-press-event", self.on_fav_list_button_press)
@@ -1240,16 +1240,19 @@ class Application(Gtk.Application):
 
         if dialog.run() == Gtk.ResponseType.OK:
             list(map(self.fav_list_box.remove, self.fav_list_box.get_selected_rows()))
+            self.fav_count_label.set_text(str(len(self.fav_list_box)))
         dialog.destroy()
 
     def show_fav_channels(self, channels):
         self.navigate_to("channels_page")
         self.update_channels_data(channels, self.fav_list_box, False)
+        self.fav_count_label.set_text(str(len(self.fav_list_box)))
 
     def on_add_fav(self, button):
         channels = [row.channel for row in self.channels_list_box.get_selected_rows()]
         current_count = len(self.fav_list_box)
         self.update_channels_data(channels, self.fav_list_box, False)
+        self.fav_count_label.set_text(str(len(self.fav_list_box)))
         self.show_info_message(f"{_('Done!')} {_('Channels added:')} {len(self.fav_list_box) - current_count}")
 
     def get_favorites(self):

@@ -659,7 +659,7 @@ Dmitriy Yefremov 2022
                               </packing>
                             </child>
                             <style>
-                              <class name="tvdemon-info-section"/>
+                              <class name="info-section"/>
                             </style>
                           </object>
                           <packing>
@@ -1856,10 +1856,34 @@ Dmitriy Yefremov 2022
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Favorites</property>
                 <child>
-                  <object class="GtkImage" id="fav_button_image">
+                  <object class="GtkBox" id="fav_button_info_box">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="icon-name">user-bookmarks-symbolic</property>
+                    <property name="homogeneous">True</property>
+                    <child>
+                      <object class="GtkImage" id="fav_button_image">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="icon-name">user-bookmarks-symbolic</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="fav_count_label">
+                        <property name="can-focus">False</property>
+                        <property name="margin-start">5</property>
+                        <property name="label">0</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
                   </object>
                 </child>
               </object>
