@@ -55,12 +55,12 @@ Dmitriy Yefremov 2022
           <object class="GtkPaned" id="main_paned">
             <property name="visible">True</property>
             <property name="can-focus">True</property>
+            <property name="border-width">12</property>
             <property name="wide-handle">True</property>
             <child>
               <object class="GtkBox" id="fav_box">
                 <property name="width-request">150</property>
                 <property name="can-focus">False</property>
-                <property name="border-width">12</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">5</property>
                 <child>
@@ -113,7 +113,6 @@ Dmitriy Yefremov 2022
                   <object class="GtkBox" id="landing_box">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="border-width">12</property>
                     <property name="orientation">vertical</property>
                     <property name="spacing">20</property>
                     <child>
@@ -324,7 +323,6 @@ Dmitriy Yefremov 2022
                   <object class="GtkBox" id="channels_box">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="border-width">12</property>
                     <property name="orientation">vertical</property>
                     <child>
                       <object class="GtkBox">
@@ -724,7 +722,6 @@ Dmitriy Yefremov 2022
                   <object class="GtkBox" id="episodes_page">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="border-width">12</property>
                     <property name="orientation">vertical</property>
                     <child>
                       <object class="GtkScrolledWindow">
@@ -764,6 +761,7 @@ Dmitriy Yefremov 2022
                   <object class="GtkBox" id="preferences_box">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
+                    <property name="border-width">24</property>
                     <property name="orientation">vertical</property>
                     <child>
                       <object class="GtkScrolledWindow" id="pref_scrolled">
@@ -777,7 +775,6 @@ Dmitriy Yefremov 2022
                               <object class="GtkBox" id="pref_box">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
-                                <property name="border-width">24</property>
                                 <property name="orientation">vertical</property>
                                 <property name="spacing">12</property>
                                 <child>
@@ -973,18 +970,20 @@ Dmitriy Yefremov 2022
                   <object class="GtkBox" id="providers_box">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="border-width">12</property>
+                    <property name="border-width">24</property>
                     <property name="orientation">vertical</property>
+                    <property name="spacing">20</property>
                     <child>
-                      <object class="GtkBox">
+                      <object class="GtkFrame" id="providers_frame">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="orientation">vertical</property>
-                        <property name="spacing">20</property>
+                        <property name="label-xalign">0</property>
+                        <property name="shadow-type">in</property>
                         <child>
-                          <object class="GtkScrolledWindow">
+                          <object class="GtkScrolledWindow" id="providers_scrolled">
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
+                            <property name="border-width">6</property>
                             <child>
                               <object class="GtkViewport">
                                 <property name="visible">True</property>
@@ -1001,122 +1000,65 @@ Dmitriy Yefremov 2022
                               </object>
                             </child>
                           </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
                         </child>
+                        <child type="label_item">
+                          <placeholder/>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkBox" id="providers_action_box">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">center</property>
+                        <property name="orientation">vertical</property>
                         <child>
-                          <object class="GtkSeparator">
+                          <object class="GtkButtonBox" id="providers_button_box">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkBox" id="providers_action_box">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="halign">center</property>
-                            <property name="orientation">vertical</property>
+                            <property name="homogeneous">True</property>
+                            <property name="layout-style">expand</property>
                             <child>
-                              <object class="GtkButtonBox" id="providers_button_box">
+                              <object class="GtkButton" id="new_provider_button">
                                 <property name="visible">True</property>
-                                <property name="can-focus">False</property>
-                                <property name="homogeneous">True</property>
-                                <property name="layout-style">expand</property>
+                                <property name="can-focus">True</property>
+                                <property name="receives-default">True</property>
                                 <child>
-                                  <object class="GtkButton" id="new_provider_button">
+                                  <object class="GtkBox">
                                     <property name="visible">True</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="receives-default">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="halign">center</property>
+                                    <property name="spacing">6</property>
                                     <child>
-                                      <object class="GtkBox">
+                                      <object class="GtkImage">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="halign">center</property>
-                                        <property name="spacing">6</property>
-                                        <child>
-                                          <object class="GtkImage">
-                                            <property name="visible">True</property>
-                                            <property name="can-focus">False</property>
-                                            <property name="icon-name">list-add-symbolic</property>
-                                          </object>
-                                          <packing>
-                                            <property name="expand">False</property>
-                                            <property name="fill">True</property>
-                                            <property name="position">0</property>
-                                          </packing>
-                                        </child>
-                                        <child>
-                                          <object class="GtkLabel">
-                                            <property name="visible">True</property>
-                                            <property name="can-focus">False</property>
-                                            <property name="label" translatable="yes">Add a new provider...</property>
-                                          </object>
-                                          <packing>
-                                            <property name="expand">False</property>
-                                            <property name="fill">True</property>
-                                            <property name="position">1</property>
-                                          </packing>
-                                        </child>
+                                        <property name="icon-name">list-add-symbolic</property>
                                       </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
                                     </child>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="reset_providers_button">
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="receives-default">True</property>
                                     <child>
-                                      <object class="GtkBox">
+                                      <object class="GtkLabel">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="halign">center</property>
-                                        <property name="spacing">6</property>
-                                        <child>
-                                          <object class="GtkImage">
-                                            <property name="visible">True</property>
-                                            <property name="can-focus">False</property>
-                                            <property name="icon-name">view-refresh-symbolic</property>
-                                          </object>
-                                          <packing>
-                                            <property name="expand">False</property>
-                                            <property name="fill">True</property>
-                                            <property name="position">0</property>
-                                          </packing>
-                                        </child>
-                                        <child>
-                                          <object class="GtkLabel">
-                                            <property name="visible">True</property>
-                                            <property name="can-focus">False</property>
-                                            <property name="label" translatable="yes">Reset to defaults...</property>
-                                          </object>
-                                          <packing>
-                                            <property name="expand">False</property>
-                                            <property name="fill">True</property>
-                                            <property name="position">1</property>
-                                          </packing>
-                                        </child>
+                                        <property name="label" translatable="yes">Add a new provider...</property>
                                       </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
+                                      </packing>
                                     </child>
                                   </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">1</property>
-                                  </packing>
                                 </child>
                               </object>
                               <packing>
@@ -1125,18 +1067,62 @@ Dmitriy Yefremov 2022
                                 <property name="position">0</property>
                               </packing>
                             </child>
+                            <child>
+                              <object class="GtkButton" id="reset_providers_button">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="receives-default">True</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="halign">center</property>
+                                    <property name="spacing">6</property>
+                                    <child>
+                                      <object class="GtkImage">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="icon-name">view-refresh-symbolic</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes">Reset to defaults...</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
                           </object>
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">4</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
+                        <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">0</property>
+                        <property name="position">1</property>
                       </packing>
                     </child>
                   </object>
@@ -1151,10 +1137,9 @@ Dmitriy Yefremov 2022
                     <property name="can-focus">False</property>
                     <property name="valign">start</property>
                     <property name="margin-start">20</property>
-                    <property name="margin-end">10</property>
+                    <property name="margin-end">20</property>
                     <property name="margin-top">10</property>
                     <property name="hexpand">True</property>
-                    <property name="border-width">12</property>
                     <property name="orientation">vertical</property>
                     <property name="spacing">12</property>
                     <child>
@@ -1448,7 +1433,6 @@ Dmitriy Yefremov 2022
                     <property name="can-focus">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
-                    <property name="border-width">12</property>
                     <property name="orientation">vertical</property>
                     <property name="spacing">24</property>
                     <child>
@@ -1515,7 +1499,6 @@ Dmitriy Yefremov 2022
                     <property name="can-focus">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
-                    <property name="border-width">12</property>
                     <property name="orientation">vertical</property>
                     <property name="spacing">24</property>
                     <child>

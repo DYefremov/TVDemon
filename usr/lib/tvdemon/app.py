@@ -952,6 +952,7 @@ class Application(Gtk.Application):
     def refresh_providers_page(self):
         for child in self.providers_flowbox.get_children():
             self.providers_flowbox.remove(child)
+
         for provider in self.providers:
             labels_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
             image = Gtk.Image()
@@ -986,9 +987,8 @@ class Application(Gtk.Application):
             box = Gtk.Box()
             box.pack_start(button, True, True, 0)
             box.set_spacing(6)
-
             # Edit button
-            button = Gtk.Button()
+            button = Gtk.Button(valign=Gtk.Align.CENTER)
             button.set_relief(Gtk.ReliefStyle.NONE)
             button.connect("clicked", self.on_edit_button_clicked, provider)
             image = Gtk.Image()
@@ -997,7 +997,7 @@ class Application(Gtk.Application):
             button.add(image)
             box.pack_start(button, False, False, 0)
             # Clear icon cache button
-            button = Gtk.Button()
+            button = Gtk.Button(valign=Gtk.Align.CENTER)
             button.set_relief(Gtk.ReliefStyle.NONE)
             button.connect("clicked", self.on_clear_icon_cache_button_clicked, provider)
             image = Gtk.Image()
@@ -1006,7 +1006,7 @@ class Application(Gtk.Application):
             button.add(image)
             box.pack_start(button, False, False, 0)
             # Remove button
-            button = Gtk.Button()
+            button = Gtk.Button(valign=Gtk.Align.CENTER)
             button.set_relief(Gtk.ReliefStyle.NONE)
             button.connect("clicked", self.on_delete_button_clicked, provider)
             image = Gtk.Image()
