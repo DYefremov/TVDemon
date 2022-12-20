@@ -3,7 +3,7 @@
 ### TVDemon is based on [Hypnotix](https://github.com/linuxmint/hypnotix).  
 This is an IPTV streaming application with support for live TV, movies and series.
 
-![shadow](https://user-images.githubusercontent.com/7511379/188286424-162c4584-3c26-4b15-9151-089ba6eb2e70.png)
+![shadow](https://user-images.githubusercontent.com/7511379/208684877-6d901320-9859-4381-8220-f9209f40e51b.png)
 
 It can support multiple IPTV providers of the following types:
 
@@ -15,11 +15,11 @@ It can support multiple IPTV providers of the following types:
  * Some GUI changes.
  * Functionality improvement.
  * Removed use of [xapp](https://github.com/linuxmint/xapp).
- * Some code improvements and refactoring.
+ * Some code changes and improvements.
 
 ## Requirements
 
-- libmpv
+- libmpv >= 0.34.1
 - python3-imdbpy (for Older Mint and Debian releases get it from https://packages.ubuntu.com/focal/all/python3-imdbpy/download)
 
 ## TV Channels and media content
@@ -28,7 +28,7 @@ TVDemon does not provide content or TV channels, it is a player application whic
 
 By default, TVDemon is configured with one IPTV provider called Free-TV: https://github.com/Free-TV/IPTV.
 
-Issues relating to TV channels and media content should be addressed directly to the relevant provider.
+### Issues relating to TV channels and media content should be addressed directly to the relevant provider.
 
 Note: Feel free to remove Free-TV from TVDemon if you don't use it, or add any other provider you may have access to or local M3U playlists.
 
