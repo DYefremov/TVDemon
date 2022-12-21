@@ -323,6 +323,15 @@ class Manager:
                     else:
                         provider.channels.append(channel)
 
+    @staticmethod
+    def get_m3u_tvg_info(path):
+        """ Returns "x-tvg-url" parameter value from the local file. """
+        with open(path, "r") as file:
+            line = file.readline()
+            if line.startswith("#EXTM3U"):
+                return dict(PARAMS.findall(line)).get("x-tvg-url", "")
+            return ""
+
 
 if __name__ == '__main__':
     pass

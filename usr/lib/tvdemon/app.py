@@ -1115,15 +1115,15 @@ class Application(Gtk.Application):
         dialog.add_filter(filter_m3u)
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
-            self.path_entry.set_text(dialog.get_filename())
+            path = dialog.get_filename()
+            self.path_entry.set_text(path)
+            self.epg_entry.set_text(self.manager.get_m3u_tvg_info(path))
         dialog.destroy()
 
     # ******** PREFERENCES ******** #
 
     def save(self):
-        provider_strings = []
-        for provider in self.providers:
-            provider_strings.append(provider.get_info())
+        provider_strings = [provider.get_info() for provider in self.providers]
         self.settings.set_strv("providers", provider_strings)
         self.reload(page="providers_page", refresh=True)
 
@@ -1132,19 +1132,19 @@ class Application(Gtk.Application):
         self.set_provider_type(type_id)
 
     def set_provider_type(self, type_id):
-        widgets = [self.path_entry, self.path_label, self.browse_button,
+        widgets = [self.path_entry, self.path_label,
                    self.url_entry, self.url_label,
                    self.username_entry, self.username_label,
                    self.password_entry, self.password_label,
-                   self.epg_label, self.epg_entry]
-        for widget in widgets:
-            widget.hide()
-        visible_widgets = []
+                   self.epg_label, self.epg_entry,
+                   self.browse_button]
+
+        [widget.hide() for widget in widgets]
+        visible_widgets = [self.epg_label, self.epg_entry]
+
         if type_id == PROVIDER_TYPE_URL:
             visible_widgets.append(self.url_entry)
             visible_widgets.append(self.url_label)
-            visible_widgets.append(self.epg_label)
-            visible_widgets.append(self.epg_entry)
         elif type_id == PROVIDER_TYPE_LOCAL:
             visible_widgets.append(self.path_entry)
             visible_widgets.append(self.path_label)
@@ -1156,13 +1156,10 @@ class Application(Gtk.Application):
             visible_widgets.append(self.username_label)
             visible_widgets.append(self.password_entry)
             visible_widgets.append(self.password_label)
-            visible_widgets.append(self.epg_label)
-            visible_widgets.append(self.epg_entry)
         else:
             print("Incorrect provider type: ", type_id)
 
-        for widget in visible_widgets:
-            widget.show()
+        [widget.show() for widget in visible_widgets]
 
     def on_provider_ok_button(self, widget):
         type_id = self.provider_type_combo.get_model()[self.provider_type_combo.get_active()][PROVIDER_TYPE_ID]
