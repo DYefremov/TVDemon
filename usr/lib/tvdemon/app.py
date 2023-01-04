@@ -29,6 +29,7 @@ import sys
 import time
 import traceback
 import warnings
+from enum import Enum
 from functools import partial
 from pathlib import Path
 
@@ -112,6 +113,22 @@ class ChannelWidget(Gtk.ListBoxRow):
     @channel.setter
     def channel(self, value):
         self._channel = value
+
+
+class Page(str, Enum):
+    """ Displayed page. """
+    SPINNER = "spinner_page"
+    LANDING = "landing_page"
+    CATEGORIES = "categories_page"
+    CHANNELS = "channels_page"
+    PROVIDERS = "providers_page"
+    VOD = "vod_page"
+    EPISODES = "episodes_page"
+    PREFERENCES = "preferences_page"
+    ADD = "add_page"
+    DELETE = "delete_page"
+    RESET = "reset_page"
+    PLAYER = "player_page"
 
 
 class Application(Gtk.Application):
@@ -303,7 +320,7 @@ class Application(Gtk.Application):
 
         self.channels_list_box.connect("row-activated", self.play_channel)
         # Favorites.
-        self.non_fav_pages = {"categories_page", "providers_page", "preferences_page"}
+        self.non_fav_pages = {Page.CATEGORIES, Page.PROVIDERS, Page.PREFERENCES}
         self._fav_store_path = f"{Path.home()}/.config/tvdemon/favorites.json"
         self.fav_list_box.connect("row-activated", self.play_fav_channel)
         self.add_fav_button.connect("clicked", self.on_add_fav)
@@ -331,7 +348,7 @@ class Application(Gtk.Application):
     def do_startup(self):
         Gtk.Application.do_startup(self)
 
-        self.reload(page="landing_page")
+        self.reload(page=Page.LANDING)
         # Redownload playlists by default
         # This is going to get readjusted
         self._timer_id = GLib.timeout_add_seconds(self.reload_timeout_sec, self.force_reload)
@@ -380,7 +397,7 @@ class Application(Gtk.Application):
 
     def show_groups(self, widget, content_type):
         self.content_type = content_type
-        self.navigate_to("categories_page")
+        self.navigate_to(Page.CATEGORIES)
         for child in self.categories_flowbox.get_children():
             self.categories_flowbox.remove(child)
 
@@ -425,7 +442,7 @@ class Application(Gtk.Application):
             self.show_vod(group.series) if group else self.show_vod(self.active_provider.series)
 
     def show_channels(self, channels):
-        self.navigate_to("channels_page")
+        self.navigate_to(Page.CHANNELS)
         if self.content_type == TV_GROUP:
             self.sidebar.show()
             self.update_channels_data(channels, self.channels_list_box)
@@ -452,7 +469,7 @@ class Application(Gtk.Application):
 
     def show_vod(self, items):
         logos_to_refresh = []
-        self.navigate_to("vod_page")
+        self.navigate_to(Page.VOD)
 
         for child in self.vod_flowbox.get_children():
             self.vod_flowbox.remove(child)
@@ -492,7 +509,7 @@ class Application(Gtk.Application):
         if self.active_provider.type_id == "xtream":
             self.x.get_series_info_by_id(self.active_serie)
 
-        self.navigate_to("episodes_page")
+        self.navigate_to(Page.EPISODES)
         for child in self.episodes_box.get_children():
             self.episodes_box.remove(child)
         for season_name in serie.seasons.keys():
@@ -581,7 +598,7 @@ class Application(Gtk.Application):
         self.navigate_to(self.back_page)
         if self.active_channel is not None:
             self.playback_bar.show()
-        if self.active_group and self.back_page == "categories_page":
+        if self.active_group and self.back_page is Page.CATEGORIES:
             self.init_channels_list_box()
 
     def on_search_button_toggled(self, widget):
@@ -619,7 +636,7 @@ class Application(Gtk.Application):
         self.status(_("No channels found") if self.visible_search_results == 0 else None)
         self.search_bar.set_sensitive(True)
         self.search_bar.grab_focus_without_selecting()
-        self.navigate_to("channels_page")
+        self.navigate_to(Page.CHANNELS)
 
     def init_channels_list_box(self):
         self.latest_search_bar_text = None
@@ -643,7 +660,7 @@ class Application(Gtk.Application):
             self.fav_button.set_sensitive(True)
 
         provider = self.active_provider
-        if page == "landing_page":
+        if page is Page.LANDING:
             self.back_page = None
             self.headerbar.set_title("TVDemon")
 
@@ -666,8 +683,8 @@ class Application(Gtk.Application):
                 self.movies_button.set_sensitive(len(provider.movies) > 0)
                 self.series_button.set_sensitive(len(provider.series) > 0)
             self.go_back_button.hide()
-        elif page == "categories_page":
-            self.back_page = "landing_page"
+        elif page is Page.CATEGORIES:
+            self.back_page = Page.LANDING
             self.headerbar.set_title(provider.name)
 
             if self.content_type == TV_GROUP:
@@ -676,69 +693,69 @@ class Application(Gtk.Application):
                 self.headerbar.set_subtitle(_("Movies"))
             else:
                 self.headerbar.set_subtitle(_("Series"))
-        elif page == "channels_page":
+        elif page is Page.CHANNELS:
             self.fullscreen_button.show()
             self.playback_bar.hide()
             self.headerbar.set_title(provider.name)
 
             if self.content_type == TV_GROUP:
                 if self.active_group is None:
-                    self.back_page = "landing_page"
+                    self.back_page = Page.LANDING
                     self.headerbar.set_subtitle(_("TV Channels"))
                 else:
-                    self.back_page = "categories_page"
+                    self.back_page = Page.CATEGORIES
                     self.headerbar.set_subtitle(_(f"TV Channels > {self.active_group.name}"))
             elif self.content_type == MOVIES_GROUP:
                 self.headerbar.set_subtitle(self.active_channel.name if self.active_channel else None)
-                self.back_page = "vod_page"
+                self.back_page = Page.VOD
             else:
                 self.headerbar.set_subtitle(self.active_channel.name if self.active_channel else None)
-                self.back_page = "episodes_page"
-        elif page == "vod_page":
+                self.back_page = Page.EPISODES
+        elif page is Page.VOD:
             self.headerbar.set_title(provider.name)
             if self.content_type == MOVIES_GROUP:
                 if self.active_group is None:
-                    self.back_page = "landing_page"
+                    self.back_page = Page.LANDING
                     self.headerbar.set_subtitle(_("Movies"))
                 else:
-                    self.back_page = "categories_page"
+                    self.back_page = Page.CATEGORIES
                     self.headerbar.set_subtitle(_(f"Movies > {self.active_group.name}"))
             else:
                 if self.active_group is None:
-                    self.back_page = "landing_page"
+                    self.back_page = Page.LANDING
                     self.headerbar.set_subtitle(_("Series"))
                 else:
-                    self.back_page = "categories_page"
+                    self.back_page = Page.CATEGORIES
                     self.headerbar.set_subtitle(_(f"Series > {self.active_group.name}"))
-        elif page == "episodes_page":
-            self.back_page = "vod_page"
+        elif page is Page.EPISODES:
+            self.back_page = Page.VOD
             self.headerbar.set_title(provider.name)
             self.headerbar.set_subtitle(self.active_serie.name)
-        elif page == "preferences_page":
-            self.back_page = "landing_page"
+        elif page is Page.PREFERENCES:
+            self.back_page = Page.LANDING
             self.headerbar.set_title("TVDemon")
             self.headerbar.set_subtitle(_("Preferences"))
             if self.active_channel is not None:
                 self.playback_bar.show()
-        elif page == "providers_page":
-            self.back_page = "landing_page"
+        elif page is Page.PROVIDERS:
+            self.back_page = Page.LANDING
             self.headerbar.set_title("TVDemon")
             self.headerbar.set_subtitle(_("Providers"))
             if self.active_channel is not None:
                 self.playback_bar.show()
-        elif page == "add_page":
-            self.back_page = "providers_page"
+        elif page is Page.ADD:
+            self.back_page = Page.PROVIDERS
             self.headerbar.set_title("TVDemon")
             if self.edit_mode:
                 self.headerbar.set_subtitle(_(f"Edit {name}"))
             else:
                 self.headerbar.set_subtitle(_("Add a new provider"))
-        elif page == "delete_page":
-            self.back_page = "providers_page"
+        elif page is Page.DELETE:
+            self.back_page = Page.PROVIDERS
             self.headerbar.set_title("TVDemon")
             self.headerbar.set_subtitle(_(f"Delete {name}"))
-        elif page == "reset_page":
-            self.back_page = "providers_page"
+        elif page is Page.RESET:
+            self.back_page = Page.PROVIDERS
             self.headerbar.set_title("TVDemon")
             self.headerbar.set_subtitle(_("Reset providers"))
 
@@ -772,7 +789,7 @@ class Application(Gtk.Application):
 
     @idle_function
     def before_play(self, channel):
-        self.mpv_stack.set_visible_child_name("spinner_page")
+        self.mpv_stack.set_visible_child_name(Page.SPINNER)
         self.video_properties.clear()
         self.video_properties[_("General")] = {}
         self.video_properties[_("Color")] = {}
@@ -787,7 +804,7 @@ class Application(Gtk.Application):
 
     @idle_function
     def after_play(self, channel):
-        self.mpv_stack.set_visible_child_name("player_page")
+        self.mpv_stack.set_visible_child_name(Page.PLAYER)
         self.spinner.stop()
         self.playback_label.set_text(channel.name)
         self.info_revealer.set_reveal_child(False)
@@ -943,10 +960,10 @@ class Application(Gtk.Application):
         self.mpv.pause = not self.mpv.pause
 
     def on_show_button(self, widget):
-        self.navigate_to("channels_page")
+        self.navigate_to(Page.CHANNELS)
 
     def on_provider_button(self, widget):
-        self.navigate_to("providers_page")
+        self.navigate_to(Page.PROVIDERS)
 
     @idle_function
     def refresh_providers_page(self):
@@ -1023,10 +1040,10 @@ class Application(Gtk.Application):
         self.active_provider = provider
         self.settings.set_string("active-provider", provider.name)
         self.init_channels_list_box()
-        self.navigate_to("landing_page")
+        self.navigate_to(Page.LANDING)
 
     def on_preferences_button(self, widget):
-        self.navigate_to("preferences_page")
+        self.navigate_to(Page.PREFERENCES)
 
     def on_new_provider_button(self, widget):
         self.name_entry.set_text("")
@@ -1040,13 +1057,13 @@ class Application(Gtk.Application):
                 self.provider_type_combo.set_active_iter(itr)
                 break
             itr = model.iter_next(itr)
-        self.navigate_to("add_page")
+        self.navigate_to(Page.ADD)
         self.edit_mode = False
         self.provider_ok_button.set_sensitive(False)
         self.name_entry.grab_focus()
 
     def on_reset_providers_button(self, widget):
-        self.navigate_to("reset_page")
+        self.navigate_to(Page.RESET)
 
     def on_close_info_window(self, widget, event):
         self.info_window.hide()
@@ -1059,7 +1076,7 @@ class Application(Gtk.Application):
                 Path(channel.logo_path).unlink(missing_ok=True)
 
     def on_delete_button_clicked(self, widget, provider):
-        self.navigate_to("delete_page", provider.name)
+        self.navigate_to(Page.DELETE, provider.name)
         self.marked_provider = provider
 
     def on_edit_button_clicked(self, widget, provider):
@@ -1084,16 +1101,16 @@ class Application(Gtk.Application):
                 break
             itr = model.iter_next(itr)
         self.edit_mode = True
-        self.navigate_to("add_page", provider.name)
+        self.navigate_to(Page.ADD, provider.name)
         self.provider_ok_button.set_sensitive(True)
         self.name_entry.grab_focus()
         self.set_provider_type(provider.type_id)
 
     def on_delete_no_button(self, widget):
-        self.navigate_to("providers_page")
+        self.navigate_to(Page.PROVIDERS)
 
     def on_reset_no_button(self, widget):
-        self.navigate_to("providers_page")
+        self.navigate_to(Page.PROVIDERS)
 
     def on_delete_yes_button(self, widget):
         self.providers.remove(self.marked_provider)
@@ -1104,7 +1121,7 @@ class Application(Gtk.Application):
 
     def on_reset_yes_button(self, widget):
         self.settings.reset("providers")
-        self.reload(page="providers_page")
+        self.reload(page=Page.PROVIDERS)
 
     def on_browse_button(self, widget):
         dialog = Gtk.FileChooserDialog(parent=self.window, action=Gtk.FileChooserAction.OPEN)
@@ -1125,7 +1142,7 @@ class Application(Gtk.Application):
     def save(self):
         provider_strings = [provider.get_info() for provider in self.providers]
         self.settings.set_strv("providers", provider_strings)
-        self.reload(page="providers_page", refresh=True)
+        self.reload(page=Page.PROVIDERS, refresh=True)
 
     def on_provider_type_combo_changed(self, widget):
         type_id = self.provider_type_combo.get_model()[self.provider_type_combo.get_active()][PROVIDER_TYPE_ID]
@@ -1178,7 +1195,7 @@ class Application(Gtk.Application):
         self.save()
 
     def on_provider_cancel_button(self, widget):
-        self.navigate_to("providers_page")
+        self.navigate_to(Page.PROVIDERS)
 
     def toggle_ok_sensitivity(self, widget=None):
         if self.name_entry.get_text() == "":
@@ -1209,7 +1226,7 @@ class Application(Gtk.Application):
 
     def play_fav_channel(self, box, row):
         if not self.back_page:
-            self.navigate_to("channels_page")
+            self.navigate_to(Page.CHANNELS)
         self.play_channel(box, row)
 
     def on_fav_list_button_press(self, list_box, event):
@@ -1241,7 +1258,7 @@ class Application(Gtk.Application):
         dialog.destroy()
 
     def show_fav_channels(self, channels):
-        self.navigate_to("channels_page")
+        self.navigate_to(Page.CHANNELS)
         self.update_channels_data(channels, self.fav_list_box, False)
         self.fav_count_label.set_text(str(len(self.fav_list_box)))
 
@@ -1517,7 +1534,7 @@ class Application(Gtk.Application):
         cr.paint()
 
     def toggle_fullscreen(self):
-        if self.stack.get_visible_child_name() == "channels_page":
+        if self.stack.get_visible_child_name() == Page.CHANNELS:
             # Toggle state
             self.fullscreen = (not self.fullscreen)
             if self.fullscreen:
