@@ -333,7 +333,6 @@ Dmitriy Yefremov 2022
                             <property name="width-request">150</property>
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
-                            <property name="margin-end">12</property>
                             <property name="propagate-natural-width">True</property>
                             <child>
                               <object class="GtkViewport">

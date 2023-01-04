@@ -185,7 +185,7 @@ class Application(Gtk.Application):
 
         # Create variables to quickly access dynamic widgets
         widget_names = ("headerbar", "status_label", "status_bar", "sidebar", "go_back_button", "search_button",
-                        "search_bar", "channels_box", "provider_button", "preferences_button",
+                        "search_bar", "main_paned", "provider_button", "preferences_button",
                         "mpv_drawing_area", "stack", "fullscreen_button", "provider_ok_button",
                         "provider_cancel_button", "name_entry", "path_label", "path_entry", "browse_button",
                         "url_label", "url_entry", "username_label", "username_entry", "password_label",
@@ -950,7 +950,6 @@ class Application(Gtk.Application):
 
     def on_stop_button(self, widget):
         self.mpv.stop()
-        # self.mpv_drawing_area.hide()
         self.info_revealer.set_reveal_child(False)
         self.active_channel = None
         self.info_menu_item.set_sensitive(False)
@@ -1544,14 +1543,14 @@ class Application(Gtk.Application):
                 self.headerbar.hide()
                 self.status_label.hide()
                 self.info_revealer.set_reveal_child(False)
-                self.channels_box.set_border_width(0)
+                self.main_paned.set_border_width(0)
             else:
                 # Normal mode
                 self.window.unfullscreen()
                 if self.content_type == TV_GROUP and not self.fav_button.get_active():
                     self.sidebar.show()
                 self.headerbar.show()
-                self.channels_box.set_border_width(12)
+                self.main_paned.set_border_width(12)
 
         if self.fav_button.get_active():
             self.fav_box.set_visible(not self.fullscreen)
