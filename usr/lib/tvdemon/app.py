@@ -1378,19 +1378,22 @@ class Application(Gtk.Application):
         # Bool of Control or Shift modifier states
         ctrl = modifier == Gdk.ModifierType.CONTROL_MASK
         shift = modifier == Gdk.ModifierType.SHIFT_MASK
+        key = event.keyval
 
         if ctrl and event.keyval == Gdk.KEY_r:
             self.reload(page=None, refresh=True)
-        elif ctrl and event.keyval == Gdk.KEY_f:
+        elif ctrl and key == Gdk.KEY_f:
             if self.search_button.get_active():
                 self.search_button.set_active(False)
             else:
                 self.search_button.set_active(True)
-        elif event.keyval == Gdk.KEY_F11 or \
-                (event.keyval == Gdk.KEY_f and not ctrl and type(
-                    widget.get_focus()) != gi.repository.Gtk.SearchEntry) or \
-                (self.fullscreen and event.keyval == Gdk.KEY_Escape):
+        elif key == Gdk.KEY_F11 or (key == Gdk.KEY_f and not ctrl and type(
+                widget.get_focus()) != Gtk.SearchEntry) or (self.fullscreen and key == Gdk.KEY_Escape):
             self.toggle_fullscreen()
+        elif event.keyval == Gdk.KEY_Left:
+            self.on_previous_channel()
+        elif event.keyval == Gdk.KEY_Right:
+            self.on_next_channel()
 
     @async_function
     def reload(self, page=None, refresh=False):
@@ -1574,6 +1577,18 @@ class Application(Gtk.Application):
     def on_drawing_area_button_press(self, widget, event):
         if event.get_event_type() == Gdk.EventType.DOUBLE_BUTTON_PRESS and event.button == Gdk.BUTTON_PRIMARY:
             self.toggle_fullscreen()
+
+    def on_previous_channel(self):
+        if self.stack.get_visible_child_name() == Page.CHANNELS:
+            self.activate_channel(self.fav_list_box if self.fav_button.get_active() else self.channels_list_box, -1)
+
+    def on_next_channel(self):
+        if self.stack.get_visible_child_name() == Page.CHANNELS:
+            self.activate_channel(self.fav_list_box if self.fav_button.get_active() else self.channels_list_box, 1)
+
+    def activate_channel(self, box, movement=0):
+        box.do_move_cursor(box, Gtk.MovementStep.DISPLAY_LINES, movement)
+        box.do_activate_cursor_row(box)
 
     def on_error(self, ap, msg=""):
         self.show_info_message(msg, Gtk.MessageType.ERROR)
