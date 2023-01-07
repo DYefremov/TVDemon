@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# Copyright (C) 2022 Dmitriy Yefremov
+# Copyright (C) 2022-2023 Dmitriy Yefremov
 #               2020 Linux Mint <root@linuxmint.com>
 #
 #
@@ -102,7 +102,9 @@ class ChannelWidget(Gtk.ListBoxRow):
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         box.pack_start(logo, False, False, 6)
         box.pack_start(label, False, False, 6)
-        self.add(box)
+        frame = Gtk.Frame()
+        frame.add(box)
+        self.add(frame)
 
         self.show_all()
 
@@ -113,6 +115,28 @@ class ChannelWidget(Gtk.ListBoxRow):
     @channel.setter
     def channel(self, value):
         self._channel = value
+
+
+class GroupWidget(Gtk.FlowBoxChild):
+    """ A custom widget for displaying and holding group data. """
+
+    def __init__(self, data, name, logo, **kwargs):
+        super().__init__(**kwargs)
+        self._data = data
+
+        box = Gtk.Box(border_width=6)
+        box.pack_start(logo, False, False, 0) if logo else None
+        box.pack_start(Gtk.Label(name, max_width_chars=30, ellipsize=Pango.EllipsizeMode.END), False, False, 0)
+        box.set_spacing(6)
+        frame = Gtk.Frame()
+        frame.add(box)
+        self.add(frame)
+
+        self.show_all()
+
+    @property
+    def data(self):
+        return self._data
 
 
 class Page(str, Enum):
@@ -319,6 +343,8 @@ class Application(Gtk.Application):
         self.series_logo.set_from_surface(self.get_surface_for_file(f"{UI_PATH}pictures/series.svg", 258, 258))
 
         self.channels_list_box.connect("row-activated", self.play_channel)
+        self.categories_flowbox.connect("child-activated", self.on_group_activate)
+        self.vod_flowbox.connect("child-activated", self.on_vod_activate)
         # Favorites.
         self.non_fav_pages = {Page.CATEGORIES, Page.PROVIDERS, Page.PREFERENCES}
         self._fav_store_path = f"{Path.home()}/.config/tvdemon/favorites.json"
@@ -382,57 +408,54 @@ class Application(Gtk.Application):
         surf = self.get_surface_for_file(filename, width, height)
         return Gtk.Image.new_from_surface(surf)
 
-    def add_badge(self, word, box, added_words):
-        if word not in added_words:
-            for extension in ["svg", "png"]:
-                badge = f"{UI_PATH}pictures/badges/{word}.{extension}"
-                if os.path.exists(badge):
-                    try:
-                        image = self.get_surf_based_image(badge, -1, 32)
-                        box.pack_start(image, False, False, 0)
-                        added_words.append(word)
-                        break
-                    except Exception as e:
-                        print(f"Could not load badge '{badge}'. {e}")
+    def get_badge(self, name):
+        """ Returns group badge. """
+        added_words = set()
+        extensions = ("svg", "png")
+
+        for word in name.split():
+            word = BADGES.get(word, word)
+
+            if word not in added_words:
+                for extension in extensions:
+                    badge = f"{UI_PATH}pictures/badges/{word}.{extension}"
+                    if os.path.exists(badge):
+                        try:
+                            image = self.get_surf_based_image(badge, -1, 32)
+                            added_words.add(word)
+                            return image
+                        except Exception as e:
+                            print(f"Could not load badge '{badge}'. {e}")
 
     def show_groups(self, widget, content_type):
         self.content_type = content_type
-        self.navigate_to(Page.CATEGORIES)
-        for child in self.categories_flowbox.get_children():
-            self.categories_flowbox.remove(child)
-
         self.active_group = None
         found_groups = False
+
+        [self.categories_flowbox.remove(child) for child in self.categories_flowbox.get_children()]
+
         for group in self.active_provider.groups:
             if group.group_type != self.content_type:
                 continue
             found_groups = True
-            button = Gtk.Button()
-            button.connect("clicked", self.on_category_button_clicked, group)
-            label = Gtk.Label()
+
             if self.content_type == TV_GROUP:
-                label.set_text(f"{group.name} ({len(group.channels)})")
+                label = f"{group.name} ({len(group.channels)})"
             elif self.content_type == MOVIES_GROUP:
-                label.set_text(f"{self.remove_word('VOD', group.name)} ({len(group.channels)})")
+                label = f"{self.remove_word('VOD', group.name)} ({len(group.channels)})"
             else:
-                label.set_text(f"{self.remove_word('SERIES', group.name)} ({len(group.series)})")
-            box = Gtk.Box()
+                label = f"{self.remove_word('SERIES', group.name)} ({len(group.series)})"
+
             name = group.name.lower().replace("(", " ").replace(")", " ")
-            added_words = []
-            for word in name.split():
-                self.add_badge(word, box, added_words)
-                if word in BADGES.keys():
-                    self.add_badge(BADGES[word], box, added_words)
-            box.pack_start(label, False, False, 0)
-            box.set_spacing(6)
-            button.add(box)
-            self.categories_flowbox.add(button)
-            self.categories_flowbox.show_all()
+            self.categories_flowbox.add(GroupWidget(group, label, self.get_badge(name)))
+
+        self.navigate_to(Page.CATEGORIES)
 
         if not found_groups:
-            self.on_category_button_clicked(None, None)
+            self.active_group = None
 
-    def on_category_button_clicked(self, widget, group):
+    def on_group_activate(self, box, group_widget):
+        group = group_widget.data
         self.active_group = group
         if self.content_type == TV_GROUP:
             self.show_channels(group.channels) if group else self.show_channels(self.active_provider.channels)
@@ -470,26 +493,13 @@ class Application(Gtk.Application):
     def show_vod(self, items):
         logos_to_refresh = []
         self.navigate_to(Page.VOD)
-
-        for child in self.vod_flowbox.get_children():
-            self.vod_flowbox.remove(child)
+        [self.vod_flowbox.remove(child) for child in self.vod_flowbox.get_children()]
 
         for item in items:
-            button = Gtk.Button()
-            button.set_tooltip_text(item.name)
-            if self.content_type == MOVIES_GROUP:
-                button.connect("clicked", self.on_vod_movie_button_clicked, item)
-            else:
-                button.connect("clicked", self.on_vod_series_button_clicked, item)
-            label = Gtk.Label(item.name, max_width_chars=30, ellipsize=Pango.EllipsizeMode.END)
-            box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
             image = Gtk.Image().new_from_surface(self.get_channel_surface(item.logo_path))
             logos_to_refresh.append((item, image))
-            box.pack_start(image, False, False, 0)
-            box.pack_start(label, False, False, 0)
-            button.add(box)
-            self.vod_flowbox.add(button)
-        self.vod_flowbox.show_all()
+            self.vod_flowbox.add(GroupWidget(item, item.name, image))
+
         if len(logos_to_refresh) > 0:
             self.download_channel_logos(logos_to_refresh)
 
@@ -544,18 +554,18 @@ class Application(Gtk.Application):
         if len(logos_to_refresh) > 0:
             self.download_channel_logos(logos_to_refresh)
 
-    def on_vod_movie_button_clicked(self, widget, channel):
-        self.active_channel = channel
-        self.show_channels(None)
-        self.play_async(channel)
+    def on_vod_activate(self, box, widget):
+        if self.content_type == MOVIES_GROUP:
+            self.active_channel = widget.data
+            self.show_channels(None)
+            self.play_async(widget.data)
+        else:
+            self.show_episodes(widget.data)
 
     def on_episode_button_clicked(self, widget, channel):
         self.active_channel = channel
         self.show_channels(None)
         self.play_async(channel)
-
-    def on_vod_series_button_clicked(self, widget, serie):
-        self.show_episodes(serie)
 
     def bind_setting_widget(self, key, widget):
         widget.set_text(self.settings.get_string(key))
