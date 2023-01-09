@@ -120,11 +120,11 @@ class ChannelWidget(Gtk.ListBoxRow):
 class GroupWidget(Gtk.FlowBoxChild):
     """ A custom widget for displaying and holding group data. """
 
-    def __init__(self, data, name, logo, **kwargs):
+    def __init__(self, data, name, logo, orientation=Gtk.Orientation.HORIZONTAL, **kwargs):
         super().__init__(**kwargs)
         self._data = data
 
-        box = Gtk.Box(border_width=6)
+        box = Gtk.Box(border_width=6, orientation=orientation)
         box.pack_start(logo, False, False, 0) if logo else None
         box.pack_start(Gtk.Label(name, max_width_chars=30, ellipsize=Pango.EllipsizeMode.END), False, False, 0)
         box.set_spacing(6)
@@ -498,7 +498,7 @@ class Application(Gtk.Application):
         for item in items:
             image = Gtk.Image().new_from_surface(self.get_channel_surface(item.logo_path))
             logos_to_refresh.append((item, image))
-            self.vod_flowbox.add(GroupWidget(item, item.name, image))
+            self.vod_flowbox.add(GroupWidget(item, item.name, image, orientation=Gtk.Orientation.VERTICAL))
 
         if len(logos_to_refresh) > 0:
             self.download_channel_logos(logos_to_refresh)
@@ -519,9 +519,9 @@ class Application(Gtk.Application):
         if self.active_provider.type_id == "xtream":
             self.x.get_series_info_by_id(self.active_serie)
 
+        [self.episodes_box.remove(child) for child in self.episodes_box.get_children()]
         self.navigate_to(Page.EPISODES)
-        for child in self.episodes_box.get_children():
-            self.episodes_box.remove(child)
+
         for season_name in serie.seasons.keys():
             season = serie.seasons[season_name]
             label = Gtk.Label()
@@ -530,24 +530,14 @@ class Application(Gtk.Application):
             flow_box = Gtk.FlowBox()
             self.episodes_box.pack_start(label, False, False, 0)
             self.episodes_box.pack_start(flow_box, False, False, 0)
+            flow_box.connect("child-activated", self.on_episode_activate)
 
             for episode_name in season.episodes.keys():
                 episode = season.episodes[episode_name]
-                button = Gtk.Button()
-                button.set_tooltip_text(episode_name)
-                button.connect("clicked", self.on_episode_button_clicked, episode)
-                label = Gtk.Label()
-                label.set_text(_(f"Episode {episode_name}"))
-                label.set_max_width_chars(30)
-                label.set_ellipsize(Pango.EllipsizeMode.END)
-                box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
                 image = Gtk.Image().new_from_surface(self.get_channel_surface(episode.logo_path))
                 logos_to_refresh.append((episode, image))
-                box.pack_start(image, False, False, 0)
-                box.pack_start(label, False, False, 0)
-                box.set_spacing(6)
-                button.add(box)
-                flow_box.add(button)
+                w = GroupWidget(episode, _(f"Episode {episode_name}"), image, orientation=Gtk.Orientation.VERTICAL)
+                flow_box.add(w)
 
         self.episodes_box.show_all()
 
@@ -562,10 +552,10 @@ class Application(Gtk.Application):
         else:
             self.show_episodes(widget.data)
 
-    def on_episode_button_clicked(self, widget, channel):
-        self.active_channel = channel
+    def on_episode_activate(self, box, widget):
+        self.active_channel = widget.data
         self.show_channels(None)
-        self.play_async(channel)
+        self.play_async(self.active_channel)
 
     def bind_setting_widget(self, key, widget):
         widget.set_text(self.settings.get_string(key))
