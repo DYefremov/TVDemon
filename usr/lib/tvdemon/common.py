@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
-# Copyright (C) 2022 Dmitriy Yefremov
-#               2020 Linux Mint <root@linuxmint.com>
+# Copyright (C) 2022-2023 Dmitriy Yefremov <https://github.com/DYefremov>
+#               2020-2022 Linux Mint <root@linuxmint.com>
 #
 #
 # This file is part of TVDemon.
@@ -27,6 +27,22 @@ import threading
 import requests
 from gi.repository import GLib, GObject
 
+import gettext
+import locale
+
+import setproctitle
+
+APP = 'tvdemon'
+setproctitle.setproctitle(APP)
+
+UI_PATH = "/usr/share/tvdemon/"
+LOCALE_DIR = "/usr/share/locale"
+
+locale.bindtextdomain(APP, LOCALE_DIR)
+gettext.bindtextdomain(APP, LOCALE_DIR)
+gettext.textdomain(APP)
+_ = gettext.gettext
+
 # M3U parsing regex
 PARAMS = re.compile(r'(\S+)="(.*?)"')
 EXT_INF = re.compile(r'^#EXTINF:(?P<duration>-?\d+?) ?(?P<params>.*),(?P<title>.*?)$')
@@ -39,8 +55,8 @@ TV_GROUP, MOVIES_GROUP, SERIES_GROUP = range(3)
 BADGES = {'musik': "music", 'zeland': "newzealand"}
 
 
-# Used as a decorator to run things in the background
 def async_function(func):
+    """  Used as a decorator to run things in the background.  """
     def wrapper(*args, **kwargs):
         thread = threading.Thread(target=func, args=args, kwargs=kwargs)
         thread.daemon = True

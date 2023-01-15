@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
   <schema id="org.x.tvdemon" path="/org/x/tvdemon/">
+    <key type="s" name="playback-library">
+      <default>"mpv"</default>
+      <summary></summary>
+      <description></description>
+    </key>
     <key type="s" name="mpv-options">
       <default>"hwdec=auto-safe"</default>
       <summary></summary>

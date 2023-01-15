@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
-# Copyright (C) 2022-2023 Dmitriy Yefremov
-#               2020 Linux Mint <root@linuxmint.com>
+# Copyright (C) 2022-2023 Dmitriy Yefremov <https://github.com/DYefremov>
+#               2020-2022 Linux Mint <root@linuxmint.com>
 #
 #
 # This file is part of TVDemon.
@@ -22,7 +22,6 @@
 
 import gettext
 import json
-import locale
 import os
 import shutil
 import sys
@@ -32,6 +31,8 @@ import warnings
 from enum import Enum
 from functools import partial
 from pathlib import Path
+
+from madia import Player
 
 # Force X11 on a Wayland session
 if "WAYLAND_DISPLAY" in os.environ:
@@ -45,24 +46,12 @@ import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf, GLib, Pango, GObject
 
-import mpv
 import requests
-import setproctitle
 from imdb import IMDb
 from unidecode import unidecode
 
-from common import (Manager, Provider, BADGES, MOVIES_GROUP, PROVIDERS_PATH, SERIES_GROUP, TV_GROUP,
+from common import (_, APP, UI_PATH, Manager, Provider, BADGES, MOVIES_GROUP, PROVIDERS_PATH, SERIES_GROUP, TV_GROUP,
                     async_function, idle_function, Channel)
-
-setproctitle.setproctitle("tvdemon")
-
-APP = 'tvdemon'
-UI_PATH = "/usr/share/tvdemon/"
-LOCALE_DIR = "/usr/share/locale"
-locale.bindtextdomain(APP, LOCALE_DIR)
-gettext.bindtextdomain(APP, LOCALE_DIR)
-gettext.textdomain(APP)
-_ = gettext.gettext
 
 PROVIDER_OBJ, PROVIDER_NAME = range(2)
 PROVIDER_TYPE_ID, PROVIDER_TYPE_NAME = range(2)
@@ -77,16 +66,6 @@ PROVIDER_TYPE_LOCAL = "local"
 PROVIDER_TYPE_XTREAM = "xtream"
 
 UPDATE_BR_INTERVAL = 5
-
-AUDIO_SAMPLE_FORMATS = {"u16": "unsigned 16 bits",
-                        "s16": "signed 16 bits",
-                        "s16p": "signed 16 bits, planar",
-                        "flt": "float",
-                        "float": "float",
-                        "fltp": "float, planar",
-                        "floatp": "float, planar",
-                        "dbl": "double",
-                        "dblp": "double, planar"}
 
 
 class ChannelWidget(Gtk.ListBoxRow):
@@ -176,14 +155,9 @@ class Application(Gtk.Application):
         self.fullscreen = False
         self.latest_search_bar_text = None
         self.visible_search_results = 0
-        self.mpv = None
+        self.player = None
         self.ia = IMDb()
 
-        self.video_properties = {}
-        self.audio_properties = {}
-        # Historic bitrates of the currently playing media
-        self.video_bitrates = []
-        self.audio_bitrates = []
         # Used for redownloading timer
         self.reload_timeout_sec = 60 * 5
         self._timer_id = -1
@@ -774,32 +748,21 @@ class Application(Gtk.Application):
 
     @async_function
     def play_async(self, channel):
-        if not self.mpv:
+        if not self.player:
             return
 
-        self.mpv.stop()
+        self.player.stop()
 
         if channel and channel.url:
             print(f"CHANNEL: '{channel.name}' URL: {channel.url}")
             self.info_menu_item.set_sensitive(False)
             self.before_play(channel)
-            self.mpv.play(channel.url)
-            self.mpv.wait_until_playing()
+            self.player.play(channel.url)
             self.after_play(channel)
 
     @idle_function
     def before_play(self, channel):
         self.mpv_stack.set_visible_child_name(Page.SPINNER)
-        self.video_properties.clear()
-        self.video_properties[_("General")] = {}
-        self.video_properties[_("Color")] = {}
-
-        self.audio_properties.clear()
-        self.audio_properties[_("General")] = {}
-        self.audio_properties[_("Layout")] = {}
-
-        self.video_bitrates.clear()
-        self.audio_bitrates.clear()
         self.spinner.start()
 
     @idle_function
@@ -813,88 +776,6 @@ class Application(Gtk.Application):
         elif self.content_type == SERIES_GROUP:
             self.get_imdb_details(self.active_serie.name)
         self.info_menu_item.set_sensitive(True)
-        self.monitor_playback()
-
-    def monitor_playback(self):
-        self.mpv.observe_property("video-params", self.on_video_params)
-        self.mpv.observe_property("video-format", self.on_video_format)
-        self.mpv.observe_property("audio-params", self.on_audio_params)
-        self.mpv.observe_property("audio-codec", self.on_audio_codec)
-        self.mpv.observe_property("video-bitrate", self.on_bitrate)
-        self.mpv.observe_property("audio-bitrate", self.on_bitrate)
-
-    @idle_function
-    def on_bitrate(self, prop, bitrate):
-        if not bitrate or prop not in ["video-bitrate", "audio-bitrate"]:
-            return
-
-        # Only update the bitrates when the info window is open unless we don't have any data yet.
-        if _("Average Bitrate") in self.video_properties:
-            if _("Average Bitrate") in self.audio_properties:
-                if not self.info_window.props.visible:
-                    return
-
-        rates = {"video": self.video_bitrates, "audio": self.audio_bitrates}
-        rate = "video"
-        if prop == "audio-bitrate":
-            rate = "audio"
-
-        rates[rate].append(int(bitrate) / 1000.0)
-        rates[rate] = rates[rate][-30:]
-        br = sum(rates[rate]) / float(len(rates[rate]))
-
-        if rate == "video":
-            self.video_properties[_("General")][_("Average Bitrate")] = f"{br:.0f} Kbps"
-        else:
-            self.audio_properties[_("General")][_("Average Bitrate")] = f"{br:.0f} Kbps"
-
-    @idle_function
-    def on_video_params(self, prp, params):
-        if not params or not type(params) == dict:
-            return
-        if "w" in params and "h" in params:
-            self.video_properties[_("General")][_("Dimensions")] = f"{params['w']}x{params['h']}"
-        if "aspect" in params:
-            aspect = round(float(params["aspect"]), 2)
-            self.video_properties[_("General")][_("Aspect")] = f"{aspect}"
-        if "pixelformat" in params:
-            self.video_properties[_("Color")][_("Pixel Format")] = params["pixelformat"]
-        if "gamma" in params:
-            self.video_properties[_("Color")][_("Gamma")] = params["gamma"]
-        if "average-bpp" in params:
-            self.video_properties[_("Color")][_("Bits Per Pixel")] = params["average-bpp"]
-
-    @idle_function
-    def on_video_format(self, property, vformat):
-        if not vformat:
-            return
-        self.video_properties[_("General")][_("Codec")] = vformat
-
-    @idle_function
-    def on_audio_params(self, property, params):
-        if not params or not type(params) == dict:
-            return
-        if "channels" in params:
-            chans = params["channels"]
-            if "5.1" in chans or "7.1" in chans:
-                chans += " " + _("surround sound")
-            self.audio_properties[_("Layout")][_("Channels")] = chans
-        if "samplerate" in params:
-            sr = float(params["samplerate"]) / 1000.0
-            self.audio_properties[_("General")][_("Sample Rate")] = f"{sr:.1f}.1f KHz"
-        if "format" in params:
-            fmt = params["format"]
-            if fmt in AUDIO_SAMPLE_FORMATS:
-                fmt = AUDIO_SAMPLE_FORMATS[fmt]
-            self.audio_properties[_("General")][_("Format")] = fmt
-        if "channel-count" in params:
-            self.audio_properties[_("Layout")][_("Channel Count")] = params["channel-count"]
-
-    @idle_function
-    def on_audio_codec(self, prp, codec):
-        if not codec:
-            return
-        self.audio_properties[_("General")][_("Codec")] = codec.split()[0]
 
     @async_function
     def get_imdb_details(self, name):
@@ -949,14 +830,14 @@ class Application(Gtk.Application):
         self.info_revealer.set_reveal_child(False)
 
     def on_stop_button(self, widget):
-        self.mpv.stop()
+        self.player.stop()
         self.info_revealer.set_reveal_child(False)
         self.active_channel = None
         self.info_menu_item.set_sensitive(False)
         self.playback_bar.hide()
 
     def on_pause_button(self, widget):
-        self.mpv.pause = not self.mpv.pause
+        self.player.pause()
 
     def on_show_button(self, widget):
         self.navigate_to(Page.CHANNELS)
@@ -1315,10 +1196,9 @@ class Application(Gtk.Application):
             for child in section.get_children():
                 section.remove(child)
 
-        props = [self.video_properties[_("General")],
-                 self.video_properties[_("Color")],
-                 self.audio_properties[_("General")],
-                 self.audio_properties[_("Layout")]]
+        video_properties, audio_properties = self.player.video_properties, self.player.audio_properties
+        props = [video_properties[_("General")], video_properties[_("Color")],
+                 audio_properties[_("General")], audio_properties[_("Layout")]]
 
         for section, props in zip(sections, props):
             for prop_k, prop_v in props.items():
@@ -1341,11 +1221,11 @@ class Application(Gtk.Application):
                         label.set_text(properties[_("Average Bitrate")])
                     return True
 
-                if prop_k == _("Average Bitrate") and props == self.video_properties[_("General")]:
+                if prop_k == _("Average Bitrate") and props == video_properties[_("General")]:
                     cb = partial(update_bitrate, v, props)
                     GLib.timeout_add_seconds(UPDATE_BR_INTERVAL, cb)
 
-                elif prop_k == _("Average Bitrate") and props == self.audio_properties[_("General")]:
+                elif prop_k == _("Average Bitrate") and props == audio_properties[_("General")]:
                     cb = partial(update_bitrate, v, props)
                     GLib.timeout_add_seconds(UPDATE_BR_INTERVAL, cb)
 
@@ -1501,8 +1381,8 @@ class Application(Gtk.Application):
         self.reinit_mpv()
 
     def reinit_mpv(self):
-        if self.mpv:
-            self.mpv.stop()
+        if self.player:
+            self.player.stop()
         options = {}
         try:
             mpv_options = self.settings.get_string("mpv-options")
@@ -1521,15 +1401,7 @@ class Application(Gtk.Application):
         while not self.mpv_drawing_area.get_window() and not Gtk.events_pending():
             time.sleep(0.1)
 
-        self.mpv = mpv.MPV(**options, input_cursor=False, cursor_autohide="no", input_default_bindings=False, ytdl=True,
-                           wid=str(self.mpv_drawing_area.get_window().get_xid()))
-
-        @self.mpv.event_callback(mpv.MpvEventID.END_FILE)
-        def on_end(event):
-            event = event.as_dict(mpv.strict_decoder)
-            if event.get("reason", None) == "error":
-                error = event.get("file_error", _("Can't Playback!")).capitalize()
-                GLib.idle_add(self.emit, "error", f"{error}.")
+        self.player = Player(self)
 
     def on_mpv_drawing_area_draw(self, widget, cr):
         cr.set_source_rgb(0.0, 0.0, 0.0)
