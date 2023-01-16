@@ -2,7 +2,7 @@
 <schemalist>
   <schema id="org.x.tvdemon" path="/org/x/tvdemon/">
     <key type="s" name="playback-library">
-      <default>"mpv"</default>
+      <default>"MPV"</default>
       <summary></summary>
       <description></description>
     </key>

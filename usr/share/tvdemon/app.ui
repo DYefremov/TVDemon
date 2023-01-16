@@ -372,7 +372,7 @@ Dmitriy Yefremov 2022
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <child>
-                                  <object class="GtkDrawingArea" id="mpv_drawing_area">
+                                  <object class="GtkDrawingArea" id="drawing_area">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                   </object>

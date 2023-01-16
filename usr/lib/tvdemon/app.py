@@ -25,7 +25,6 @@ import json
 import os
 import shutil
 import sys
-import time
 import traceback
 import warnings
 from enum import Enum
@@ -184,7 +183,7 @@ class Application(Gtk.Application):
         # Create variables to quickly access dynamic widgets
         widget_names = ("headerbar", "status_label", "status_bar", "sidebar", "go_back_button", "search_button",
                         "search_bar", "main_paned", "provider_button", "preferences_button",
-                        "mpv_drawing_area", "stack", "fullscreen_button", "provider_ok_button",
+                        "drawing_area", "stack", "fullscreen_button", "provider_ok_button",
                         "provider_cancel_button", "name_entry", "path_label", "path_entry", "browse_button",
                         "url_label", "url_entry", "username_label", "username_entry", "password_label",
                         "password_entry", "epg_label", "epg_entry", "tv_logo", "movies_logo", "series_logo",
@@ -214,12 +213,12 @@ class Application(Gtk.Application):
 
         # Widget signals
         self.window.connect("key-press-event", self.on_key_press_event)
-        self.mpv_drawing_area.connect("realize", self.on_mpv_drawing_area_realize)
-        self.mpv_drawing_area.connect("draw", self.on_mpv_drawing_area_draw)
+        self.drawing_area.connect("realize", self.on_drawing_area_realize)
+        self.drawing_area.connect("draw", self.on_drawing_area_draw)
         # Activating mouse events for drawing area.
-        self.mpv_drawing_area.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
-        self.mpv_drawing_area.connect("motion-notify-event", self.on_drawing_area_mouse_motion)
-        self.mpv_drawing_area.connect("button-press-event", self.on_drawing_area_button_press)
+        self.drawing_area.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
+        self.drawing_area.connect("motion-notify-event", self.on_drawing_area_mouse_motion)
+        self.drawing_area.connect("button-press-event", self.on_drawing_area_button_press)
         self._mouse_hide_interval = 3  # Delay before hiding the mouse cursor.
         self._is_mouse_cursor_hidden = True
 
@@ -1377,33 +1376,10 @@ class Application(Gtk.Application):
             self.status_label.set_text(string)
             print(string)
 
-    def on_mpv_drawing_area_realize(self, widget):
-        self.reinit_mpv()
+    def on_drawing_area_realize(self, widget):
+        self.player = Player.get_instance(self)
 
-    def reinit_mpv(self):
-        if self.player:
-            self.player.stop()
-        options = {}
-        try:
-            mpv_options = self.settings.get_string("mpv-options")
-            if "=" in mpv_options:
-                pairs = mpv_options.split()
-                for pair in pairs:
-                    key, value = pair.split("=")
-                    options[key] = value
-        except Exception as e:
-            print("Could not parse MPV options!")
-            print(e)
-
-        options["user_agent"] = self.settings.get_string("user-agent")
-        options["referrer"] = self.settings.get_string("http-referer")
-
-        while not self.mpv_drawing_area.get_window() and not Gtk.events_pending():
-            time.sleep(0.1)
-
-        self.player = Player(self)
-
-    def on_mpv_drawing_area_draw(self, widget, cr):
+    def on_drawing_area_draw(self, widget, cr):
         cr.set_source_rgb(0.0, 0.0, 0.0)
         cr.paint()
 

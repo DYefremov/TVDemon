@@ -40,6 +40,7 @@ class Player:
 
     def __init__(self, app):
         self._app = app
+        self._player = None
 
         self._video_properties = {}
         self._audio_properties = {}
@@ -47,16 +48,6 @@ class Player:
         self._audio_bitrates = []
 
         self._lib = app.settings.get_string("playback-library")
-        if self._lib == "mpv":
-            self._player = self.get_mpv()
-            self._player.observe_property("video-params", self.on_video_params)
-            self._player.observe_property("video-format", self.on_video_format)
-            self._player.observe_property("audio-params", self.on_audio_params)
-            self._player.observe_property("audio-codec", self.on_audio_codec)
-            self._player.observe_property("video-bitrate", self.on_bitrate)
-            self._player.observe_property("audio-bitrate", self.on_bitrate)
-        else:
-            self._player = self.get_gstreamer()
 
     @property
     def current_lib(self):
@@ -77,6 +68,33 @@ class Player:
     @property
     def audio_bitrates(self):
         return self._audio_bitrates
+
+    def play(self, url):
+        pass
+
+    def pause(self):
+        pass
+
+    def stop(self):
+        pass
+
+    def get_xid(self):
+        return self._app.drawing_area.get_window().get_xid()
+
+    @staticmethod
+    def get_instance(app):
+        lib = app.settings.get_string("playback-library")
+        if lib == "MPV":
+            return MpvPlayer(app)
+        raise NameError(f"There is no such [{lib}] implementation.")
+
+
+class MpvPlayer(Player):
+    """ Wrapper class for the MPV library. """
+
+    def __init__(self, app):
+        super().__init__(app)
+        self._player = self.get_mpv()
 
     def get_mpv(self):
         options = {}
@@ -105,7 +123,7 @@ class Player:
                              cursor_autohide="no",
                              input_default_bindings=False,
                              ytdl=True,
-                             wid=str(self._app.mpv_drawing_area.get_window().get_xid()))
+                             wid=str(self.get_xid()))
 
             @player.event_callback(mpv.MpvEventID.END_FILE)
             def on_end(event):
@@ -114,10 +132,14 @@ class Player:
                     error = event.get("file_error", _("Can't Playback!")).capitalize()
                     GLib.idle_add(self._app.emit, "error", f"{error}.")
 
-            return player
+            player.observe_property("video-params", self.on_video_params)
+            player.observe_property("video-format", self.on_video_format)
+            player.observe_property("audio-params", self.on_audio_params)
+            player.observe_property("audio-codec", self.on_audio_codec)
+            player.observe_property("video-bitrate", self.on_bitrate)
+            player.observe_property("audio-bitrate", self.on_bitrate)
 
-    def get_gstreamer(self):
-        raise ValueError("[get_gstreamer] -> Not implemented yet!")
+            return player
 
     def play(self, url):
         self.before_play()
