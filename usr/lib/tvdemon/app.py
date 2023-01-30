@@ -425,10 +425,10 @@ class Application(Gtk.Application):
         self.navigate_to(Page.CATEGORIES)
 
         if not found_groups:
-            self.active_group = None
+            self.on_group_activate()
 
-    def on_group_activate(self, box, group_widget):
-        group = group_widget.data
+    def on_group_activate(self, box=None, group_widget=None):
+        group = group_widget.data if group_widget else None
         self.active_group = group
         if self.content_type == TV_GROUP:
             self.show_channels(group.channels) if group else self.show_channels(self.active_provider.channels)
@@ -614,8 +614,7 @@ class Application(Gtk.Application):
     def init_channels_list_box(self):
         self.latest_search_bar_text = None
         self.active_group = None
-        for child in self.channels_list_box.get_children():
-            self.channels_list_box.remove(child)
+        [self.channels_list_box.remove(child) for child in self.channels_list_box.get_children()]
         self.channels_list_box.invalidate_filter()
         self.visible_search_results = 0
 
