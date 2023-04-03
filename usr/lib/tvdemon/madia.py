@@ -78,6 +78,12 @@ class Player:
     def stop(self):
         pass
 
+    def volume_up(self):
+        pass
+
+    def volume_down(self):
+        pass
+
     def get_xid(self):
         return self._app.drawing_area.get_window().get_xid()
 
@@ -95,6 +101,7 @@ class MpvPlayer(Player):
     def __init__(self, app):
         super().__init__(app)
         self._player = self.get_mpv()
+        self._volume_value = 100.0
 
     def get_mpv(self):
         options = {}
@@ -138,6 +145,7 @@ class MpvPlayer(Player):
             player.observe_property("audio-codec", self.on_audio_codec)
             player.observe_property("video-bitrate", self.on_bitrate)
             player.observe_property("audio-bitrate", self.on_bitrate)
+            player.observe_property("volume", self.on_volume)
 
             return player
 
@@ -151,6 +159,16 @@ class MpvPlayer(Player):
 
     def stop(self):
         self._player.stop()
+
+    def volume_up(self):
+        self._volume_value += 5.0
+        self._volume_value = self._volume_value if self._volume_value <= 100 else 100
+        self._player._set_property("volume", self._volume_value)
+
+    def volume_down(self):
+        self._volume_value -= 5.0
+        self._volume_value = self._volume_value if self._volume_value > 0 else 0
+        self._player._set_property("volume", self._volume_value)
 
     @idle_function
     def before_play(self):
@@ -238,6 +256,9 @@ class MpvPlayer(Player):
             return
 
         self._audio_properties[_("General")][_("Codec")] = codec.split()[0]
+
+    def on_volume(self, prp, value):
+        self._volume_value = value
 
 
 if __name__ == "__main__":

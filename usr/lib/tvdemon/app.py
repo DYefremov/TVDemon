@@ -216,9 +216,12 @@ class Application(Gtk.Application):
         self.drawing_area.connect("realize", self.on_drawing_area_realize)
         self.drawing_area.connect("draw", self.on_drawing_area_draw)
         # Activating mouse events for drawing area.
-        self.drawing_area.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
+        self.drawing_area.add_events(
+            Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK | Gdk.EventMask.SCROLL_MASK)
         self.drawing_area.connect("motion-notify-event", self.on_drawing_area_mouse_motion)
         self.drawing_area.connect("button-press-event", self.on_drawing_area_button_press)
+        self.drawing_area.connect("scroll-event", self.on_drawing_area_scroll)
+
         self._mouse_hide_interval = 3  # Delay before hiding the mouse cursor.
         self._is_mouse_cursor_hidden = True
 
@@ -1424,6 +1427,13 @@ class Application(Gtk.Application):
     def on_drawing_area_button_press(self, widget, event):
         if event.get_event_type() == Gdk.EventType.DOUBLE_BUTTON_PRESS and event.button == Gdk.BUTTON_PRIMARY:
             self.toggle_fullscreen()
+
+    def on_drawing_area_scroll(self, area, event):
+        if event.get_event_type() == Gdk.EventType.SCROLL:
+            if event.direction == Gdk.ScrollDirection.DOWN:
+                self.player.volume_down()
+            elif event.direction == Gdk.ScrollDirection.UP:
+                self.player.volume_up()
 
     def on_previous_channel(self):
         if self.stack.get_visible_child_name() == Page.CHANNELS:
