@@ -183,14 +183,14 @@ class Application(Gtk.Application):
         # Create variables to quickly access dynamic widgets
         widget_names = ("headerbar", "status_label", "status_bar", "sidebar", "go_back_button", "search_button",
                         "search_bar", "main_paned", "provider_button", "preferences_button",
-                        "drawing_area", "stack", "fullscreen_button", "provider_ok_button",
+                        "drawing_area", "stack", "provider_ok_button",
                         "provider_cancel_button", "name_entry", "path_label", "path_entry", "browse_button",
                         "url_label", "url_entry", "username_label", "username_entry", "password_label",
                         "password_entry", "epg_label", "epg_entry", "tv_logo", "movies_logo", "series_logo",
                         "tv_button", "movies_button", "series_button", "tv_label", "movies_label", "series_label",
                         "categories_flowbox", "channels_list_box", "vod_flowbox", "episodes_box",
                         "stop_button", "pause_button", "show_button", "playback_label", "playback_bar",
-                        "providers_flowbox", "new_provider_button", "reset_providers_button",
+                        "providers_flowbox", "new_provider_button", "reset_providers_button", "playback_overlay",
                         "delete_no_button", "delete_yes_button", "reset_no_button", "reset_yes_button",
                         "info_section", "info_revealer", "info_name_label", "info_plot_label", "info_rating_label",
                         "info_year_label", "close_info_button", "info_genre_label", "info_duration_label",
@@ -218,14 +218,12 @@ class Application(Gtk.Application):
         # Activating mouse events for drawing area.
         self.drawing_area.add_events(
             Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK | Gdk.EventMask.SCROLL_MASK)
-        self.drawing_area.connect("motion-notify-event", self.on_drawing_area_mouse_motion)
+        self.drawing_area.connect("motion-notify-event", self.on_playback_area_mouse_motion)
         self.drawing_area.connect("button-press-event", self.on_drawing_area_button_press)
         self.drawing_area.connect("scroll-event", self.on_drawing_area_scroll)
 
-        self._mouse_hide_interval = 3  # Delay before hiding the mouse cursor.
+        self._mouse_hide_interval = 5  # Delay before hiding the mouse cursor.
         self._is_mouse_cursor_hidden = True
-
-        self.fullscreen_button.connect("clicked", self.on_fullscreen_button_clicked)
 
         self.info_window.connect("delete-event", self.on_close_info_window)
         self.info_window_close_button.connect("clicked", self.on_close_info_window_button_clicked)
@@ -346,6 +344,42 @@ class Application(Gtk.Application):
         self.fav_list_box.drag_dest_set(Gtk.DestDefaults.ALL, targets, Gdk.DragAction.MOVE)
         self.fav_list_box.connect("drag-data-get", self.on_fav_drag_data_get)
         self.fav_list_box.connect("drag-data-received", self.on_fav_drag_data_received)
+        # Media bar
+        self.media_bar = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6, margin_bottom=12)
+        # self.media_bar.get_style_context().add_class("app-notification")
+        self.media_bar.set_valign(Gtk.Align.END)
+        self.media_bar.set_halign(Gtk.Align.CENTER)
+        self.prev_button = Gtk.Button.new_from_icon_name("media-skip-backward-symbolic", Gtk.IconSize.SMALL_TOOLBAR)
+        self.prev_button.connect("clicked", self.on_previous_channel)
+        self.media_bar.pack_start(self.prev_button, True, True, 0)
+        button = Gtk.Button.new_from_icon_name("media-playback-stop-symbolic", Gtk.IconSize.SMALL_TOOLBAR)
+        button.connect("clicked", self.on_stop_button)
+        self.media_bar.pack_start(button, True, True, 0)
+        button = Gtk.Button.new_from_icon_name("media-playback-pause-symbolic", Gtk.IconSize.SMALL_TOOLBAR)
+        button.connect("clicked", self.on_pause_button)
+        self.media_bar.pack_start(button, True, True, 0)
+        self.next_button = Gtk.Button.new_from_icon_name("media-skip-forward-symbolic", Gtk.IconSize.SMALL_TOOLBAR)
+        self.next_button.set_margin_end(12)
+        self.media_bar.pack_start(self.next_button, True, True, 0)
+        self.next_button.connect("clicked", self.on_next_channel)
+
+        self.fullscreen_button = Gtk.Button.new_from_icon_name("view-fullscreen-symbolic", Gtk.IconSize.SMALL_TOOLBAR)
+        self.fullscreen_button.set_tooltip_text(_("Fullscreen"))
+        self.fullscreen_button.connect("clicked", self.on_fullscreen_button_clicked)
+        self.fullscreen_button.set_margin_start(12)
+        self.media_bar.pack_end(self.fullscreen_button, True, True, 0)
+
+        self.media_bar.show_all()
+        self.bind_property("is_mouse_cursor_hidden", self.media_bar, "visible", 4)
+        self.playback_overlay.add_overlay(self.media_bar)
+
+    @GObject.Property(type=bool, default=True)
+    def is_mouse_cursor_hidden(self):
+        return self._is_mouse_cursor_hidden
+
+    @is_mouse_cursor_hidden.setter
+    def is_mouse_cursor_hidden(self, value):
+        self._is_mouse_cursor_hidden = value
 
     def do_startup(self):
         Gtk.Application.do_startup(self)
@@ -1411,18 +1445,18 @@ class Application(Gtk.Application):
     def on_fullscreen_button_clicked(self, widget):
         self.toggle_fullscreen()
 
-    def on_drawing_area_mouse_motion(self, widget, event):
-        if self._is_mouse_cursor_hidden:
-            self._is_mouse_cursor_hidden = False
+    def on_playback_area_mouse_motion(self, widget, event):
+        if self.is_mouse_cursor_hidden:
             display = widget.get_display()
             window = event.get_window()
             window.set_cursor(Gdk.Cursor.new_from_name(display, "default"))
+            self.is_mouse_cursor_hidden = False
 
             GLib.timeout_add_seconds(self._mouse_hide_interval, self.hide_mouse_cursor, window, display)
 
     def hide_mouse_cursor(self, window, display):
-        self._is_mouse_cursor_hidden = True
         window.set_cursor(Gdk.Cursor.new_for_display(display, Gdk.CursorType.BLANK_CURSOR))
+        self.is_mouse_cursor_hidden = True
 
     def on_drawing_area_button_press(self, widget, event):
         if event.get_event_type() == Gdk.EventType.DOUBLE_BUTTON_PRESS and event.button == Gdk.BUTTON_PRIMARY:
@@ -1435,11 +1469,11 @@ class Application(Gtk.Application):
             elif event.direction == Gdk.ScrollDirection.UP:
                 self.player.volume_up()
 
-    def on_previous_channel(self):
+    def on_previous_channel(self, button=None):
         if self.stack.get_visible_child_name() == Page.CHANNELS:
             self.activate_channel(self.fav_list_box if self.fav_button.get_active() else self.channels_list_box, -1)
 
-    def on_next_channel(self):
+    def on_next_channel(self, button=None):
         if self.stack.get_visible_child_name() == Page.CHANNELS:
             self.activate_channel(self.fav_list_box if self.fav_button.get_active() else self.channels_list_box, 1)
 
