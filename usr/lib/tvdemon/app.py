@@ -346,7 +346,6 @@ class Application(Gtk.Application):
         self.fav_list_box.connect("drag-data-received", self.on_fav_drag_data_received)
         # Media bar
         self.media_bar = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6, margin_bottom=12)
-        # self.media_bar.get_style_context().add_class("app-notification")
         self.media_bar.set_valign(Gtk.Align.END)
         self.media_bar.set_halign(Gtk.Align.CENTER)
         self.prev_button = Gtk.Button.new_from_icon_name("media-skip-backward-symbolic", Gtk.IconSize.SMALL_TOOLBAR)
@@ -363,10 +362,13 @@ class Application(Gtk.Application):
         self.media_bar.pack_start(self.next_button, True, True, 0)
         self.next_button.connect("clicked", self.on_next_channel)
 
+        self.volume_button = Gtk.VolumeButton(use_symbolic=True, value=1.0, relief=Gtk.ReliefStyle.NORMAL)
+        self.volume_button.connect("value-changed", self.on_volume_changed)
+        self.media_bar.pack_start(self.volume_button, True, True, 0)
+
         self.fullscreen_button = Gtk.Button.new_from_icon_name("view-fullscreen-symbolic", Gtk.IconSize.SMALL_TOOLBAR)
         self.fullscreen_button.set_tooltip_text(_("Fullscreen"))
         self.fullscreen_button.connect("clicked", self.on_fullscreen_button_clicked)
-        self.fullscreen_button.set_margin_start(12)
         self.media_bar.pack_end(self.fullscreen_button, True, True, 0)
 
         self.media_bar.show_all()
@@ -1414,6 +1416,7 @@ class Application(Gtk.Application):
 
     def on_drawing_area_realize(self, widget):
         self.player = Player.get_instance(self)
+        self.player.connect("volume-changed", self.on_volume_changed)
 
     def on_drawing_area_draw(self, widget, cr):
         cr.set_source_rgb(0.0, 0.0, 0.0)
@@ -1468,6 +1471,12 @@ class Application(Gtk.Application):
                 self.player.volume_down()
             elif event.direction == Gdk.ScrollDirection.UP:
                 self.player.volume_up()
+
+    def on_volume_changed(self, widget, value):
+        if widget is self.player:
+            self.volume_button.set_value(value / 100)
+        else:
+            self.player.set_volume(value * 100)
 
     def on_previous_channel(self, button=None):
         if self.stack.get_visible_child_name() == Page.CHANNELS:

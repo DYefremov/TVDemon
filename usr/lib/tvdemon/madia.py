@@ -20,7 +20,7 @@
 #
 
 """ Basic playback module. """
-from gi.repository import GLib
+from gi.repository import GLib, GObject
 
 from common import _, idle_function
 
@@ -35,12 +35,16 @@ AUDIO_SAMPLE_FORMATS = {"u16": "unsigned 16 bits",
                         "dblp": "double, planar"}
 
 
-class Player:
+class Player(GObject.GObject):
     """ Wrapper class for the media library. """
 
-    def __init__(self, app):
+    def __init__(self, app, **kwargs):
+        super().__init__(**kwargs)
         self._app = app
         self._player = None
+
+        GObject.signal_new("volume-changed", self, GObject.SIGNAL_RUN_LAST,
+                           GObject.TYPE_PYOBJECT, (GObject.TYPE_PYOBJECT,))
 
         self._video_properties = {}
         self._audio_properties = {}
@@ -78,6 +82,9 @@ class Player:
     def stop(self):
         pass
 
+    def set_volume(self, value):
+        pass
+
     def volume_up(self):
         pass
 
@@ -98,8 +105,8 @@ class Player:
 class MpvPlayer(Player):
     """ Wrapper class for the MPV library. """
 
-    def __init__(self, app):
-        super().__init__(app)
+    def __init__(self, app, **kwargs):
+        super().__init__(app, **kwargs)
         self._player = self.get_mpv()
         self._volume_value = 100.0
 
@@ -160,15 +167,21 @@ class MpvPlayer(Player):
     def stop(self):
         self._player.stop()
 
+    def set_volume(self, value):
+        self._volume_value = value
+        self._player._set_property("volume", self._volume_value)
+
     def volume_up(self):
         self._volume_value += 5.0
         self._volume_value = self._volume_value if self._volume_value <= 100 else 100
         self._player._set_property("volume", self._volume_value)
+        self.emit("volume-changed", self._volume_value)
 
     def volume_down(self):
         self._volume_value -= 5.0
         self._volume_value = self._volume_value if self._volume_value > 0 else 0
         self._player._set_property("volume", self._volume_value)
+        self.emit("volume-changed", self._volume_value)
 
     @idle_function
     def before_play(self):
