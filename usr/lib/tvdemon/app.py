@@ -199,7 +199,8 @@ class Application(Gtk.Application):
                         "video_properties_box", "video_properties_label", "colour_properties_box",
                         "colour_properties_label", "audio_properties_box", "audio_properties_label",
                         "layout_properties_box", "layout_properties_label", "info_bar", "info_message_label",
-                        "fav_button", "fav_box", "fav_list_box", "add_fav_button", "fav_menu", "fav_count_label")
+                        "fav_button", "fav_box", "fav_list_box", "fav_gr_flowbox", "add_fav_button", "fav_menu",
+                        "fav_count_label")
 
         for name in widget_names:
             widget = self.builder.get_object(name)
@@ -324,9 +325,6 @@ class Application(Gtk.Application):
         self._fav_store_path = f"{Path.home()}/.config/tvdemon/favorites.json"
         self.fav_list_box.connect("row-activated", self.play_fav_channel)
         self.add_fav_button.connect("clicked", self.on_add_fav)
-        self.fav_button.bind_property("active", self.fav_box, "visible")
-        self.fav_button.bind_property("active", self.fav_count_label, "visible")
-        self.fav_button.bind_property("active", self.sidebar, "visible", 4)
         self.fav_list_box.connect("realize", self.on_fav_list_box_realize)
         self.fav_list_box.connect("button-press-event", self.on_fav_list_button_press)
         self.fav_list_box.connect("key-press-event", self.on_fav_list_key_press)
@@ -1188,6 +1186,10 @@ class Application(Gtk.Application):
 
     def get_favorites(self):
         """ Restores the current favorites list. """
+        gr = GroupWidget(None, "Default", None)
+        self.fav_gr_flowbox.add(gr)
+        self.fav_gr_flowbox.select_child(gr)
+
         path = Path(self._fav_store_path)
         try:
             return [Channel.from_dict(f) for f in json.loads(path.read_text())] if path.is_file() else []

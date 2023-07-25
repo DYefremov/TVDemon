@@ -60,34 +60,172 @@ Dmitriy Yefremov 2022
             <child>
               <object class="GtkBox" id="fav_box">
                 <property name="width-request">150</property>
+                <property name="visible" bind-source="fav_button" bind-property="active">False</property>
                 <property name="can-focus">False</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">5</property>
                 <child>
-                  <object class="GtkScrolledWindow" id="fav_scrolled">
+                  <object class="GtkPaned" id="fav_paned">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
-                    <property name="propagate-natural-width">True</property>
+                    <property name="orientation">vertical</property>
+                    <property name="wide-handle">True</property>
                     <child>
-                      <object class="GtkViewport" id="fav_view_port">
+                      <object class="GtkScrolledWindow" id="fav_scrolled">
                         <property name="visible">True</property>
-                        <property name="can-focus">False</property>
+                        <property name="can-focus">True</property>
+                        <property name="propagate-natural-width">True</property>
                         <child>
-                          <object class="GtkListBox" id="fav_list_box">
+                          <object class="GtkViewport" id="fav_view_port">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="selection-mode">multiple</property>
-                            <property name="activate-on-single-click">False</property>
-                            <child type="placeholder">
-                              <object class="GtkLabel" id="fav_place_holder_label">
+                            <child>
+                              <object class="GtkListBox" id="fav_list_box">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
-                                <property name="label" translatable="yes">No channels</property>
+                                <property name="selection-mode">multiple</property>
+                                <property name="activate-on-single-click">False</property>
+                                <child type="placeholder">
+                                  <object class="GtkLabel" id="fav_place_holder_label">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="label" translatable="yes">No channels</property>
+                                  </object>
+                                </child>
                               </object>
                             </child>
                           </object>
                         </child>
                       </object>
+                      <packing>
+                        <property name="resize">True</property>
+                        <property name="shrink">True</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkBox" id="fav_gr_box">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="margin-bottom">2</property>
+                            <property name="label" translatable="yes">Groups</property>
+                            <attributes>
+                              <attribute name="weight" value="bold"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkScrolledWindow" id="fav_gr_scrolled">
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="propagate-natural-width">True</property>
+                            <child>
+                              <object class="GtkViewport" id="fav_gr_view_port">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <child>
+                                  <object class="GtkFlowBox" id="fav_gr_flowbox">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="max-children-per-line">1</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButtonBox" id="fav_gr_actions_box">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="halign">start</property>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">6</property>
+                            <property name="margin-top">6</property>
+                            <property name="layout-style">expand</property>
+                            <child>
+                              <object class="GtkButton" id="fav_gr_add_button">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="receives-default">True</property>
+                                <child>
+                                  <object class="GtkImage">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="icon-name">list-add-symbolic</property>
+                                  </object>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="fav_gr_remove_button">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="receives-default">True</property>
+                                <child>
+                                  <object class="GtkImage">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="icon-name">list-remove-symbolic</property>
+                                  </object>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="fav_gr_edit_button">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="receives-default">True</property>
+                                <child>
+                                  <object class="GtkImage">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="icon-name">document-edit-symbolic</property>
+                                  </object>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">2</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="resize">False</property>
+                        <property name="shrink">True</property>
+                      </packing>
                     </child>
                   </object>
                   <packing>
@@ -96,13 +234,10 @@ Dmitriy Yefremov 2022
                     <property name="position">0</property>
                   </packing>
                 </child>
-                <child>
-                  <placeholder/>
-                </child>
               </object>
               <packing>
                 <property name="resize">True</property>
-                <property name="shrink">False</property>
+                <property name="shrink">True</property>
               </packing>
             </child>
             <child>
@@ -332,7 +467,7 @@ Dmitriy Yefremov 2022
                         <child>
                           <object class="GtkScrolledWindow" id="sidebar">
                             <property name="width-request">150</property>
-                            <property name="visible">True</property>
+                            <property name="visible" bind-source="fav_button" bind-property="active" bind-flags="invert-boolean">True</property>
                             <property name="can-focus">True</property>
                             <property name="propagate-natural-width">True</property>
                             <child>
@@ -1870,6 +2005,7 @@ Dmitriy Yefremov 2022
                     </child>
                     <child>
                       <object class="GtkLabel" id="fav_count_label">
+                        <property name="visible" bind-source="fav_button" bind-property="active">False</property>
                         <property name="can-focus">False</property>
                         <property name="margin-start">5</property>
                         <property name="label">0</property>
