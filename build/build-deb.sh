@@ -1,5 +1,5 @@
 #!/bin/bash
-VER="1.0.7-Beta"
+VER="1.0.8-Beta"
 B_PATH="dist/TVDemon"
 
 mkdir -p $B_PATH
