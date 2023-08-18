@@ -50,7 +50,7 @@ from imdb import IMDb
 from unidecode import unidecode
 
 from common import (_, APP, UI_PATH, Manager, Provider, BADGES, MOVIES_GROUP, PROVIDERS_PATH, SERIES_GROUP, TV_GROUP,
-                    async_function, idle_function, Channel)
+                    async_function, idle_function, Group)
 
 PROVIDER_OBJ, PROVIDER_NAME = range(2)
 PROVIDER_TYPE_ID, PROVIDER_TYPE_NAME = range(2)
@@ -76,12 +76,12 @@ class ChannelWidget(Gtk.ListBoxRow):
         super().__init__(**kwargs)
         self._channel = channel
         self.set_tooltip_text(channel.name)
-        label = Gtk.Label(channel.name, max_width_chars=30, ellipsize=Pango.EllipsizeMode.END)
-        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        box.pack_start(logo, False, False, 6)
-        box.pack_start(label, False, False, 6)
+        self.label = Gtk.Label(channel.name, max_width_chars=30, ellipsize=Pango.EllipsizeMode.END)
+        self.box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.box.pack_start(logo, False, False, 6)
+        self.box.pack_start(self.label, False, False, 6)
         frame = Gtk.Frame()
-        frame.add(box)
+        frame.add(self.box)
         self.add(frame)
 
         self.show_all()
@@ -102,12 +102,13 @@ class GroupWidget(Gtk.FlowBoxChild):
         super().__init__(**kwargs)
         self._data = data
 
-        box = Gtk.Box(border_width=6, orientation=orientation)
-        box.pack_start(logo, False, False, 0) if logo else None
-        box.pack_start(Gtk.Label(name, max_width_chars=30, ellipsize=Pango.EllipsizeMode.END), False, False, 0)
-        box.set_spacing(6)
+        self.box = Gtk.Box(border_width=6, orientation=orientation)
+        self.box.pack_start(logo, False, False, 0) if logo else None
+        self.label = Gtk.Label(name, max_width_chars=30, ellipsize=Pango.EllipsizeMode.END)
+        self.box.pack_start(self.label, False, False, 0)
+        self.box.set_spacing(6)
         frame = Gtk.Frame()
-        frame.add(box)
+        frame.add(self.box)
         self.add(frame)
 
         self.show_all()
@@ -115,6 +116,22 @@ class GroupWidget(Gtk.FlowBoxChild):
     @property
     def data(self):
         return self._data
+
+
+class FavGroupWidget(GroupWidget):
+    def __init__(self, data, name, logo, **kwargs):
+        super().__init__(data, name, logo, **kwargs)
+
+        self.entry = Gtk.Entry(text=name, has_frame=False)
+        self.box.pack_start(self.entry, False, False, 0)
+        self.entry.bind_property("visible", self.label, "visible", 4)
+        self.entry.connect("activate", self.on_activate)
+
+    def on_activate(self, entry):
+        text = entry.get_text()
+        self.label.set_text(text)
+        self.data.name = text
+        entry.set_visible(False)
 
 
 class Page(str, Enum):
@@ -200,7 +217,7 @@ class Application(Gtk.Application):
                         "colour_properties_label", "audio_properties_box", "audio_properties_label",
                         "layout_properties_box", "layout_properties_label", "info_bar", "info_message_label",
                         "fav_button", "fav_box", "fav_list_box", "fav_gr_flowbox", "add_fav_button", "fav_menu",
-                        "fav_count_label")
+                        "fav_gr_menu", "fav_count_label", "fav_gr_add_button")
 
         for name in widget_names:
             widget = self.builder.get_object(name)
@@ -322,20 +339,32 @@ class Application(Gtk.Application):
         self.vod_flowbox.connect("child-activated", self.on_vod_activate)
         # Favorites.
         self.non_fav_pages = {Page.CATEGORIES, Page.PROVIDERS, Page.PREFERENCES}
+        self.current_fav_group = None
         self._fav_store_path = f"{Path.home()}/.config/tvdemon/favorites.json"
         self.fav_list_box.connect("row-activated", self.play_fav_channel)
         self.add_fav_button.connect("clicked", self.on_add_fav)
+        self.fav_gr_add_button.connect("clicked", self.on_add_fav_group)
         self.fav_list_box.connect("realize", self.on_fav_list_box_realize)
         self.fav_list_box.connect("button-press-event", self.on_fav_list_button_press)
         self.fav_list_box.connect("key-press-event", self.on_fav_list_key_press)
+        self.fav_list_box.connect("remove", self.on_fav_removed)
+        self.fav_gr_flowbox.connect("selected-children_changed", self.on_fav_gr_selected)
+        self.fav_gr_flowbox.connect("button-press-event", self.on_fav_gr_button_press)
         self.channels_list_box.connect("set-focus-child", lambda b, c: self.add_fav_button.set_sensitive(c))
         # Favorites menu.
         item = Gtk.ImageMenuItem(_("Remove"), image=Gtk.Image.new_from_icon_name("edit-delete-symbolic", icon_size))
-        item.connect("activate", self.on_fav_delete)
+        item.connect("activate", self.on_fav_remove)
         key, mod = Gtk.accelerator_parse("Delete")
         item.add_accelerator("activate", accel_group, key, mod, Gtk.AccelFlags.VISIBLE)
         self.fav_menu.append(item)
         self.fav_menu.show_all()
+        # Fav groups menu.
+        item = Gtk.ImageMenuItem(_("Remove"), image=Gtk.Image.new_from_icon_name("edit-delete-symbolic", icon_size))
+        item.connect("activate", self.on_fav_gr_remove)
+        key, mod = Gtk.accelerator_parse("Delete")
+        item.add_accelerator("activate", accel_group, key, mod, Gtk.AccelFlags.VISIBLE)
+        self.fav_gr_menu.append(item)
+        self.fav_gr_menu.show_all()
         # DnD
         targets = [Gtk.TargetEntry.new(ChannelWidget.TARGET, Gtk.TargetFlags.SAME_APP, 0)]
         self.fav_list_box.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, targets, Gdk.DragAction.MOVE)
@@ -515,11 +544,8 @@ class Application(Gtk.Application):
 
     def remove_word(self, word, string):
         if " " not in string:
-            return string
-        words = string.split()
-        if word in string:
-            words.remove(word)
-        return " ".join(words)
+            return
+        return " ".join(w for w in string.split() if w != word)
 
     def show_episodes(self, serie):
         logos_to_refresh = []
@@ -1137,17 +1163,32 @@ class Application(Gtk.Application):
     # ******** FAVORITES ******* #
 
     def on_fav_list_box_realize(self, box):
-        self.show_fav_channels(self.get_favorites())
+        self.init_favorites()
 
     def play_fav_channel(self, box, row):
         if not self.back_page:
             self.navigate_to(Page.CHANNELS)
         self.play_channel(box, row)
 
-    def on_fav_list_button_press(self, list_box, event):
+    def on_fav_list_button_press(self, box, event):
+        return self.on_fav_button_press(self.fav_menu, event)
+
+    def on_fav_gr_button_press(self, box, event):
+        if event.get_event_type() == Gdk.EventType.DOUBLE_BUTTON_PRESS:
+            children = box.get_selected_children()
+            if children:
+                entry = children[0].entry
+                entry.set_visible(True)
+                entry.grab_focus()
+            return False
+
+        return self.on_fav_button_press(self.fav_gr_menu, event)
+
+    def on_fav_button_press(self, menu, event):
         if event.get_event_type() == Gdk.EventType.BUTTON_PRESS and event.button == Gdk.BUTTON_SECONDARY:
-            self.fav_menu.popup(None, None, None, None, event.button, event.time)
+            menu.popup(None, None, None, None, event.button, event.time)
             return True
+        return False
 
     def on_fav_list_key_press(self, list_box, event):
         ctrl = event.state & Gdk.ModifierType.CONTROL_MASK
@@ -1160,39 +1201,84 @@ class Application(Gtk.Application):
             if 0 <= dst < len(list_box):
                 self.move_list_data(dst, indexes, list_box)
 
-    def on_fav_delete(self, item=None):
-        dialog = Gtk.MessageDialog(self.window,
-                                   Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                                   Gtk.MessageType.QUESTION,
-                                   Gtk.ButtonsType.OK_CANCEL,
-                                   _("Are you sure?"))
+    def on_fav_remove(self, item=None):
+        if not len(self.fav_list_box):
+            return
+
+        dialog = self.get_question_dialog()
 
         if dialog.run() == Gtk.ResponseType.OK:
             list(map(self.fav_list_box.remove, self.fav_list_box.get_selected_rows()))
             self.fav_count_label.set_text(str(len(self.fav_list_box)))
         dialog.destroy()
 
+    def on_fav_gr_remove(self, item=None):
+        dialog = self.get_question_dialog()
+
+        if dialog.run() == Gtk.ResponseType.OK:
+            if len(self.fav_gr_flowbox) > 1:
+                list(map(self.fav_gr_flowbox.remove, self.fav_gr_flowbox.get_selected_children()))
+            else:
+                self.show_info_message(_("The element can't be deleted!"), Gtk.MessageType.ERROR)
+        dialog.destroy()
+
+    def on_fav_removed(self, box, chw):
+        if self.current_fav_group:
+            try:
+                self.current_fav_group.channels.remove(chw.channel)
+            except ValueError:
+                pass  # NOP
+
     def show_fav_channels(self, channels):
         self.navigate_to(Page.CHANNELS)
-        self.update_channels_data(channels, self.fav_list_box, False)
+        self.update_channels_data(channels, self.fav_list_box, True)
         self.fav_count_label.set_text(str(len(self.fav_list_box)))
 
     def on_add_fav(self, button):
+        if not self.fav_list_box.get_realized():
+            self.fav_list_box.realize()
+
+        if not self.current_fav_group:
+            self.show_info_message(_("Group list is empty!"), Gtk.MessageType.ERROR)
+            return
+
         channels = [row.channel for row in self.channels_list_box.get_selected_rows()]
+        self.current_fav_group.channels.extend(channels)
         current_count = len(self.fav_list_box)
         self.update_channels_data(channels, self.fav_list_box, False)
         self.fav_count_label.set_text(str(len(self.fav_list_box)))
         self.show_info_message(f"{_('Done!')} {_('Channels added:')} {len(self.fav_list_box) - current_count}")
 
-    def get_favorites(self):
-        """ Restores the current favorites list. """
-        gr = GroupWidget(None, "Default", None)
-        self.fav_gr_flowbox.add(gr)
-        self.fav_gr_flowbox.select_child(gr)
+    def on_add_fav_group(self, button):
+        group = Group.from_dict({"name": "Default", "channels": [], "is_default": False})
+        grw = FavGroupWidget(group, group.name, None)
+        grw.entry.set_visible(True)
+        self.fav_gr_flowbox.add(grw)
+        self.current_fav_group = group
+        self.fav_gr_flowbox.select_child(grw)
 
+    def on_fav_gr_selected(self, box):
+        [c.entry.set_visible(False) for c in box if c.entry.get_visible()]
+        children = box.get_selected_children()
+        if children:
+            self.current_fav_group = children[0].data
+            self.show_fav_channels(self.current_fav_group.channels)
+
+    def init_favorites(self):
+        """ Restores the current favorites list. """
         path = Path(self._fav_store_path)
         try:
-            return [Channel.from_dict(f) for f in json.loads(path.read_text())] if path.is_file() else []
+            groups = json.loads(path.read_text()) if path.is_file() else []
+            if not groups:
+                groups.append({"name": "Default", "channels": [], "is_default": True})
+
+            for g in groups:
+                group = Group.from_dict(g)
+                grw = FavGroupWidget(group, group.name, None)
+                self.fav_gr_flowbox.add(grw)
+                if group.is_default:
+                    self.fav_gr_flowbox.select_child(grw)
+                    self.current_fav_group = group
         except Exception as e:
             print("Restoring favorites error:", e)
 
@@ -1202,7 +1288,11 @@ class Application(Gtk.Application):
             try:
                 path = Path(self._fav_store_path)
                 path.parent.mkdir(parents=True, exist_ok=True)
-                path.write_text(json.dumps([vars(r.channel) for r in self.fav_list_box]))
+                groups = [w.data for w in self.fav_gr_flowbox]
+                for g in groups:
+                    if g is self.current_fav_group:
+                        g.is_default = True
+                path.write_text(json.dumps(groups, default=vars))
             except Exception as e:
                 print("Storing favorites error:", e)
 
@@ -1220,6 +1310,7 @@ class Application(Gtk.Application):
         rows = [list_box.get_row_at_index(i) for i in indexes]
         list(map(list_box.remove, rows))
         list(map(lambda r: list_box.insert(r, dst), reversed(rows)))
+        self.current_fav_group.channels = [r.channel for r in list_box]
 
     # ************************** #
 
@@ -1499,6 +1590,13 @@ class Application(Gtk.Application):
         self.info_bar.set_visible(True)
         self.info_bar.set_message_type(message_type)
         self.info_message_label.set_text(msg)
+
+    def get_question_dialog(self):
+        return Gtk.MessageDialog(self.window,
+                                 Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                                 Gtk.MessageType.QUESTION,
+                                 Gtk.ButtonsType.OK_CANCEL,
+                                 _("Are you sure?"))
 
     def on_close_app(self, window=None, event=None):
         # Saving main window size.

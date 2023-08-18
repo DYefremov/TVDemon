@@ -1,6 +1,6 @@
 # TVDemon
 
-### TVDemon is based on [Hypnotix](https://github.com/linuxmint/hypnotix).  
+### TVDemon based on [Hypnotix](https://github.com/linuxmint/hypnotix).  
 This is an IPTV streaming application with support for live TV, movies and series.
 
 ![shadow](https://user-images.githubusercontent.com/7511379/208684877-6d901320-9859-4381-8220-f9209f40e51b.png)

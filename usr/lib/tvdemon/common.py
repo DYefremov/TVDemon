@@ -57,6 +57,7 @@ BADGES = {'musik': "music", 'zeland': "newzealand"}
 
 def async_function(func):
     """  Used as a decorator to run things in the background.  """
+
     def wrapper(*args, **kwargs):
         thread = threading.Thread(target=func, args=args, kwargs=kwargs)
         thread.daemon = True
@@ -100,7 +101,7 @@ class Provider:
 
 
 class Group:
-    def __init__(self, name):
+    def __init__(self, name="", channels=None, series=None):
         if "VOD" in name.split():
             self.group_type = MOVIES_GROUP
         elif "SERIES" in name.split():
@@ -108,8 +109,16 @@ class Group:
         else:
             self.group_type = TV_GROUP
         self.name = name
-        self.channels = []
-        self.series = []
+        self.channels = channels or []
+        self.series = series or []
+        self.is_default = False
+
+    @staticmethod
+    def from_dict(data: dict):
+        gr = Group()
+        [setattr(gr, k, v) for k, v in data.items()]
+        gr.channels = [Channel.from_dict(c) for c in gr.channels]
+        return gr
 
 
 class Serie:
@@ -173,8 +182,7 @@ class Channel:
     @staticmethod
     def from_dict(data: dict):
         ch = Channel()
-        for k, v in data.items():
-            setattr(ch, k, v)
+        [setattr(ch, k, v) for k, v in data.items()]
         return ch
 
 
