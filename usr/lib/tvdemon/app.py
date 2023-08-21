@@ -359,7 +359,7 @@ class Application(Gtk.Application):
         # Favorites.
         self.non_fav_pages = {Page.CATEGORIES, Page.PROVIDERS, Page.PREFERENCES}
         self.current_fav_group = None
-        self._fav_store_path = f"{Path.home()}/.config/tvdemon/favorites.json"
+        self._fav_store_path = f"{Path.home()}/.config/tvdemon/favorites"
         self.fav_list_box.connect("row-activated", self.play_fav_channel)
         self.add_fav_button.connect("clicked", self.on_add_fav)
         self.fav_gr_add_button.connect("clicked", self.on_add_fav_group)
