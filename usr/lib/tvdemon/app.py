@@ -102,6 +102,9 @@ class GroupWidget(Gtk.FlowBoxChild):
         super().__init__(**kwargs)
         self._data = data
 
+        self.name = name
+        self.logo = logo
+
         self.box = Gtk.Box(border_width=6, orientation=orientation)
         self.box.pack_start(logo, False, False, 0) if logo else None
         self.label = Gtk.Label(name, max_width_chars=30, ellipsize=Pango.EllipsizeMode.END)
@@ -111,11 +114,27 @@ class GroupWidget(Gtk.FlowBoxChild):
         frame.add(self.box)
         self.add(frame)
 
+        self.tooltip_logo = None
+        self.set_has_tooltip(logo)
+        self.connect("query-tooltip", self.on_query_tooltip)
+
         self.show_all()
 
     @property
     def data(self):
         return self._data
+
+    def on_query_tooltip(self, widget, x, y, keyboard_mode, tooltip):
+        if not widget.tooltip_logo:
+            path = widget.data.logo_path
+            try:
+                self.tooltip_logo = GdkPixbuf.Pixbuf.new_from_file_at_scale(path, -1, 96, 1) if path else None
+            except GLib.Error:
+                pass  # NOP
+
+        tooltip.set_icon(self.tooltip_logo)
+        tooltip.set_text(widget.name)
+        return True
 
 
 class FavGroupWidget(GroupWidget):
@@ -624,9 +643,9 @@ class Application(Gtk.Application):
     def refresh_channel_logo(self, channel, image):
         image.set_from_surface(self.get_channel_surface(channel.logo_path))
 
-    def get_channel_surface(self, path):
+    def get_channel_surface(self, path, w=64, h=32):
         try:
-            return self.get_surface_for_file(path, 64, 32)
+            return self.get_surface_for_file(path, w, h)
         except Exception:
             return self.get_surface_for_file(f"{UI_PATH}generic_tv_logo.png", 22, 22)
 

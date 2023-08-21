@@ -108,7 +108,10 @@ class Group:
             self.group_type = SERIES_GROUP
         else:
             self.group_type = TV_GROUP
+
         self.name = name
+        self.logo = None
+        self.logo_path = None
         self.channels = channels or []
         self.series = series or []
         self.is_default = False
