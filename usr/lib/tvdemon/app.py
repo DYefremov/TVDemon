@@ -32,6 +32,7 @@ from functools import partial
 from pathlib import Path
 
 from madia import Player
+from settings import Settings
 
 # Force X11 on a Wayland session
 if "WAYLAND_DISPLAY" in os.environ:
@@ -177,7 +178,7 @@ class Application(Gtk.Application):
         GObject.signal_new("error", self, GObject.SIGNAL_RUN_LAST, GObject.TYPE_PYOBJECT, (GObject.TYPE_PYOBJECT,))
         self.connect("error", self.on_error)
 
-        self.settings = Gio.Settings(schema_id="org.x.tvdemon")
+        self.settings = Settings()
         self.manager = Manager(self.settings)
         self.providers = []
         self.active_provider = None
@@ -202,7 +203,9 @@ class Application(Gtk.Application):
         self.builder.add_from_file(glade_file)
         self.window = self.builder.get_object("main_window")
         self.window.connect("delete-event", self.on_close_app)
-        self.window.resize(*self.settings.get_value("main-window-size"))
+        size = self.settings.get_value("main-window-size")
+        if size:
+            self.window.resize(*size)
         # The window used to display stream information
         self.info_window = self.builder.get_object("stream_info_window")
 
@@ -1619,11 +1622,10 @@ class Application(Gtk.Application):
 
     def on_close_app(self, window=None, event=None):
         # Saving main window size.
-        width, height = self.window.get_size()
-        w_size = GLib.Variant.new_tuple(GLib.Variant.new_int32(width), GLib.Variant.new_int32(height))
-        self.settings.set_value("main-window-size", w_size)
-        # Saving favorites list.
+        self.settings.set_value("main-window-size", self.window.get_size())
+        # Saving settings and favorites list.
         self.on_favorites_store()
+        self.settings.save()
 
     def on_close_info_window_button_clicked(self, widget):
         self.info_window.hide()

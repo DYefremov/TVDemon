@@ -14,7 +14,7 @@ It can support multiple IPTV providers of the following types:
 ## Differences from [Hypnotix](https://github.com/linuxmint/hypnotix)
  * Some GUI changes.
  * Functionality improvement.
- * Removed use of [xapp](https://github.com/linuxmint/xapp).
+ * Removed use of [xapp](https://github.com/linuxmint/xapp) and **GSettings**.
  * Some code changes and improvements.
 
 ## Requirements

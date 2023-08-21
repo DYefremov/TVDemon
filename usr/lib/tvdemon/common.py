@@ -192,7 +192,7 @@ class Channel:
 class Manager:
 
     def __init__(self, settings):
-        os.system("mkdir -p '%s'" % PROVIDERS_PATH)
+        os.system(f"mkdir -p {PROVIDERS_PATH}")
         self.verbose = False
         self.settings = settings
 
