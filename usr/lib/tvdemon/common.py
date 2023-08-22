@@ -35,8 +35,12 @@ import setproctitle
 APP = 'tvdemon'
 setproctitle.setproctitle(APP)
 
-UI_PATH = "/usr/share/tvdemon/"
-LOCALE_DIR = "/usr/share/locale"
+UI_PATH = f"{os.sep}usr{os.sep}share{os.sep}tvdemon{os.sep}"
+LOCALE_DIR = f"{os.sep}usr{os.sep}share{os.sep}locale"
+
+if not os.path.exists(UI_PATH):
+    UI_PATH = f".{UI_PATH}"
+    LOCALE_DIR = f".{LOCALE_DIR}"
 
 locale.bindtextdomain(APP, LOCALE_DIR)
 gettext.bindtextdomain(APP, LOCALE_DIR)

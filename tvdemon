@@ -1,0 +1,14 @@
+#!/bin/sh
+#
+FILENAME="tvdemon.desktop"
+LOGO_PATH="/usr/share/icons/hicolor/scalable/apps/tvdemon.svg"
+CURRENT_PATH=$PWD
+TARGET="Icon=${CURRENT_PATH}${LOGO_PATH}"
+# Icon path update.
+if ! grep -Fq $TARGET $FILENAME
+then
+  sed -i "s%Icon=.*%${TARGET}%" $FILENAME
+fi
+
+echo "Starting..."
+./usr/lib/tvdemon/app.py &
