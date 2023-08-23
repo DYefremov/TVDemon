@@ -26,32 +26,18 @@ import os
 import shutil
 import sys
 import traceback
-import warnings
 from enum import Enum
 from functools import partial
 from pathlib import Path
-
-from madia import Player
-from settings import Settings
-
-# Force X11 on a Wayland session
-if "WAYLAND_DISPLAY" in os.environ:
-    os.environ["WAYLAND_DISPLAY"] = ""
-
-# Suppress GTK deprecation warnings
-warnings.filterwarnings("ignore")
-
-import gi
-
-gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, Gdk, Gio, GdkPixbuf, GLib, Pango, GObject
 
 import requests
 from imdb import IMDb
 from unidecode import unidecode
 
-from common import (_, APP, UI_PATH, Manager, Provider, BADGES, MOVIES_GROUP, PROVIDERS_PATH, SERIES_GROUP, TV_GROUP,
-                    async_function, idle_function, Group)
+from common import (_, Gtk, Gdk, Gio, GdkPixbuf, GLib, Pango, GObject, APP, UI_PATH, Manager, Provider, BADGES,
+                    MOVIES_GROUP, PROVIDERS_PATH, SERIES_GROUP, TV_GROUP, async_function, idle_function, Group)
+from madia import Player
+from settings import Settings
 
 PROVIDER_OBJ, PROVIDER_NAME = range(2)
 PROVIDER_TYPE_ID, PROVIDER_TYPE_NAME = range(2)

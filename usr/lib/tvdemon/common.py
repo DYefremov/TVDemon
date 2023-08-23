@@ -23,24 +23,39 @@
 import os
 import re
 import threading
+import warnings
 
 import requests
-from gi.repository import GLib, GObject
-
 import gettext
 import locale
 
 import setproctitle
 
+import gi
+
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, Gdk, Gio, GdkPixbuf, GLib, Pango, GObject
+
+# Force X11 on a Wayland session
+if "WAYLAND_DISPLAY" in os.environ:
+    os.environ["WAYLAND_DISPLAY"] = ""
+
+# Suppress GTK deprecation warnings
+warnings.filterwarnings("ignore")
+
 APP = 'tvdemon'
 setproctitle.setproctitle(APP)
 
-UI_PATH = f"{os.sep}usr{os.sep}share{os.sep}tvdemon{os.sep}"
-LOCALE_DIR = f"{os.sep}usr{os.sep}share{os.sep}locale"
+BASE_PATH = f"{os.sep}usr{os.sep}share{os.sep}"
+UI_PATH = f"{BASE_PATH}tvdemon{os.sep}"
+LOCALE_DIR = f"{BASE_PATH}locale"
 
 if not os.path.exists(UI_PATH):
     UI_PATH = f".{UI_PATH}"
     LOCALE_DIR = f".{LOCALE_DIR}"
+    # Icons.
+    theme = Gtk.IconTheme.get_default()
+    theme.append_search_path(f".{BASE_PATH}icons")
 
 locale.bindtextdomain(APP, LOCALE_DIR)
 gettext.bindtextdomain(APP, LOCALE_DIR)
