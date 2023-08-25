@@ -39,7 +39,7 @@ class Defaults(dict):
 
 
 class Settings(dict):
-    CONFIG_PATH = f"{Path.home()}{os.sep}.config{os.sep}tvdemon/"
+    CONFIG_PATH = f"{Path.home()}{os.sep}.config{os.sep}tvdemon{os.sep}"
     CONFIG_FILE = f"{CONFIG_PATH}config"
 
     def __init__(self, **kwargs):

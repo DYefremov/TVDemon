@@ -20,22 +20,21 @@
 # along with TVDemon  If not, see <http://www.gnu.org/licenses/>.
 #
 
+import gettext
+import locale
 import os
 import re
 import sys
 import threading
 import warnings
-
-import requests
-import gettext
-import locale
-
-import setproctitle
+from pathlib import Path
 
 import gi
+import requests
+import setproctitle
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, Gdk, Gio, GdkPixbuf, GLib, Pango, GObject
+from gi.repository import Gtk, GLib, GObject
 
 # Force X11 on a Wayland session
 if "WAYLAND_DISPLAY" in os.environ:
@@ -50,6 +49,7 @@ setproctitle.setproctitle(APP)
 BASE_PATH = f"{os.sep}usr{os.sep}share{os.sep}"
 UI_PATH = f"{BASE_PATH}tvdemon{os.sep}"
 LOCALE_DIR = f"{BASE_PATH}locale"
+PROVIDERS_PATH = os.path.join(os.path.normpath(GLib.get_user_cache_dir()), "tvdemon", "providers")
 
 if not os.path.exists(UI_PATH):
     UI_PATH = f".{UI_PATH}"
@@ -62,6 +62,7 @@ if sys.platform == "linux":
     locale.bindtextdomain(APP, LOCALE_DIR)
 elif sys.platform == "win32":
     locale.setlocale(locale.LC_NUMERIC, "C")
+    Path(PROVIDERS_PATH).mkdir(parents=True, exist_ok=True)
 
 gettext.bindtextdomain(APP, LOCALE_DIR)
 gettext.textdomain(APP)
@@ -71,8 +72,6 @@ _ = gettext.gettext
 PARAMS = re.compile(r'(\S+)="(.*?)"')
 EXT_INF = re.compile(r'^#EXTINF:(?P<duration>-?\d+?) ?(?P<params>.*),(?P<title>.*?)$')
 SERIES = re.compile(r"(?P<series>.*?) S(?P<season>.\d{1,2}).*E(?P<episode>.\d{1,2}.*)$", re.IGNORECASE)
-
-PROVIDERS_PATH = os.path.join(GLib.get_user_cache_dir(), "tvdemon", "providers")
 
 TV_GROUP, MOVIES_GROUP, SERIES_GROUP = range(3)
 
@@ -263,11 +262,8 @@ class Manager:
                         block_bytes = int(4 * 1024 * 1024)  # 4 MB
 
                         response.encoding = response.apparent_encoding
-                        # try:
-                        #    source = response.content.decode("UTF-8")
-                        # except UnicodeDecodeError as e:
-                        #    source = response.content.decode("latin1")
-                        with open(provider.path, "w") as file:
+
+                        with open(provider.path, "w", encoding="utf-8") as file:
                             # Grab data by block_bytes
                             for data in response.iter_content(block_bytes, decode_unicode=True):
                                 downloaded_bytes += block_bytes
@@ -303,7 +299,7 @@ class Manager:
         return legit
 
     def load_channels(self, provider):
-        with open(provider.path, "r") as file:
+        with open(provider.path, "r", encoding="utf-8", errors="ignore") as file:
             channel = None
             group = None
             groups = {}
