@@ -22,6 +22,7 @@
 
 import os
 import re
+import sys
 import threading
 import warnings
 
@@ -57,7 +58,11 @@ if not os.path.exists(UI_PATH):
     theme = Gtk.IconTheme.get_default()
     theme.append_search_path(f".{BASE_PATH}icons")
 
-locale.bindtextdomain(APP, LOCALE_DIR)
+if sys.platform == "linux":
+    locale.bindtextdomain(APP, LOCALE_DIR)
+elif sys.platform == "win32":
+    locale.setlocale(locale.LC_NUMERIC, "C")
+
 gettext.bindtextdomain(APP, LOCALE_DIR)
 gettext.textdomain(APP)
 _ = gettext.gettext

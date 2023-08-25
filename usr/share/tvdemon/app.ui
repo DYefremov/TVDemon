@@ -564,7 +564,7 @@ Dmitriy Yefremov 2022
                                             <property name="can-focus">False</property>
                                             <property name="valign">end</property>
                                             <attributes>
-                                              <attribute name="font-desc" value="Ubuntu Bold 18"/>
+                                              <attribute name="weight" value="bold"/>
                                             </attributes>
                                           </object>
                                           <packing>
@@ -579,7 +579,7 @@ Dmitriy Yefremov 2022
                                             <property name="can-focus">False</property>
                                             <property name="valign">end</property>
                                             <attributes>
-                                              <attribute name="font-desc" value="Ubuntu Bold 12"/>
+                                              <attribute name="weight" value="bold"/>
                                             </attributes>
                                           </object>
                                           <packing>
@@ -604,7 +604,7 @@ Dmitriy Yefremov 2022
                                                     <property name="can-focus">False</property>
                                                     <property name="valign">end</property>
                                                     <attributes>
-                                                      <attribute name="font-desc" value="Ubuntu Bold 18"/>
+                                                      <attribute name="weight" value="bold"/>
                                                     </attributes>
                                                   </object>
                                                   <packing>

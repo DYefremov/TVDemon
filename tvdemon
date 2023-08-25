@@ -11,4 +11,4 @@ then
 fi
 
 echo "Starting..."
-./usr/lib/tvdemon/app.py &
+python3 ./usr/lib/tvdemon/app.py &
