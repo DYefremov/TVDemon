@@ -37,7 +37,7 @@ along with TVDemon.  If not, see <http://www.gnu.org/licenses/>.
     <property name="icon-name">tvdemon</property>
     <property name="type-hint">dialog</property>
     <property name="program-name">TVDemon</property>
-    <property name="version">1.0.8 Beta</property>
+    <property name="version">1.1.0 Beta</property>
     <property name="copyright" translatable="yes">2022-2023 Dmitriy Yefremov</property>
     <property name="comments" translatable="yes">Watch TV
 
