@@ -35,11 +35,11 @@ class Defaults(dict):
         self["active-provider"] = "Free-TV"
         self["providers"] = [
             "Free-TV:::url:::https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8:::::::::'"]
-        self["main-window-size"] = "(700, 500)"
+        self["main-window-size"] = (700, 500)
 
 
 class Settings(dict):
-    CONFIG_PATH = f"{Path.home()}{os.sep}.config{os.sep}ffmpeg-gtk/"
+    CONFIG_PATH = f"{Path.home()}{os.sep}.config{os.sep}tvdemon/"
     CONFIG_FILE = f"{CONFIG_PATH}config"
 
     def __init__(self, **kwargs):
