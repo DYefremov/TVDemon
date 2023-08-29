@@ -1298,8 +1298,7 @@ class Application(Gtk.Application):
                 path.parent.mkdir(parents=True, exist_ok=True)
                 groups = [w.data for w in self.fav_gr_flowbox]
                 for g in groups:
-                    if g is self.current_fav_group:
-                        g.is_default = True
+                    g.is_default = g is self.current_fav_group
                 path.write_text(json.dumps(groups, default=vars))
             except Exception as e:
                 print("Storing favorites error:", e)
