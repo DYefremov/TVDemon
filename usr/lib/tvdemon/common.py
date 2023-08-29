@@ -34,7 +34,7 @@ import requests
 import setproctitle
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, GLib, GObject
+from gi.repository import Gtk, Gdk, GdkPixbuf, Gio, GLib, GObject, Pango
 
 # Force X11 on a Wayland session
 if "WAYLAND_DISPLAY" in os.environ:
