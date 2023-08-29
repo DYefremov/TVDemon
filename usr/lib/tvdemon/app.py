@@ -225,7 +225,7 @@ class Application(Gtk.Application):
                         "colour_properties_label", "audio_properties_box", "audio_properties_label",
                         "layout_properties_box", "layout_properties_label", "info_bar", "info_message_label",
                         "fav_button", "fav_box", "fav_list_box", "fav_gr_flowbox", "add_fav_button", "fav_menu",
-                        "fav_gr_menu", "fav_count_label", "fav_gr_add_button")
+                        "fav_gr_menu", "fav_count_label", "fav_gr_add_button", "fav_paned")
 
         for name in widget_names:
             widget = self.builder.get_object(name)
@@ -358,6 +358,7 @@ class Application(Gtk.Application):
         self.fav_list_box.connect("remove", self.on_fav_removed)
         self.fav_gr_flowbox.connect("selected-children_changed", self.on_fav_gr_selected)
         self.fav_gr_flowbox.connect("button-press-event", self.on_fav_gr_button_press)
+        self.fav_paned.connect("realize", self.on_fav_paned_realize)
         self.channels_list_box.connect("set-focus-child", lambda b, c: self.add_fav_button.set_sensitive(c))
         # Favorites menu.
         item = Gtk.ImageMenuItem(_("Remove"), image=Gtk.Image.new_from_icon_name("edit-delete-symbolic", icon_size))
@@ -1173,6 +1174,10 @@ class Application(Gtk.Application):
     def on_fav_list_box_realize(self, box):
         self.init_favorites()
 
+    def on_fav_paned_realize(self, paned):
+        pos = self.settings.get_value("fav-paned-position")
+        paned.set_position(pos) if pos is not None else None
+
     def play_fav_channel(self, box, row):
         if not self.back_page:
             self.navigate_to(Page.CHANNELS)
@@ -1293,6 +1298,8 @@ class Application(Gtk.Application):
     def on_favorites_store(self):
         """ Stores the current favorites list. """
         if self.fav_list_box.get_realized():
+            self.settings.set_value("fav-paned-position", self.fav_paned.get_position())
+
             try:
                 path = Path(self._fav_store_path)
                 path.parent.mkdir(parents=True, exist_ok=True)
