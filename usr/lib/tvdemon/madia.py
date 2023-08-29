@@ -20,6 +20,8 @@
 #
 
 """ Basic playback module. """
+import sys
+
 from gi.repository import GLib, GObject
 
 from common import _, idle_function
@@ -92,7 +94,26 @@ class Player(GObject.GObject):
         pass
 
     def get_xid(self):
-        return self._app.drawing_area.get_window().get_xid()
+        window = self._app.drawing_area.get_window()
+
+        if sys.platform == "win32":
+            try:
+                import ctypes
+
+                libgdk = ctypes.CDLL("libgdk-3-0.dll")
+            except OSError as e:
+                print(f"{__class__.__name__}: Load library error: {e}")
+            else:
+                ctypes.pythonapi.PyCapsule_GetPointer.restype = ctypes.c_void_p
+                ctypes.pythonapi.PyCapsule_GetPointer.argtypes = [ctypes.py_object]
+                gpointer = ctypes.pythonapi.PyCapsule_GetPointer(window.__gpointer__, None)
+                get_pointer = libgdk.gdk_win32_window_get_handle
+                get_pointer.restype = ctypes.c_void_p
+                get_pointer.argtypes = [ctypes.c_void_p]
+
+                return get_pointer(gpointer)
+
+        return window.get_xid()
 
     @staticmethod
     def get_instance(app):
