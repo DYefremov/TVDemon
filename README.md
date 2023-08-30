@@ -16,6 +16,7 @@ It can support multiple IPTV providers of the following types:
  * Functionality improvement.
  * Removed use of [xapp](https://github.com/linuxmint/xapp) and **GSettings**.
  * Can be run without installation.
+ * Ability to run in MS Windows (via [MSYS2](https://www.msys2.org/) platform).
 
 ## Requirements
 
