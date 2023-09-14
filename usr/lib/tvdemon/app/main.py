@@ -1,5 +1,5 @@
-#!/usr/bin/python3
-
+# -*- coding: utf-8 -*-
+#
 # Copyright (C) 2022-2023 Dmitriy Yefremov <https://github.com/DYefremov>
 #               2020-2022 Linux Mint <root@linuxmint.com>
 #
@@ -34,10 +34,9 @@ import requests
 from imdb import IMDb
 from unidecode import unidecode
 
-from common import (_, Gtk, Gdk, Gio, GdkPixbuf, GLib, Pango, GObject, APP, UI_PATH, Manager, Provider, BADGES,
-                    MOVIES_GROUP, PROVIDERS_PATH, SERIES_GROUP, TV_GROUP, async_function, idle_function, Group)
-from madia import Player
-from settings import Settings
+from .common import *
+from .madia import Player
+from .settings import Settings
 
 PROVIDER_OBJ, PROVIDER_NAME = range(2)
 PROVIDER_TYPE_ID, PROVIDER_TYPE_NAME = range(2)
@@ -1623,6 +1622,10 @@ class Application(Gtk.Application):
         self.info_window.hide()
 
 
-if __name__ == "__main__":
+def run():
     app = Application()
     sys.exit(app.run(sys.argv))
+
+
+if __name__ == "__main__":
+    pass

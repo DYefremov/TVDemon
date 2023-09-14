@@ -1,5 +1,5 @@
-#!/usr/bin/python3
-
+# -*- coding: utf-8 -*-
+#
 # Copyright (C) 2022-2023 Dmitriy Yefremov <https://github.com/DYefremov>
 #               2020-2022 Linux Mint <root@linuxmint.com>
 #
@@ -19,6 +19,10 @@
 # You should have received a copy of the GNU General Public License
 # along with TVDemon  If not, see <http://www.gnu.org/licenses/>.
 #
+
+__all__ = ("_", "Gtk", "Gdk", "Gio", "GdkPixbuf", "GLib", "Pango", "GObject",
+           "APP", "UI_PATH", "Manager", "Provider", "Group", "async_function", "idle_function",
+           "BADGES", "MOVIES_GROUP", "PROVIDERS_PATH", "SERIES_GROUP", "TV_GROUP")
 
 import gettext
 import locale
@@ -43,10 +47,13 @@ if "WAYLAND_DISPLAY" in os.environ:
 # Suppress GTK deprecation warnings
 warnings.filterwarnings("ignore")
 
-APP = 'tvdemon'
+APP = "tvdemon"
 setproctitle.setproctitle(APP)
 
-BASE_PATH = f"{os.sep}usr{os.sep}share{os.sep}"
+IS_FROZEN = getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS")
+
+PREFIX = "" if IS_FROZEN else f"{os.sep}usr{os.sep}"
+BASE_PATH = f"{PREFIX}share{os.sep}"
 UI_PATH = f"{BASE_PATH}tvdemon{os.sep}"
 LOCALE_DIR = f"{BASE_PATH}locale"
 PROVIDERS_PATH = os.path.join(os.path.normpath(GLib.get_user_cache_dir()), "tvdemon", "providers")

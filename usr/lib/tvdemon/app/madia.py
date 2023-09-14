@@ -24,7 +24,7 @@ import sys
 
 from gi.repository import GLib, GObject
 
-from common import _, idle_function
+from .common import _, idle_function
 
 AUDIO_SAMPLE_FORMATS = {"u16": "unsigned 16 bits",
                         "s16": "signed 16 bits",
@@ -148,7 +148,7 @@ class MpvPlayer(Player):
         options["referrer"] = self._app.settings.get_string("http-referer")
 
         try:
-            import mpv
+            from . import mpv
         except ImportError as e:
             print(e)
             GLib.idle_add(self._app.emit, "error", f"MPV initialization error: {e}.")
