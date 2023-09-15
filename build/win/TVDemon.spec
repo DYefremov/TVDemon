@@ -11,7 +11,9 @@ excludes = ['youtube_dl',
             'tkinter']
 
 
-ui_files = [('usr\\share\\tvdemon', 'share\\tvdemon')]
+ui_files = [('usr\\share\\tvdemon', 'share\\tvdemon'),
+           ('usr\\share\\icons\\hicolor\\scalable\\apps\\tvdemon.svg',
+            'share\\icons\\hicolor\\scalable\\apps')]
 
 
 a = Analysis([EXE_NAME],
