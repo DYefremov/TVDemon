@@ -19,9 +19,21 @@ It can support multiple IPTV providers of the following types:
  * Ability to run in MS Windows (via [MSYS2](https://www.msys2.org/) platform).
 
 ## Requirements
-
 - libmpv >= 0.34.1
-- python3-imdbpy (for Older Mint and Debian releases get it from https://packages.ubuntu.com/focal/all/python3-imdbpy/download)
+- [IMDbPy](https://pypi.org/project/IMDbPY/) (python3-imdbpy)
+
+## Installation and Launch
+* ### Linux
+  To start the program, in most cases it is enough to download the [archive](https://github.com/DYefremov/TVDemon/archive/refs/heads/main.zip),   
+  unpack and run it by double-clicking on the *.desktop file in the root directory,  
+  or launch from the console with the command:```./tvdemon```   
+  Depending on your distro, you may need to install additional packages and libraries.
+
+To create a Debian package, you can use the *build-deb.sh* file from the *build* directory.
+
+* ### MS Windows (experimental) 
+  Windows users can also run (build) this program.  
+One way is the [MSYS2](https://www.msys2.org/) platform. You can use [this](https://github.com/DYefremov/TVDemon/blob/main/build/win/BUILD.md) quick guide.  
 
 ## TV Channels and media content
 
