@@ -2077,7 +2077,7 @@ Dmitriy Yefremov 2022
                   <object class="GtkImage">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="icon-name">xapp-prefs-behavior-symbolic</property>
+                    <property name="icon-name">document-properties-symbolic</property>
                   </object>
                 </child>
               </object>
