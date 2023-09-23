@@ -13,8 +13,9 @@
     * Copy mpv-2.dll to *C:\msys64\mingw64\bin*    
     * libmpv.dll.a to *C:\msys64\mingw64\lib*    
       and folder *include\mpv to *C:\msys64\mingw64\include* path.
-6. Download and unzip the archive with sources from preferred branch (e.g. [main](https://github.com/DYefremov/TVDemon/archive/refs/heads/main.zip)) in to folder where MSYS2 is installed. E.g: `c:\msys64\home\username\`
-7. Run mingw64 shell. Go to the folder where the program was unpacked. E.g: `cd TVDemon`
+6. Install [IMDbPY](https://pypi.org/project/IMDbPY/) `pip3 install imdbpy`.
+7. Download and unzip the archive with sources from preferred branch (e.g. [main](https://github.com/DYefremov/TVDemon/archive/refs/heads/main.zip)) in to folder where MSYS2 is installed. E.g: `c:\msys64\home\username\`
+8. Run mingw64 shell. Go to the folder where the program was unpacked. E.g: `cd TVDemon`
 And run: `./tvdemon`
 
 ## Building a package
