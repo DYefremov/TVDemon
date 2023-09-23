@@ -296,7 +296,7 @@ class Manager:
     def check_playlist(self, provider):
         legit = False
         if os.path.exists(provider.path):
-            with open(provider.path, "r") as file:
+            with open(provider.path, "r", encoding="utf-8", errors="ignore") as file:
                 content = file.read()
                 if "#EXTM3U" in content and "#EXTINF" in content:
                     legit = True
