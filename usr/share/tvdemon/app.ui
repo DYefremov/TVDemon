@@ -543,7 +543,7 @@ Dmitriy Yefremov 2022
                                             <property name="visible">True</property>
                                             <property name="can-focus">False</property>
                                             <property name="pixel-size">16</property>
-                                            <property name="icon-name">dialog-close-symbolic</property>
+                                            <property name="icon-name">window-close-symbolic</property>
                                           </object>
                                         </child>
                                       </object>
