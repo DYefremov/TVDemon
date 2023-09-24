@@ -9,8 +9,7 @@
 5. Install [MPV](https://mpv.io/) `pacman -S mingw-w64-x86_64-mpv`.  
     To reduce the installation size, we can install the *libmpv* [build](https://github.com/shinchiro/mpv-winbuild-cmake/releases) (**mpv-dev**-x86_64-v3-*.7z) by [shinchiro](https://github.com/shinchiro).  
     * Download and extract 7z archive.    
-    * Rename libmpv-2.dll to mpv-2.dll.  
-    * Copy mpv-2.dll to *C:\msys64\mingw64\bin*    
+    * Copy libmpv-2.dll to *C:\msys64\mingw64\bin*    
     * libmpv.dll.a to *C:\msys64\mingw64\lib*    
       and folder *include\mpv to *C:\msys64\mingw64\include* path.
 6. Install [IMDbPY](https://pypi.org/project/IMDbPY/) `pip3 install imdbpy`.
