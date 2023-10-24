@@ -204,6 +204,15 @@ class MpvPlayer(Player):
         self._player._set_property("volume", self._volume_value)
         self.emit("volume-changed", self._volume_value)
 
+    def record(self, path):
+        self._player._set_property("stream-record", path)
+
+    def record_stop(self):
+        self.record("")
+
+    def is_record(self):
+        return self._player._get_property("stream-record")
+
     @idle_function
     def before_play(self):
         self._video_properties.clear()

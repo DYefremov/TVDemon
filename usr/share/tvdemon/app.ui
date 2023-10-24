@@ -2,7 +2,7 @@
 <!-- Generated with glade 3.38.2 
 
 Copyright (C) 2020 Linux Mint <root@linuxmint.com>
-2022 Dmitriy Yefremov
+2023 Dmitriy Yefremov
 
 This file is part of TVDemon.
 
@@ -21,7 +21,7 @@ along with TVDemon.  If not, see <http://www.gnu.org/licenses/>.
 
 Authors:
 Clement Lefebvre 2020
-Dmitriy Yefremov 2022
+Dmitriy Yefremov 2022-2023
 
 -->
 <interface domain="tvdemon">
@@ -30,8 +30,8 @@ Dmitriy Yefremov 2022
   <!-- interface-license-type gplv3 -->
   <!-- interface-name TVDemon -->
   <!-- interface-description TVDemon is an IPTV streaming application with support for live TV, movies and series. -->
-  <!-- interface-copyright 2020 Linux Mint <root@linuxmint.com>\n2022 Dmitriy Yefremov -->
-  <!-- interface-authors Clement Lefebvre 2020\nDmitriy Yefremov 2022\n -->
+  <!-- interface-copyright 2020 Linux Mint <root@linuxmint.com>\n2022-2023 Dmitriy Yefremov -->
+  <!-- interface-authors Clement Lefebvre 2020\nDmitriy Yefremov 2022-2023\n -->
   <object class="GtkMenu" id="fav_gr_menu">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
@@ -963,13 +963,93 @@ Dmitriy Yefremov 2022
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes">Playback</property>
+                                        <attributes>
+                                          <attribute name="weight" value="bold"/>
+                                        </attributes>
                                       </object>
                                     </child>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">True</property>
-                                    <property name="position">2</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkFrame" id="pref_rec_frame">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="label-xalign">0.5</property>
+                                    <property name="shadow-type">in</property>
+                                    <child>
+                                      <object class="GtkBox" id="pref_rec_box">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="border-width">24</property>
+                                        <property name="orientation">vertical</property>
+                                        <property name="spacing">6</property>
+                                        <child>
+                                          <object class="GtkBox" id="rec_path_pox">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="spacing">6</property>
+                                            <child>
+                                              <object class="GtkLabel" id="rec_path_label">
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">False</property>
+                                                <property name="label" translatable="yes">Path</property>
+                                                <attributes>
+                                                  <attribute name="weight" value="bold"/>
+                                                </attributes>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">0</property>
+                                              </packing>
+                                            </child>
+                                            <child>
+                                              <object class="GtkFileChooserButton" id="rec_path_button">
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">False</property>
+                                                <property name="action">select-folder</property>
+                                                <property name="local-only">False</property>
+                                                <property name="title" translatable="yes">Select recordings path</property>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">True</property>
+                                                <property name="fill">True</property>
+                                                <property name="pack-type">end</property>
+                                                <property name="position">2</property>
+                                              </packing>
+                                            </child>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">True</property>
+                                            <property name="position">0</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <placeholder/>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child type="label">
+                                      <object class="GtkLabel" id="pref_rec_frame_label">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes">Recordings</property>
+                                        <attributes>
+                                          <attribute name="weight" value="bold"/>
+                                        </attributes>
+                                      </object>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">1</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -1047,13 +1127,16 @@ Dmitriy Yefremov 2022
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes">Network</property>
+                                        <attributes>
+                                          <attribute name="weight" value="bold"/>
+                                        </attributes>
                                       </object>
                                     </child>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">True</property>
-                                    <property name="position">3</property>
+                                    <property name="position">2</property>
                                   </packing>
                                 </child>
                               </object>

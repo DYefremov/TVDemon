@@ -30,6 +30,7 @@ class Defaults(dict):
         super().__init__(**kwargs)
         self["playback-library"] = "MPV"
         self["mpv-options"] = "hwdec=auto-safe"
+        self["recordings-path"] = str(Path.home())
         self["user-agent"] = "Mozilla/5.0"
         self["http-referer"] = ""
         self["active-provider"] = "Free-TV"

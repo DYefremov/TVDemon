@@ -26,6 +26,7 @@ import os
 import shutil
 import sys
 import traceback
+from datetime import datetime
 from enum import Enum
 from functools import partial
 from pathlib import Path
@@ -224,7 +225,7 @@ class Application(Gtk.Application):
                         "colour_properties_label", "audio_properties_box", "audio_properties_label",
                         "layout_properties_box", "layout_properties_label", "info_bar", "info_message_label",
                         "fav_button", "fav_box", "fav_list_box", "fav_gr_flowbox", "add_fav_button", "fav_menu",
-                        "fav_gr_menu", "fav_count_label", "fav_gr_add_button", "fav_paned")
+                        "fav_gr_menu", "fav_count_label", "fav_gr_add_button", "fav_paned", "rec_path_button")
 
         for name in widget_names:
             widget = self.builder.get_object(name)
@@ -290,6 +291,8 @@ class Application(Gtk.Application):
         self.bind_setting_widget("user-agent", self.useragent_entry)
         self.bind_setting_widget("http-referer", self.referer_entry)
         self.bind_setting_widget("mpv-options", self.mpv_entry)
+        self.rec_path_button.set_file(Gio.File.new_for_path(self.settings.get_value("recordings-path")))
+        self.rec_path_button.connect("file-set", self.on_rec_path_set)
         # Menubar
         accel_group = Gtk.AccelGroup()
         self.window.add_accel_group(accel_group)
@@ -405,6 +408,12 @@ class Application(Gtk.Application):
         self.fullscreen_button.set_tooltip_text(_("Fullscreen"))
         self.fullscreen_button.connect("clicked", self.on_fullscreen_button_clicked)
         self.media_bar.pack_end(self.fullscreen_button, True, True, 0)
+
+        self.rec_button = Gtk.Button.new_from_icon_name("media-record-symbolic", Gtk.IconSize.SMALL_TOOLBAR)
+        self.rec_button_image = self.rec_button.get_image()
+        self.rec_button.set_margin_end(12)
+        self.media_bar.pack_end(self.rec_button, True, True, 0)
+        self.rec_button.connect("clicked", self.on_rec_start)
 
         self.media_bar.show_all()
         self.bind_property("is_mouse_cursor_hidden", self.media_bar, "visible", 4)
@@ -818,6 +827,10 @@ class Application(Gtk.Application):
     @async_function
     def play_async(self, channel):
         if not self.player:
+            return
+
+        if self.player.is_record():
+            self.show_info_message(_("Stream recording in progress!"), Gtk.MessageType.WARNING)
             return
 
         self.player.stop()
@@ -1325,6 +1338,47 @@ class Application(Gtk.Application):
         list(map(lambda r: list_box.insert(r, dst), reversed(rows)))
         self.current_fav_group.channels = [r.channel for r in list_box]
 
+    # ******* Recordings ****** #
+
+    def on_rec_start(self, button=None):
+        if self.player.is_record():
+            self.on_rec_stop()
+        else:
+            if self.active_channel:
+                rec_path = self.get_rec_path()
+                if Path(rec_path).parent.exists():
+                    self.player.record(rec_path)
+                    GLib.timeout_add_seconds(1, self.update_rec_status, priority=GLib.PRIORITY_LOW)
+                else:
+                    self.show_info_message(_("The recordings path is not specified or missing!"), Gtk.MessageType.ERROR)
+            else:
+                self.show_info_message(_("No active stream!"), Gtk.MessageType.ERROR)
+
+    def get_rec_path(self):
+        cur_time = datetime.now().strftime("%a_%x_%H_%M")
+        ch_name = self.active_channel.name.replace(' ', '_')
+        fmt = "ts"
+        return os.path.join(self.settings.get_value("recordings-path"), f"{cur_time}_{ch_name}.{fmt}")
+
+    def on_rec_stop(self, button=None):
+        dialog = self.get_question_dialog()
+
+        if dialog.run() == Gtk.ResponseType.OK:
+            self.player.record_stop()
+
+        dialog.destroy()
+
+    def update_rec_status(self):
+        is_rec = self.player.is_record()
+        if not is_rec:
+            self.rec_button_image.set_opacity(1.0)
+        else:
+            self.rec_button_image.set_opacity(0 if self.rec_button_image.get_opacity() else 1.0)
+        return is_rec
+
+    def on_rec_path_set(self, button):
+        self.settings.set_value("recordings-path", button.get_file().get_path())
+
     # ************************** #
 
     def open_info(self, widget):
@@ -1599,6 +1653,7 @@ class Application(Gtk.Application):
     def on_error(self, ap, msg=""):
         self.show_info_message(msg, Gtk.MessageType.ERROR)
 
+    @idle_function
     def show_info_message(self, msg, message_type=Gtk.MessageType.INFO):
         self.info_bar.set_visible(True)
         self.info_bar.set_message_type(message_type)
