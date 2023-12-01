@@ -1464,12 +1464,14 @@ class Application(Gtk.Application):
                 self.search_button.set_active(False)
             else:
                 self.search_button.set_active(True)
+        elif ctrl and key == Gdk.KEY_v and self.fav_button.get_sensitive():
+            self.fav_button.set_active(not self.fav_button.get_active())
         elif key == Gdk.KEY_F11 or (key == Gdk.KEY_f and not ctrl and type(
                 widget.get_focus()) != Gtk.SearchEntry) or (self.fullscreen and key == Gdk.KEY_Escape):
             self.toggle_fullscreen()
-        elif event.keyval == Gdk.KEY_Left:
+        elif key == Gdk.KEY_Left:
             self.on_previous_channel()
-        elif event.keyval == Gdk.KEY_Right:
+        elif key == Gdk.KEY_Right:
             self.on_next_channel()
 
     @async_function

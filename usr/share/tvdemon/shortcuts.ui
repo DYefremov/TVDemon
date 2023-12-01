@@ -64,6 +64,13 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">1</property>
+                <property name="accelerator">&lt;Control&gt;V</property>
+                <property name="title" translatable="yes">Show/hide favorites</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
                 <property name="accelerator">&lt;CONTROL&gt;Up &lt;CONTROL&gt;Down</property>
                 <property name="title" translatable="yes">Move channels in the favorites list</property>
               </object>
