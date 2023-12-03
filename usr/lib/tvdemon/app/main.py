@@ -1243,6 +1243,7 @@ class Application(Gtk.Application):
         if dialog.run() == Gtk.ResponseType.OK:
             if len(self.fav_gr_flowbox) > 1:
                 list(map(self.fav_gr_flowbox.remove, self.fav_gr_flowbox.get_selected_children()))
+                self.fav_gr_flowbox.select_child(self.fav_gr_flowbox.get_child_at_index(0))
             else:
                 self.show_info_message(_("The element can't be deleted!"), Gtk.MessageType.ERROR)
         dialog.destroy()
