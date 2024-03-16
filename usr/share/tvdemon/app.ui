@@ -26,10 +26,10 @@ Author: Dmitriy Yefremov 2024
   <requires lib="libadwaita" version="1.5"/>
   <template class="AppWindow" parent="AdwApplicationWindow">
     <property name="default-width">560</property>
-    <property name="default-height">320</property>
+    <property name="default-height">480</property>
     <property name="icon-name">tv-symbolic</property>
     <property name="content">
-      <object class="AdwNavigationView" id="view">
+      <object class="AdwNavigationView" id="navigation_view">
         <!-- Start page -->
         <child>
           <object class="AdwNavigationPage">
@@ -37,10 +37,19 @@ Author: Dmitriy Yefremov 2024
             <property name="child">
               <object class="AdwToolbarView">
                 <child type="top">
-                  <object class="AdwHeaderBar"/>
+                  <object class="AdwHeaderBar">
+                    <child type="start">
+                      <object class="GtkButton" id="start_search_button">
+                        <property name="icon-name">document-search-symbolic</property>
+                        <property name="tooltip-text" translatable="yes">Search</property>
+                        <property name="action-name">navigation.push</property>
+                        <property name="action-target">'preferences-page'</property>
+                      </object>
+                    </child>
+                  </object>
                 </child>
                 <property name="content">
-                  <object class="GtkBox" id="landing_box">
+                  <object class="GtkBox" id="start_box">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="halign">center</property>
@@ -170,13 +179,93 @@ Author: Dmitriy Yefremov 2024
                       </object>
                     </child>
                   </object>
-
                 </property>
               </object>
             </property>
           </object>
         </child>
         <!-- TV page -->
+        <child>
+          <object class="AdwNavigationPage">
+            <property name="title" translatable="yes">TV</property>
+            <property name="tag">tv-page</property>
+            <property name="child">
+              <object class="AdwToolbarView">
+                <child type="top">
+                  <object class="AdwHeaderBar"/>
+                </child>
+                <property name="content">
+                  <object class="GtkBox" id="tv_box">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="orientation">vertical</property>
+                    <property name="margin-start">50</property>
+                    <property name="margin-end">50</property>
+                    <property name="margin-top">50</property>
+                    <property name="margin-bottom">50</property>
+                  </object>
+                </property>
+              </object>
+            </property>
+          </object>
+        </child>
+        <!-- Movies page -->
+        <child>
+          <object class="AdwNavigationPage">
+            <property name="title" translatable="yes">Movies</property>
+            <property name="tag">movies-page</property>
+            <property name="child">
+              <object class="AdwToolbarView">
+                <child type="top">
+                  <object class="AdwHeaderBar"/>
+                </child>
+                <property name="content">
+                  <object class="GtkBox" id="movies_box">
+                    <property name="visible">True</property>
+                  </object>
+                </property>
+              </object>
+            </property>
+          </object>
+        </child>
+        <!-- Series page -->
+        <child>
+          <object class="AdwNavigationPage">
+            <property name="title" translatable="yes">Series</property>
+            <property name="tag">series-page</property>
+            <property name="child">
+              <object class="AdwToolbarView">
+                <child type="top">
+                  <object class="AdwHeaderBar"/>
+                </child>
+                <property name="content">
+                  <object class="GtkBox" id="series_box">
+                    <property name="visible">True</property>
+                  </object>
+                </property>
+              </object>
+            </property>
+          </object>
+        </child>
+        <!-- Preferences page -->
+        <child>
+          <object class="AdwNavigationPage">
+            <property name="title" translatable="yes">Preferences</property>
+            <property name="tag">preferences-page</property>
+            <property name="child">
+              <object class="AdwToolbarView">
+                <child type="top">
+                  <object class="AdwHeaderBar"/>
+                </child>
+                <property name="content">
+                  <object class="PreferencesPage"/>
+                </property>
+              </object>
+            </property>
+          </object>
+        </child>
       </object>
     </property>
   </template>

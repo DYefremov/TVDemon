@@ -40,96 +40,21 @@ PROVIDER_TYPE_XTREAM = "xtream"
 UPDATE_BR_INTERVAL = 5
 
 
-class ChannelWidget(Gtk.ListBoxRow):
-    """ A custom widget for displaying and holding channel data. """
+@Gtk.Template(filename=f'{UI_PATH}preferences.ui')
+class PreferencesPage(Adw.PreferencesPage):
+    __gtype_name__ = "PreferencesPage"
 
-    TARGET = "GTK_LIST_BOX_ROW"
+    media_lib = Gtk.Template.Child("media_lib_prop")
 
-    def __init__(self, channel, logo, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._channel = channel
-        self.set_tooltip_text(channel.name)
-        self.label = Gtk.Label(channel.name, max_width_chars=30, ellipsize=Pango.EllipsizeMode.END)
-        self.box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        self.box.pack_start(logo, False, False, 6)
-        self.box.pack_start(self.label, False, False, 6)
-        frame = Gtk.Frame()
-        frame.add(self.box)
-        self.add(frame)
-
-        self.show_all()
-
-    @property
-    def channel(self):
-        return self._channel
-
-    @channel.setter
-    def channel(self, value):
-        self._channel = value
-
-
-class GroupWidget(Gtk.FlowBoxChild):
-    """ A custom widget for displaying and holding group data. """
-
-    def __init__(self, data, name, logo, orientation=Gtk.Orientation.HORIZONTAL, **kwargs):
-        super().__init__(**kwargs)
-        self._data = data
-
-        self.name = name
-        self.logo = logo
-
-        self.box = Gtk.Box(border_width=6, orientation=orientation)
-        self.box.pack_start(logo, False, False, 0) if logo else None
-        self.label = Gtk.Label(name, max_width_chars=30, ellipsize=Pango.EllipsizeMode.END)
-        self.box.pack_start(self.label, False, False, 0)
-        self.box.set_spacing(6)
-        frame = Gtk.Frame()
-        frame.add(self.box)
-        self.add(frame)
-
-        self.tooltip_logo = None
-        self.set_has_tooltip(logo)
-        self.connect("query-tooltip", self.on_query_tooltip)
-
-        self.show_all()
-
-    @property
-    def data(self):
-        return self._data
-
-    def on_query_tooltip(self, widget, x, y, keyboard_mode, tooltip):
-        if not widget.tooltip_logo:
-            path = widget.data.logo_path
-            try:
-                self.tooltip_logo = GdkPixbuf.Pixbuf.new_from_file_at_scale(path, -1, 96, 1) if path else None
-            except GLib.Error:
-                pass  # NOP
-
-        tooltip.set_icon(self.tooltip_logo)
-        tooltip.set_text(widget.name)
-        return True
-
-
-class FavGroupWidget(GroupWidget):
-    def __init__(self, data, name, logo, **kwargs):
-        super().__init__(data, name, logo, **kwargs)
-
-        self.entry = Gtk.Entry(text=name, has_frame=False)
-        self.box.pack_start(self.entry, False, False, 0)
-        self.entry.bind_property("visible", self.label, "visible", 4)
-        self.entry.connect("activate", self.on_activate)
-
-    def on_activate(self, entry):
-        text = entry.get_text()
-        self.label.set_text(text)
-        self.data.name = text
-        entry.set_visible(False)
 
 
 @Gtk.Template(filename=f'{UI_PATH}app.ui')
 class AppWindow(Adw.ApplicationWindow):
     __gtype_name__ = 'AppWindow'
 
+    navigation_view = Gtk.Template.Child("navigation_view")
     # Start page.
     tv_logo = Gtk.Template.Child("tv_logo")
     movies_logo = Gtk.Template.Child("movies_logo")
@@ -153,6 +78,8 @@ class Application(Adw.Application):
 
         self.app_window = None
         self.connect("activate", self.on_activate)
+
+        self.init_actions()
 
     def on_activate(self, app):
         if not self.app_window:
@@ -179,6 +106,28 @@ class Application(Adw.Application):
         """  Performs shutdown tasks. """
         log("Exiting...")
         Gtk.Application.do_shutdown(self)
+
+    def init_actions(self):
+        self.set_action("preferences", self.on_preferences)
+        self.set_action("about", self.on_about_app)
+        self.set_action("quit", self.on_close_app)
+
+    def set_action(self, name, fun, enabled=True):
+        ac = Gio.SimpleAction.new(name, None)
+        ac.connect("activate", fun)
+        ac.set_enabled(enabled)
+        self.add_action(ac)
+
+        return ac
+
+    def on_preferences(self, action, value):
+        self.app_window.navigation_view.push_by_tag("preferences-page")
+
+    def on_about_app(self, action, value):
+        pass
+
+    def on_close_app(self, action, value):
+        self.quit()
 
 
 def run_app():
