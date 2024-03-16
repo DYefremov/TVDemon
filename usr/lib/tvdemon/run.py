@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# Copyright (C) 2023 Dmitriy Yefremov <https://github.com/DYefremov>
+# Copyright (C) 2023-2024 Dmitriy Yefremov <https://github.com/DYefremov>
 #
 #
 # This file is part of TVDemon.
@@ -20,6 +20,6 @@
 #
 
 if __name__ == "__main__":
-    from app.main import run
+    from app.main import run_app
 
-    run()
+    run_app()

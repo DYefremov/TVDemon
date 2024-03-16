@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2022-2023 Dmitriy Yefremov <https://github.com/DYefremov>
+# Copyright (C) 2022-2024 Dmitriy Yefremov <https://github.com/DYefremov>
 #               2020-2022 Linux Mint <root@linuxmint.com>
 #
 #
@@ -20,50 +20,67 @@
 # along with TVDemon  If not, see <http://www.gnu.org/licenses/>.
 #
 
-__all__ = ("_", "Gtk", "Gdk", "Gio", "GdkPixbuf", "GLib", "Pango", "GObject",
+__all__ = ("APP_ID", "log", "Gtk", "Gdk", "Adw", "Gio", "GdkPixbuf", "GLib", "Pango", "GObject", "translate",
            "APP", "UI_PATH", "Manager", "Provider", "Group", "async_function", "idle_function",
            "BADGES", "MOVIES_GROUP", "PROVIDERS_PATH", "SERIES_GROUP", "TV_GROUP")
 
 import gettext
 import locale
+import logging
 import os
 import re
 import sys
 import threading
-import warnings
 from pathlib import Path
 
 import gi
 import requests
-import setproctitle
 
-gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, Gdk, GdkPixbuf, Gio, GLib, GObject, Pango
+gi.require_version("Gtk", "4.0")
+gi.require_version('Adw', '1')
+from gi.repository import Gtk, Gdk, Adw, GdkPixbuf, Gio, GLib, GObject, Pango
 
-# Force X11 on a Wayland session
-if "WAYLAND_DISPLAY" in os.environ:
-    os.environ["WAYLAND_DISPLAY"] = ""
+_LOG_FILE = "TVDemon.log"
+LOG_DATE_FORMAT = "%d-%m-%y %H:%M:%S"
+LOGGER_NAME = "main_logger"
+LOG_FORMAT = "%(asctime)s %(message)s"
 
-# Suppress GTK deprecation warnings
-warnings.filterwarnings("ignore")
 
-APP = "tvdemon"
-setproctitle.setproctitle(APP)
+def init_logger():
+    logging.Logger(LOGGER_NAME)
+    logging.basicConfig(level=logging.INFO,
+                        format=LOG_FORMAT,
+                        datefmt=LOG_DATE_FORMAT,
+                        handlers=[logging.FileHandler(_LOG_FILE), logging.StreamHandler()])
+    log("Logging is enabled.", level=logging.INFO)
+
+
+def log(message, level=logging.ERROR, debug=False, fmt_message="{}"):
+    """ The main logging function. """
+    logger = logging.getLogger(LOGGER_NAME)
+    if debug:
+        from traceback import format_exc
+        logger.log(level, fmt_message.format(format_exc()))
+    else:
+        logger.log(level, message)
+
 
 IS_FROZEN = getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS")
+
+APP = "tvdemon"
+APP_NAME = "TVDemon"
+APP_ID = f"by.{APP}dff.{APP_NAME}"
+GLib.set_application_name(APP_NAME)
 
 PREFIX = "" if IS_FROZEN else f"{os.sep}usr{os.sep}"
 BASE_PATH = f"{PREFIX}share{os.sep}"
 UI_PATH = f"{BASE_PATH}tvdemon{os.sep}"
 LOCALE_DIR = f"{BASE_PATH}locale"
-PROVIDERS_PATH = os.path.join(os.path.normpath(GLib.get_user_cache_dir()), "tvdemon", "providers")
+PROVIDERS_PATH = os.path.join(os.path.normpath(GLib.get_user_cache_dir()), APP, "providers")
 
 if not os.path.exists(UI_PATH):
     UI_PATH = f".{UI_PATH}"
     LOCALE_DIR = f".{LOCALE_DIR}"
-    # Icons.
-    theme = Gtk.IconTheme.get_default()
-    theme.append_search_path(f".{BASE_PATH}icons")
 
 if sys.platform == "linux":
     locale.bindtextdomain(APP, LOCALE_DIR)
@@ -73,7 +90,7 @@ elif sys.platform == "win32":
 
 gettext.bindtextdomain(APP, LOCALE_DIR)
 gettext.textdomain(APP)
-_ = gettext.gettext
+translate = gettext.gettext
 
 # M3U parsing regex
 PARAMS = re.compile(r'(\S+)="(.*?)"')
@@ -228,7 +245,7 @@ class Manager:
 
     def debug(self, *args):
         if self.verbose:
-            print(args)
+            log(args)
 
     def get_playlist(self, provider, refresh=False) -> bool:
         """Get the playlist from the provided URL
@@ -274,19 +291,19 @@ class Manager:
                             # Grab data by block_bytes
                             for data in response.iter_content(block_bytes, decode_unicode=True):
                                 downloaded_bytes += block_bytes
-                                print(f"{downloaded_bytes} bytes")
+                                log(f"{downloaded_bytes} bytes")
                                 file.write(str(data))
                         if downloaded_bytes < total_content_size:
-                            print("The file size is incorrect, deleting")
+                            log("The file size is incorrect, deleting")
                             os.remove(provider.path)
                         else:
                             # Set the datatime when it was last retreived
                             # self.settings.set_
                             ret_code = True
                     else:
-                        print(f"HTTP error {response.status_code} while retrieving from {provider.url}!")
+                        log(f"HTTP error {response.status_code} while retrieving from {provider.url}!")
                 except Exception as e:
-                    print(e)
+                    log(e)
         else:
             # No protocol, assume it's local
             provider.path = provider.url

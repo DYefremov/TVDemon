@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 
-# Copyright (C) 2022-2023 Dmitriy Yefremov <https://github.com/DYefremov>
+# Copyright (C) 2022-2024 Dmitriy Yefremov <https://github.com/DYefremov>
 #
 #
 # This file is part of TVDemon.
@@ -28,7 +28,7 @@ from typing import Any
 class Defaults(dict):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self["playback-library"] = "MPV"
+        self["playback-library"] = "GStreamer"
         self["mpv-options"] = "hwdec=auto-safe"
         self["recordings-path"] = str(Path.home())
         self["user-agent"] = "Mozilla/5.0"
