@@ -217,7 +217,6 @@ Author: Dmitriy Yefremov 2024
                 </property>
               </object>
             </property>
-            f
           </object>
         </child>
         <!-- TV page -->
@@ -303,9 +302,17 @@ Author: Dmitriy Yefremov 2024
                   </object>
                 </child>
                 <property name="content">
-                  <object class="AdwPreferencesPage">
+                  <object class="GtkScrolledWindow">
+                    <property name="margin-start">50</property>
+                    <property name="margin-end">50</property>
+                    <property name="margin-top">50</property>
+                    <property name="margin-bottom">50</property>
                     <child>
-                      <object class="AdwPreferencesGroup" id="providers_group"/>
+                      <object class="GtkListBox" id="providers_list">
+                        <style>
+                          <class name="boxed-list"/>
+                        </style>
+                      </object>
                     </child>
                   </object>
                 </property>

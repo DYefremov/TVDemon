@@ -22,7 +22,7 @@
 
 __all__ = ("APP_ID", "log", "Gtk", "Gdk", "Adw", "Gio", "GdkPixbuf", "GLib", "Pango", "GObject", "translate",
            "APP", "UI_PATH", "Manager", "Provider", "Group", "async_function", "idle_function",
-           "BADGES", "MOVIES_GROUP", "PROVIDERS_PATH", "SERIES_GROUP", "TV_GROUP")
+           "BADGES", "MOVIES_GROUP", "PROVIDERS_PATH", "SERIES_GROUP", "TV_GROUP", "init_logger")
 
 import gettext
 import locale

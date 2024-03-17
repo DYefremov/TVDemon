@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2022-2024 Dmitriy Yefremov <https://github.com/DYefremov>
+#               2020-2022 Linux Mint <root@linuxmint.com>
 #
 #
 # This file is part of TVDemon.
@@ -20,9 +21,11 @@
 #
 
 
+import gettext
 import sys
 
 from .common import *
+from .settings import Settings
 
 
 @Gtk.Template(filename=f'{UI_PATH}preferences.ui')
@@ -59,20 +62,183 @@ class ShortcutsWindow(Gtk.ShortcutsWindow):
 class AppWindow(Adw.ApplicationWindow):
     __gtype_name__ = 'AppWindow'
 
-    navigation_view = Gtk.Template.Child("navigation_view")
+    navigation_view = Gtk.Template.Child()
     # Start page.
-    tv_logo = Gtk.Template.Child("tv_logo")
-    movies_logo = Gtk.Template.Child("movies_logo")
-    series_logo = Gtk.Template.Child("series_logo")
+    tv_logo = Gtk.Template.Child()
+    tv_label = Gtk.Template.Child()
+    movies_logo = Gtk.Template.Child()
+    movies_label = Gtk.Template.Child()
+    series_logo = Gtk.Template.Child()
+    series_label = Gtk.Template.Child()
+    # Providers page.
+    providers_list = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        # TODO add to preferences!
+        # Used for redownloading timer
+        self.reload_timeout_sec = 60 * 5
+        self._timer_id = -1
+
+        self.settings = Settings()
+        self.manager = Manager(self.settings)
+        self.providers = []
+        self.active_provider = None
+        self.active_group = None
+        self.active_serie = None
+        self.marked_provider = None
+        self.content_type = TV_GROUP  # content being browsed
+        self.back_page = None  # page to go back to if the back button is pressed
+        self.active_channel = None
+        self.fullscreen = False
+        self.latest_search_bar_text = None
+        self.visible_search_results = 0
+        self.player = None
+        self.xtream = None
+
         # Start page.
         self.tv_logo.set_from_file(f"{UI_PATH}pictures/tv.svg")
         self.movies_logo.set_from_file(f"{UI_PATH}pictures/movies.svg")
         self.series_logo.set_from_file(f"{UI_PATH}pictures/series.svg")
         # Shortcuts.
         self.set_help_overlay(ShortcutsWindow())
+
+        self.connect("realize", self.on_realized)
+
+    def on_realized(self, window: Adw.ApplicationWindow):
+        log("Starting...")
+        self.reload()
+        # Redownload playlists by default
+        # This is going to get readjusted
+        self._timer_id = GLib.timeout_add_seconds(self.reload_timeout_sec, self.force_reload)
+
+    @async_function
+    def reload(self, page=None, refresh=False):
+        self.status(translate("Loading providers..."))
+        self.providers = []
+        for provider_info in self.settings.get_strv("providers"):
+            try:
+                provider = Provider(name=None, provider_info=provider_info)
+                # Add provider to list. This must be done so that it shows up in the
+                # list of providers for editing.
+                self.providers.append(provider)
+
+                if provider.type_id != "xtream":
+                    # Download M3U
+                    if refresh:
+                        self.status(translate("Downloading playlist..."), provider)
+                    else:
+                        self.status(translate("Getting playlist..."), provider)
+                    ret = self.manager.get_playlist(provider, refresh=refresh)
+                    p_name = provider.name
+                    if ret:
+                        self.status(translate("Checking playlist..."), provider)
+                        if self.manager.check_playlist(provider):
+                            self.status(translate("Loading channels..."), provider)
+                            self.manager.load_channels(provider)
+                            if p_name == self.settings.get_string("active-provider"):
+                                self.active_provider = provider
+                            self.status(None)
+                            lc, lg, ls = len(provider.channels), len(provider.groups), len(provider.series)
+                            log(f"{p_name}: {lc} channels, {lg} groups, {ls} series, {len(provider.movies)} movies")
+                    else:
+                        self.status(translate(f"Failed to Download playlist from {p_name}"), provider)
+                else:
+                    # Load xtream class
+                    from xtream import XTream
+                    # Download via Xtream
+                    self.xtream = XTream(provider.name, provider.username, provider.password, provider.url,
+                                         hide_adult_content=False, cache_path=PROVIDERS_PATH)
+                    if self.xtream.auth_data != {}:
+                        log(f"XTREAM `{provider.name}` Loading Channels")
+                        # Save default cursor
+                        current_cursor = self.window.get_window().get_cursor()
+                        # Set waiting cursor
+                        self.window.get_window().set_cursor(Gdk.Cursor.new_from_name(Gdk.Display.get_default(), 'wait'))
+                        # Load data
+                        self.xtream.load_iptv()
+                        # Restore default cursor
+                        self.window.get_window().set_cursor(current_cursor)
+                        # Inform Provider of data
+                        provider.channels = self.xtream.channels
+                        provider.movies = self.xtream.movies
+                        provider.series = self.xtream.series
+                        provider.groups = self.xtream.groups
+                        # Change redownload timeout
+                        self.reload_timeout_sec = 60 * 60 * 2  # 2 hours
+                        if self._timer_id:
+                            GLib.source_remove(self._timer_id)
+                        self._timer_id = GLib.timeout_add_seconds(self.reload_timeout_sec, self.force_reload)
+                        # If no errors, approve provider
+                        if provider.name == self.settings.get_string("active-provider"):
+                            self.active_provider = provider
+                        self.status(None)
+                    else:
+                        log("XTREAM Authentication Failed")
+
+            except Exception as e:
+                log(e)
+                log("Couldn't parse provider info: ", provider_info)
+
+        # If there are more than 1 providers and no Active Provider, set to the first one
+        if len(self.providers) > 0 and self.active_provider is None:
+            self.active_provider = self.providers[0]
+
+        self.refresh_providers_page()
+
+        if page:
+            self.navigate_to(page)
+        self.status(None)
+        self.latest_search_bar_text = None
+
+    def force_reload(self):
+        self.reload(page=None, refresh=True)
+        return False
+
+    @idle_function
+    def status(self, string, provider=None):
+        if string is None:
+            # self.status_label.set_text("")
+            # self.status_label.hide()
+            return
+        # self.status_label.show()
+        if provider:
+            status = f"{provider.name}: {string}"
+            # self.status_label.set_text(status)
+            log(status)
+        else:
+            # self.status_label.set_text(string)
+            log(string)
+
+    @idle_function
+    def refresh_providers_page(self):
+        [self.providers_list.remove(c) for c in [r for r in self.providers_list]]
+
+        for provider in self.providers:
+            p_row = Adw.ActionRow()
+            p_row.set_use_markup(True)
+            p_row.set_title(f"<b>{provider.name}</b>")
+            p_row.set_icon_name("tv-symbolic")
+            labels = []
+            num = len(provider.channels)
+            if num > 0:
+                labels.append(gettext.ngettext("%d TV channel", "%d TV channels", num) % num)
+
+            num = len(provider.movies)
+            if num > 0:
+                labels.append(gettext.ngettext("%d movie", "%d movies", num) % num)
+            num = len(provider.series)
+            if num > 0:
+                labels.append(gettext.ngettext("%d series", "%d series", num) % num)
+
+            if provider == self.active_provider:
+                labels.append("%s %d (active)" % (provider.name, len(provider.channels)))
+            else:
+                labels.append(provider.name)
+
+            p_row.set_subtitle(f"<i>{' '.join(labels)}</i>")
+
+            self.providers_list.append(p_row)
 
 
 class Application(Adw.Application):
@@ -83,16 +249,14 @@ class Application(Adw.Application):
         self.add_main_option("log", ord("l"), GLib.OptionFlags.NONE, GLib.OptionArg.NONE, "", None)
         self.add_main_option("debug", ord("d"), GLib.OptionFlags.NONE, GLib.OptionArg.STRING, "", None)
 
-        self.app_window = None
-        self.connect("activate", self.on_activate)
-
+        self.window = None
         self.init_actions()
 
-    def on_activate(self, app: Adw.Application):
-        if not self.app_window:
-            self.app_window = AppWindow(application=app)
+    def do_activate(self):
+        if not self.window:
+            self.window = AppWindow(application=self)
 
-        self.app_window.present()
+        self.window.present()
 
     def do_command_line(self, command_line):
         """ Processing command line parameters. """
@@ -100,7 +264,6 @@ class Application(Adw.Application):
         options = options.end().unpack()
 
         if "log" in options:
-            from .common import init_logger
             init_logger()
 
         if "debug" in options:
@@ -128,7 +291,7 @@ class Application(Adw.Application):
         return ac
 
     def on_preferences(self, action, value):
-        self.app_window.navigation_view.push_by_tag("preferences-page")
+        self.window.navigation_view.push_by_tag("preferences-page")
 
     def on_about_app(self, action, value):
         pass
