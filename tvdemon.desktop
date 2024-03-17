@@ -9,5 +9,6 @@ Icon=tvdemon
 Exec=bash -c 'cd $(dirname %k) && ./tvdemon'
 Terminal=false
 Type=Application
-Categories=Utility;Application;
+Categories=AudioVideo;Video;Player;TV;
+Keywords=Television;Stream;
 StartupNotify=false
