@@ -25,8 +25,12 @@ Author: Dmitriy Yefremov 2024
   <requires lib="gtk" version="4.12"/>
   <requires lib="libadwaita" version="1.5"/>
   <template class="PreferencesPage" parent="AdwPreferencesPage">
+    <property name="width-request">560</property>
+    <property name="height-request">420</property>
+    <!--  Playback -->
     <child>
       <object class="AdwPreferencesGroup">
+        <property name="title">Playback</property>
         <child>
           <object class="AdwComboRow" id="media_lib_prop">
             <property name="title">Media library</property>
@@ -38,7 +42,43 @@ Author: Dmitriy Yefremov 2024
                 </items>
               </object>
             </property>
-            </object>
+          </object>
+        </child>
+      </object>
+    </child>
+    <!--  Recordings -->
+    <child>
+      <object class="AdwPreferencesGroup">
+        <property name="title">Recordings</property>
+        <child>
+          <object class="AdwActionRow" id="recordings_path_row">
+            <property name="title">Recordings path</property>
+            <property name="subtitle">Not specified</property>
+            <property name="subtitle_selectable">True</property>
+            <property name="activatable">True</property>
+            <property name="tooltip-text" translatable="yes">Open</property>
+            <signal name="activated" handler="on_recordings_path_activated"/>
+            <child>
+              <object class="GtkImage">
+                <property name="icon-name">document-open-symbolic</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="AdwPreferencesGroup">
+        <property name="title">Network</property>
+        <child>
+          <object class="AdwEntryRow" id="useragent_entry">
+            <property name="title">User Agent</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwEntryRow" id="referer_entry">
+            <property name="title">Referer</property>
+          </object>
         </child>
       </object>
     </child>

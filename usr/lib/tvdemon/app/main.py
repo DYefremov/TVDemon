@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2022-2024 Dmitriy Yefremov <https://github.com/DYefremov>
-#               2020-2022 Linux Mint <root@linuxmint.com>
 #
 #
 # This file is part of TVDemon.
@@ -25,29 +24,30 @@ import sys
 
 from .common import *
 
-PROVIDER_OBJ, PROVIDER_NAME = range(2)
-PROVIDER_TYPE_ID, PROVIDER_TYPE_NAME = range(2)
-
-GROUP_OBJ, GROUP_NAME = range(2)
-CHANNEL_OBJ, CHANNEL_NAME, CHANNEL_LOGO = range(3)
-
-COL_PROVIDER_NAME, COL_PROVIDER = range(2)
-
-PROVIDER_TYPE_URL = "url"
-PROVIDER_TYPE_LOCAL = "local"
-PROVIDER_TYPE_XTREAM = "xtream"
-
-UPDATE_BR_INTERVAL = 5
-
 
 @Gtk.Template(filename=f'{UI_PATH}preferences.ui')
 class PreferencesPage(Adw.PreferencesPage):
     __gtype_name__ = "PreferencesPage"
 
     media_lib = Gtk.Template.Child("media_lib_prop")
+    recordings_path_row = Gtk.Template.Child()
+    useragent_entry = Gtk.Template.Child()
+    referer_entry = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+    @Gtk.Template.Callback("on_recordings_path_activated")
+    def on_recordings_path_select(self, row: Adw.ActionRow):
+        Gtk.FileDialog().select_folder(callback=self.on_recordings_path_selected)
+
+    def on_recordings_path_selected(self, dialog: Gtk.FileDialog, task: Gio.Task):
+        try:
+            file = dialog.select_folder_finish(task)
+        except GLib.GError:
+            pass  # NOP
+        else:
+            self.recordings_path_row.set_subtitle(file.get_path())
 
 
 @Gtk.Template(filename=f'{UI_PATH}shortcuts.ui')
@@ -88,7 +88,7 @@ class Application(Adw.Application):
 
         self.init_actions()
 
-    def on_activate(self, app):
+    def on_activate(self, app: Adw.Application):
         if not self.app_window:
             self.app_window = AppWindow(application=app)
 
