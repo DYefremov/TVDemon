@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <!-- interface-requires gtk+ 3.17 -->
-  <object class="GtkShortcutsWindow" id="shortcuts">
+  <template class="ShortcutsWindow" parent="GtkShortcutsWindow">
     <property name="modal">1</property>
     <child>
       <object class="GtkShortcutsSection">
@@ -12,20 +11,6 @@
           <object class="GtkShortcutsGroup">
             <property name="visible">1</property>
             <property name="title" translatable="yes">Main shortcuts</property>
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="visible">1</property>
-                <property name="accelerator">F1</property>
-                <property name="title" translatable="yes">About</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="visible">1</property>
-                <property name="accelerator">F2</property>
-                <property name="title" translatable="yes">Stream Information</property>
-              </object>
-            </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">1</property>
@@ -43,42 +28,49 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">1</property>
-                <property name="accelerator">&lt;Control&gt;F</property>
+                <property name="accelerator">&lt;Primary&gt;F</property>
                 <property name="title" translatable="yes">Search</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">1</property>
-                <property name="accelerator">&lt;Control&gt;K</property>
+                <property name="accelerator">&lt;Primary&gt;I</property>
+                <property name="title" translatable="yes">Stream Information</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
+                <property name="accelerator">&lt;Primary&gt;K</property>
                 <property name="title" translatable="yes">Keyboard Shortcuts</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">1</property>
-                <property name="accelerator">&lt;Control&gt;R</property>
+                <property name="accelerator">&lt;Primary&gt;R</property>
                 <property name="title" translatable="yes">Reload all providers</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">1</property>
-                <property name="accelerator">&lt;Control&gt;V</property>
+                <property name="accelerator">&lt;Primary&gt;V</property>
                 <property name="title" translatable="yes">Show/hide favorites</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">1</property>
-                <property name="accelerator">&lt;CONTROL&gt;Up &lt;CONTROL&gt;Down</property>
+                <property name="accelerator">&lt;Primary&gt;Up &lt;Primary&gt;Down</property>
                 <property name="title" translatable="yes">Move channels in the favorites list</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">1</property>
-                <property name="accelerator">&lt;CONTROL&gt;Q &lt;CONTROL&gt;W</property>
+                <property name="accelerator">&lt;Primary&gt;Q</property>
                 <property name="title" translatable="yes">Quit</property>
               </object>
             </child>
@@ -86,5 +78,5 @@
         </child>
       </object>
     </child>
-  </object>
+  </template>
 </interface>

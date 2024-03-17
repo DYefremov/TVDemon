@@ -40,10 +40,24 @@ Author: Dmitriy Yefremov 2024
                   <object class="AdwHeaderBar">
                     <child type="start">
                       <object class="GtkButton" id="start_search_button">
-                        <property name="icon-name">document-search-symbolic</property>
-                        <property name="tooltip-text" translatable="yes">Search</property>
+                        <property name="icon-name">edit-find-symbolic</property>
                         <property name="action-name">navigation.push</property>
-                        <property name="action-target">'preferences-page'</property>
+                        <property name="action-target">'search-status-page'</property>
+                      </object>
+                    </child>
+                    <child type="end">
+                      <object class="GtkMenuButton" id="start_preferences_button">
+                        <property name="icon-name">edit-find-symbolic</property>
+                        <property name="menu-model">app_menu</property>
+                        <property name="icon-name">open-menu-symbolic</property>
+                      </object>
+                    </child>
+                    <child type="end">
+                      <object class="GtkButton" id="start_menu_button">
+                        <property name="icon-name">tv-symbolic</property>
+                        <property name="tooltip-text" translatable="yes">Providers</property>
+                        <property name="action-name">navigation.push</property>
+                        <property name="action-target">'providers-page'</property>
                       </object>
                     </child>
                   </object>
@@ -184,6 +198,28 @@ Author: Dmitriy Yefremov 2024
             </property>
           </object>
         </child>
+        <!-- Satus page -->
+        <child>
+          <object class="AdwNavigationPage">
+            <property name="title" translatable="yes">Search</property>
+            <property name="tag">search-status-page</property>
+            <property name="child">
+              <object class="AdwToolbarView">
+                <child type="top">
+                  <object class="AdwHeaderBar"/>
+                </child>
+                <property name="content">
+                  <object class="AdwStatusPage" id="search_status_page">
+                    <property name="title" translatable="yes">No Results Found</property>
+                    <property name="description" translatable="yes">Try a different search</property>
+                    <property name="icon-name">edit-find-symbolic</property>
+                  </object>
+                </property>
+              </object>
+            </property>
+            f
+          </object>
+        </child>
         <!-- TV page -->
         <child>
           <object class="AdwNavigationPage">
@@ -249,6 +285,34 @@ Author: Dmitriy Yefremov 2024
             </property>
           </object>
         </child>
+        <!-- Providers page -->
+        <child>
+          <object class="AdwNavigationPage">
+            <property name="title" translatable="yes">Providers</property>
+            <property name="tag">providers-page</property>
+            <property name="child">
+              <object class="AdwToolbarView">
+                <child type="top">
+                  <object class="AdwHeaderBar">
+                    <child type="start">
+                      <object class="GtkButton" id="add_provider_button">
+                        <property name="icon-name">list-add-symbolic</property>
+                        <property name="action-name">app.add_provider</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <property name="content">
+                  <object class="AdwPreferencesPage">
+                    <child>
+                      <object class="AdwPreferencesGroup" id="providers_group"/>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </property>
+          </object>
+        </child>
         <!-- Preferences page -->
         <child>
           <object class="AdwNavigationPage">
@@ -269,4 +333,28 @@ Author: Dmitriy Yefremov 2024
       </object>
     </property>
   </template>
+  <!-- Main App menu -->
+  <menu id="app_menu">
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">_Preferences</attribute>
+        <attribute name="action">app.preferences</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Quit</attribute>
+        <attribute name="action">app.quit</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">_Shortcuts</attribute>
+        <attribute name="action">win.show-help-overlay</attribute>
+        <attribute name="accel">&lt;Primary&gt;K</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_About</attribute>
+        <attribute name="action">app.about</attribute>
+      </item>
+    </section>
+  </menu>
 </interface>

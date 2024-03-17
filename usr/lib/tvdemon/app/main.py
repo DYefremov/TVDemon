@@ -50,6 +50,11 @@ class PreferencesPage(Adw.PreferencesPage):
         super().__init__(**kwargs)
 
 
+@Gtk.Template(filename=f'{UI_PATH}shortcuts.ui')
+class ShortcutsWindow(Gtk.ShortcutsWindow):
+    __gtype_name__ = "ShortcutsWindow"
+
+
 @Gtk.Template(filename=f'{UI_PATH}app.ui')
 class AppWindow(Adw.ApplicationWindow):
     __gtype_name__ = 'AppWindow'
@@ -66,6 +71,8 @@ class AppWindow(Adw.ApplicationWindow):
         self.tv_logo.set_from_file(f"{UI_PATH}pictures/tv.svg")
         self.movies_logo.set_from_file(f"{UI_PATH}pictures/movies.svg")
         self.series_logo.set_from_file(f"{UI_PATH}pictures/series.svg")
+        # Shortcuts.
+        self.set_help_overlay(ShortcutsWindow())
 
 
 class Application(Adw.Application):
