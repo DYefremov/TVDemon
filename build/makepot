@@ -1,5 +1,0 @@
-#!/bin/bash
-intltool-extract --type=gettext/glade ../usr/share/tvdemon/app.ui
-intltool-extract --type=gettext/glade ../usr/share/tvdemon/shortcuts.ui
-xgettext --language=Python --keyword=_ --keyword=N_ --output=tvdemon.pot ../usr/lib/tvdemon/*.py generate_desktop_files ../usr/share/tvdemon/app.ui.h ../usr/share/tvdemon/shortcuts.ui.h
-rm -f ../usr/share/tvdemon/*.ui.h
