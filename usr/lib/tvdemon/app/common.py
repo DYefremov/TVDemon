@@ -21,7 +21,7 @@
 #
 
 __all__ = ("APP_ID", "log", "Gtk", "Gdk", "Adw", "Gio", "GdkPixbuf", "GLib", "Pango", "GObject", "translate",
-           "APP", "UI_PATH", "Manager", "Provider", "Group", "async_function", "idle_function",
+           "APP", "UI_PATH", "Manager", "Provider", "Group", "Channel", "async_function", "idle_function", "get_pixbuf_from_file",
            "BADGES", "MOVIES_GROUP", "PROVIDERS_PATH", "SERIES_GROUP", "TV_GROUP", "init_logger")
 
 import gettext
@@ -129,6 +129,14 @@ def slugify(string):
         and converts spaces to hyphens.
     """
     return "".join(x.lower() for x in string if x.isalnum())
+
+
+def get_pixbuf_from_file(path, size=32) -> GdkPixbuf.Pixbuf:
+    """ Returns a Pixbuf object from a file at a given size. """
+    try:
+        return GdkPixbuf.Pixbuf.new_from_file_at_scale(path, -1, size, 1)
+    except GLib.Error:
+        pass # NOP
 
 
 class Provider:

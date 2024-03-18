@@ -23,8 +23,11 @@
 
 import gettext
 import os
+import shutil
 import sys
 from enum import StrEnum
+
+import requests
 
 from .common import *
 from .settings import Settings
@@ -34,12 +37,32 @@ class Page(StrEnum):
     """ Displayed page. """
     START = "start-page"
     CATEGORIES = "categories-page"
+    CHANNELS = "channels-page"
     SEARCH = "search-page"
     TV = "tv-page"
     MOVIES = "movies-page"
     SERIES = "series-page"
     PROVIDERS = "providers-page"
     PREFERENCES = "preferences-page"
+
+
+@Gtk.Template(filename=f'{UI_PATH}channel_widget.ui')
+class ChannelWidget(Gtk.ListBoxRow):
+    """ A custom widget for displaying and holding channel data. """
+    __gtype_name__ = "ChannelWidget"
+
+    TARGET = "GTK_LIST_BOX_ROW"
+
+    label = Gtk.Template.Child()
+    logo = Gtk.Template.Child()
+
+    def __init__(self, channel, logo_pixbuf=None, **kwargs):
+        super().__init__(**kwargs)
+        self.channel = channel
+
+        self.label.set_text(channel.name)
+        self.set_tooltip_text(channel.name)
+        self.logo.set_from_pixbuf(logo_pixbuf) if logo_pixbuf else None
 
 
 @Gtk.Template(filename=f'{UI_PATH}group_widget.ui')
@@ -51,16 +74,13 @@ class GroupWidget(Gtk.FlowBoxChild):
     label = Gtk.Template.Child()
     logo = Gtk.Template.Child()
 
-    def __init__(self, data, name, log_pixbuf=None, orientation=Gtk.Orientation.HORIZONTAL, **kwargs):
+    def __init__(self, data, name, logo_pixbuf=None, orientation=Gtk.Orientation.HORIZONTAL, **kwargs):
         super().__init__(**kwargs)
         self._data = data
         self.name = name
         self.label.set_text(name)
-
-        if log_pixbuf:
-            self.logo.set_from_pixbuf(log_pixbuf)
-        else:
-            self.logo.set_from_icon_name("tv-symbolic")
+        self.box.set_orientation(orientation)
+        self.logo.set_from_pixbuf(logo_pixbuf) if logo_pixbuf else None
 
     @property
     def data(self):
@@ -115,6 +135,8 @@ class AppWindow(Adw.ApplicationWindow):
     series_button = Gtk.Template.Child()
     # Categories page.
     categories_flowbox = Gtk.Template.Child()
+    # Channels page.
+    channels_list_box = Gtk.Template.Child()
     # Providers page.
     providers_list = Gtk.Template.Child()
 
@@ -145,6 +167,8 @@ class AppWindow(Adw.ApplicationWindow):
         self.tv_button.connect("clicked", self.show_groups, TV_GROUP)
         self.movies_button.connect("clicked", self.show_groups, MOVIES_GROUP)
         self.series_button.connect("clicked", self.show_groups, SERIES_GROUP)
+        # Categories.
+        self.categories_flowbox.connect("child-activated", self.on_group_activate)
         # Shortcuts.
         self.set_help_overlay(ShortcutsWindow())
 
@@ -321,11 +345,8 @@ class AppWindow(Adw.ApplicationWindow):
                 for extension in extensions:
                     badge = f"{UI_PATH}pictures/badges/{word}.{extension}"
                     if os.path.exists(badge):
-                        try:
-                            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(badge, -1, 32, 1)
-                        except GLib.Error as e:
-                            log(f"Could not load badge '{badge}'. {e}")
-                        else:
+                        pixbuf = get_pixbuf_from_file(badge, 32)
+                        if pixbuf:
                             added_words.add(word)
                             return pixbuf
 
@@ -366,6 +387,56 @@ class AppWindow(Adw.ApplicationWindow):
         elif self.content_type == SERIES_GROUP:
             self.show_vod(group.series) if group else self.show_vod(self.active_provider.series)
 
+    # ******************** Channels ******************** #
+
+    def show_channels(self, channels: [Channel]):
+        self.navigate_to(Page.CHANNELS)
+        if self.content_type == TV_GROUP:
+            self.update_channels_data(channels, self.channels_list_box)
+
+    def update_channels_data(self, channels: list, ch_box: Gtk.ListBox, clear: bool = True):
+        if clear:
+            ch_box.remove_all()
+
+        logos_to_refresh = []
+        list(map(ch_box.append, (self.get_ch_widget(ch, logos_to_refresh) for ch in channels)))
+
+        if len(logos_to_refresh) > 0:
+            self.download_channel_logos(logos_to_refresh)
+
+    def get_ch_widget(self, channel: Channel, logos_to_refresh: list):
+        pixbuf = get_pixbuf_from_file(channel.logo_path)
+        widget = ChannelWidget(channel, pixbuf)
+        if not pixbuf:
+            logos_to_refresh.append((channel, widget.logo))
+
+        return widget
+
+    @async_function
+    def download_channel_logos(self, logos_to_refresh: list):
+        headers = {'User-Agent': self.settings.get_string("user-agent"),
+                   'Referer': self.settings.get_string("http-referer")}
+
+        for channel, image in logos_to_refresh:
+            if channel.logo_path is None:
+                continue
+            if os.path.isfile(channel.logo_path):
+                continue
+            try:
+                response = requests.get(channel.logo, headers=headers, timeout=10, stream=True)
+                if response.status_code == 200:
+                    response.raw.decode_content = True
+                    with open(channel.logo_path, 'wb') as f:
+                        shutil.copyfileobj(response.raw, f)
+                    self.refresh_channel_logo(channel, image)
+            except Exception as e:
+                log(e)
+
+    @idle_function
+    def refresh_channel_logo(self, channel: Channel, image: Gtk.Image):
+        pixbuf = get_pixbuf_from_file(channel.logo_path, 32)
+        image.set_from_pixbuf(pixbuf) if pixbuf else None
+
 
 class Application(Adw.Application):
     def __init__(self, **kwargs):
@@ -374,6 +445,11 @@ class Application(Adw.Application):
                          **kwargs)
         self.add_main_option("log", ord("l"), GLib.OptionFlags.NONE, GLib.OptionArg.NONE, "", None)
         self.add_main_option("debug", ord("d"), GLib.OptionFlags.NONE, GLib.OptionArg.STRING, "", None)
+
+        # App style.
+        # TODO add option.
+        self.style_manager = Adw.StyleManager().get_default()
+        self.style_manager.set_color_scheme(Adw.ColorScheme.PREFER_DARK)
 
         self.window = None
         self.init_actions()

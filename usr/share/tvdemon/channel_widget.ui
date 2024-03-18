@@ -23,11 +23,12 @@ Author: Dmitriy Yefremov 2024
 <interface>
   <!-- interface-name group_widget.ui -->
   <requires lib="gtk" version="4.12"/>
-  <template class="GroupWidget" parent="GtkFlowBoxChild">
+  <template class="ChannelWidget" parent="GtkListBoxRow">
     <child>
       <object class="GtkFrame">
         <child>
           <object class="GtkBox" id="box">
+            <property name="orientation">vertical</property>
             <property name="spacing">6</property>
             <property name="margin-start">12</property>
             <property name="margin-end">12</property>

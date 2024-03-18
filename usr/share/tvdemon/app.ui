@@ -228,6 +228,54 @@ Author: Dmitriy Yefremov 2024
             </property>
           </object>
         </child>
+        <!-- Channels page -->
+        <child>
+          <object class="AdwNavigationPage">
+            <property name="title" translatable="yes">Channels</property>
+            <property name="tag">channels-page</property>
+            <property name="child">
+              <object class="AdwToolbarView">
+                <child type="top">
+                  <object class="AdwHeaderBar"/>
+                </child>
+                <property name="content">
+                  <object class="GtkPaned" id="channels_paned">
+                    <property name="wide-handle">True</property>
+                    <child>
+                      <object class="GtkScrolledWindow">
+                        <property name="width-request">150</property>
+                        <child>
+                          <object class="GtkListBox" id="channels_list_box">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="selection-mode">multiple</property>
+                            <property name="activate-on-single-click">False</property>
+                            <child type="placeholder">
+                              <object class="GtkLabel" id="channels_place_holder_label">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="label" translatable="yes">No channels</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkOverlay" id="playback_info_overlay">
+                        <property name="valign">center</property>
+                        <property name="halign">center</property>
+                        <child>
+                          <object class="GtkPicture" id="playback_widget"/>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </property>
+          </object>
+        </child>
         <!-- Search page -->
         <child>
           <object class="AdwNavigationPage">
