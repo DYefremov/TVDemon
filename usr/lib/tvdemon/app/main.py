@@ -22,17 +22,56 @@
 
 
 import gettext
+import os
 import sys
+from enum import StrEnum
 
 from .common import *
 from .settings import Settings
+
+
+class Page(StrEnum):
+    """ Displayed page. """
+    START = "start-page"
+    CATEGORIES = "categories-page"
+    SEARCH = "search-page"
+    TV = "tv-page"
+    MOVIES = "movies-page"
+    SERIES = "series-page"
+    PROVIDERS = "providers-page"
+    PREFERENCES = "preferences-page"
+
+
+@Gtk.Template(filename=f'{UI_PATH}group_widget.ui')
+class GroupWidget(Gtk.FlowBoxChild):
+    """ A custom widget for displaying and holding group data. """
+    __gtype_name__ = "GroupWidget"
+
+    box = Gtk.Template.Child()
+    label = Gtk.Template.Child()
+    logo = Gtk.Template.Child()
+
+    def __init__(self, data, name, log_pixbuf=None, orientation=Gtk.Orientation.HORIZONTAL, **kwargs):
+        super().__init__(**kwargs)
+        self._data = data
+        self.name = name
+        self.label.set_text(name)
+
+        if log_pixbuf:
+            self.logo.set_from_pixbuf(log_pixbuf)
+        else:
+            self.logo.set_from_icon_name("tv-symbolic")
+
+    @property
+    def data(self):
+        return self._data
 
 
 @Gtk.Template(filename=f'{UI_PATH}preferences.ui')
 class PreferencesPage(Adw.PreferencesPage):
     __gtype_name__ = "PreferencesPage"
 
-    media_lib = Gtk.Template.Child("media_lib_prop")
+    media_lib_row = Gtk.Template.Child()
     recordings_path_row = Gtk.Template.Child()
     useragent_entry = Gtk.Template.Child()
     referer_entry = Gtk.Template.Child()
@@ -64,12 +103,18 @@ class AppWindow(Adw.ApplicationWindow):
 
     navigation_view = Gtk.Template.Child()
     # Start page.
+    start_page = Gtk.Template.Child()
     tv_logo = Gtk.Template.Child()
     tv_label = Gtk.Template.Child()
+    tv_button = Gtk.Template.Child()
     movies_logo = Gtk.Template.Child()
     movies_label = Gtk.Template.Child()
+    movies_button = Gtk.Template.Child()
     series_logo = Gtk.Template.Child()
     series_label = Gtk.Template.Child()
+    series_button = Gtk.Template.Child()
+    # Categories page.
+    categories_flowbox = Gtk.Template.Child()
     # Providers page.
     providers_list = Gtk.Template.Child()
 
@@ -88,11 +133,8 @@ class AppWindow(Adw.ApplicationWindow):
         self.active_serie = None
         self.marked_provider = None
         self.content_type = TV_GROUP  # content being browsed
-        self.back_page = None  # page to go back to if the back button is pressed
         self.active_channel = None
         self.fullscreen = False
-        self.latest_search_bar_text = None
-        self.visible_search_results = 0
         self.player = None
         self.xtream = None
 
@@ -100,6 +142,9 @@ class AppWindow(Adw.ApplicationWindow):
         self.tv_logo.set_from_file(f"{UI_PATH}pictures/tv.svg")
         self.movies_logo.set_from_file(f"{UI_PATH}pictures/movies.svg")
         self.series_logo.set_from_file(f"{UI_PATH}pictures/series.svg")
+        self.tv_button.connect("clicked", self.show_groups, TV_GROUP)
+        self.movies_button.connect("clicked", self.show_groups, MOVIES_GROUP)
+        self.series_button.connect("clicked", self.show_groups, SERIES_GROUP)
         # Shortcuts.
         self.set_help_overlay(ShortcutsWindow())
 
@@ -107,7 +152,7 @@ class AppWindow(Adw.ApplicationWindow):
 
     def on_realized(self, window: Adw.ApplicationWindow):
         log("Starting...")
-        self.reload()
+        self.reload(Page.START)
         # Redownload playlists by default
         # This is going to get readjusted
         self._timer_id = GLib.timeout_add_seconds(self.reload_timeout_sec, self.force_reload)
@@ -189,7 +234,6 @@ class AppWindow(Adw.ApplicationWindow):
         if page:
             self.navigate_to(page)
         self.status(None)
-        self.latest_search_bar_text = None
 
     def force_reload(self):
         self.reload(page=None, refresh=True)
@@ -237,8 +281,90 @@ class AppWindow(Adw.ApplicationWindow):
                 labels.append(provider.name)
 
             p_row.set_subtitle(f"<i>{' '.join(labels)}</i>")
-
             self.providers_list.append(p_row)
+
+    def navigate_to(self, page: Page):
+        if page is Page.START:
+            self.navigation_view.pop()
+        else:
+            self.navigation_view.push_by_tag(page)
+
+        provider = self.active_provider
+        if page is Page.START:
+            if provider is None:
+                # self.start_page.set_subtitle(translate("No provider selected"))
+                self.tv_label.set_text(translate("TV Channels (0)"))
+                self.movies_label.set_text(translate("Movies (0)"))
+                self.series_label.set_text(translate("Series (0)"))
+                self.preferences_button.set_sensitive(False)
+                self.tv_button.set_sensitive(False)
+                self.movies_button.set_sensitive(False)
+                self.series_button.set_sensitive(False)
+            else:
+                # self.start_page.set_subtitle(provider.name)
+                self.tv_label.set_text(translate(f"TV Channels ({len(provider.channels)})"))
+                self.movies_label.set_text(translate(f"Movies ({len(provider.movies)})"))
+                self.series_label.set_text(translate(f"Series ({len(provider.series)})"))
+                self.tv_button.set_sensitive(len(provider.channels) > 0)
+                self.movies_button.set_sensitive(len(provider.movies) > 0)
+                self.series_button.set_sensitive(len(provider.series) > 0)
+
+    def get_badge_pixbuf(self, name) -> GdkPixbuf.Pixbuf:
+        """ Returns group badge. """
+        added_words = set()
+        extensions = ("svg", "png")
+
+        for word in name.split():
+            word = BADGES.get(word, word)
+
+            if word not in added_words:
+                for extension in extensions:
+                    badge = f"{UI_PATH}pictures/badges/{word}.{extension}"
+                    if os.path.exists(badge):
+                        try:
+                            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(badge, -1, 32, 1)
+                        except GLib.Error as e:
+                            log(f"Could not load badge '{badge}'. {e}")
+                        else:
+                            added_words.add(word)
+                            return pixbuf
+
+    def show_groups(self, widget, content_type):
+        self.content_type = content_type
+        self.active_group = None
+        found_groups = False
+
+        self.categories_flowbox.remove_all()
+
+        for group in self.active_provider.groups:
+            if group.group_type != self.content_type:
+                continue
+            found_groups = True
+
+            if self.content_type == TV_GROUP:
+                label = f"{group.name} ({len(group.channels)})"
+            elif self.content_type == MOVIES_GROUP:
+                label = f"{self.remove_word('VOD', group.name)} ({len(group.channels)})"
+            else:
+                label = f"{self.remove_word('SERIES', group.name)} ({len(group.series)})"
+
+            name = group.name.lower().replace("(", " ").replace(")", " ")
+            self.categories_flowbox.append(GroupWidget(group, label, self.get_badge_pixbuf(name)))
+
+        self.navigate_to(Page.CATEGORIES)
+
+        if not found_groups:
+            self.on_group_activate()
+
+    def on_group_activate(self, box=None, group_widget=None):
+        group = group_widget.data if group_widget else None
+        self.active_group = group
+        if self.content_type == TV_GROUP:
+            self.show_channels(group.channels) if group else self.show_channels(self.active_provider.channels)
+        elif self.content_type == MOVIES_GROUP:
+            self.show_vod(group.channels) if group else self.show_vod(self.active_provider.movies)
+        elif self.content_type == SERIES_GROUP:
+            self.show_vod(group.series) if group else self.show_vod(self.active_provider.series)
 
 
 class Application(Adw.Application):
@@ -291,7 +417,7 @@ class Application(Adw.Application):
         return ac
 
     def on_preferences(self, action, value):
-        self.window.navigation_view.push_by_tag("preferences-page")
+        self.window.navigate_to(Page.PREFERENCES)
 
     def on_about_app(self, action, value):
         pass

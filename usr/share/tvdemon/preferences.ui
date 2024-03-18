@@ -32,7 +32,7 @@ Author: Dmitriy Yefremov 2024
       <object class="AdwPreferencesGroup">
         <property name="title">Playback</property>
         <child>
-          <object class="AdwComboRow" id="media_lib_prop">
+          <object class="AdwComboRow" id="media_lib_row">
             <property name="title">Media library</property>
             <property name="enable-search">True</property>
             <property name="model">

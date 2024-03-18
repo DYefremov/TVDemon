@@ -32,8 +32,9 @@ Author: Dmitriy Yefremov 2024
       <object class="AdwNavigationView" id="navigation_view">
         <!-- Start page -->
         <child>
-          <object class="AdwNavigationPage">
+          <object class="AdwNavigationPage" id="start_page">
             <property name="title" translatable="yes">TVDemon</property>
+            <property name="tag">start-page</property>
             <property name="child">
               <object class="AdwToolbarView">
                 <child type="top">
@@ -42,7 +43,7 @@ Author: Dmitriy Yefremov 2024
                       <object class="GtkButton" id="start_search_button">
                         <property name="icon-name">edit-find-symbolic</property>
                         <property name="action-name">navigation.push</property>
-                        <property name="action-target">'search-status-page'</property>
+                        <property name="action-target">'search-page'</property>
                       </object>
                     </child>
                     <child type="end">
@@ -90,7 +91,7 @@ Author: Dmitriy Yefremov 2024
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <property name="orientation">vertical</property>
-                                <property name="spacing">3</property>
+                                <property name="spacing">6</property>
                                 <property name="margin-start">24</property>
                                 <property name="margin-end">24</property>
                                 <property name="margin-top">24</property>
@@ -127,7 +128,7 @@ Author: Dmitriy Yefremov 2024
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <property name="orientation">vertical</property>
-                                <property name="spacing">3</property>
+                                <property name="spacing">6</property>
                                 <property name="margin-start">24</property>
                                 <property name="margin-end">24</property>
                                 <property name="margin-top">24</property>
@@ -164,7 +165,7 @@ Author: Dmitriy Yefremov 2024
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <property name="orientation">vertical</property>
-                                <property name="spacing">3</property>
+                                <property name="spacing">6</property>
                                 <property name="margin-start">24</property>
                                 <property name="margin-end">24</property>
                                 <property name="margin-top">24</property>
@@ -198,11 +199,40 @@ Author: Dmitriy Yefremov 2024
             </property>
           </object>
         </child>
-        <!-- Satus page -->
+        <!-- Categories page -->
+        <child>
+          <object class="AdwNavigationPage">
+            <property name="title" translatable="yes">Categories</property>
+            <property name="tag">categories-page</property>
+            <property name="child">
+              <object class="AdwToolbarView">
+                <child type="top">
+                  <object class="AdwHeaderBar"/>
+                </child>
+                <property name="content">
+                  <object class="GtkScrolledWindow">
+                    <property name="margin-start">24</property>
+                    <property name="margin-end">24</property>
+                    <property name="margin-top">24</property>
+                    <property name="margin-bottom">24</property>
+                    <child>
+                      <object class="GtkFlowBox" id="categories_flowbox">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="valign">start</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </property>
+          </object>
+        </child>
+        <!-- Search page -->
         <child>
           <object class="AdwNavigationPage">
             <property name="title" translatable="yes">Search</property>
-            <property name="tag">search-status-page</property>
+            <property name="tag">search-page</property>
             <property name="child">
               <object class="AdwToolbarView">
                 <child type="top">

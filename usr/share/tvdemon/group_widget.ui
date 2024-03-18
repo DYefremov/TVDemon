@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2024 Dmitriy Yefremov <https://github.com/DYefremov>
+
+This file is part of TVDemon.
+
+TVDemon is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+TVDemon is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with TVDemon.  If not, see <http://www.gnu.org/licenses/>.
+
+Author: Dmitriy Yefremov 2024
+
+-->
+<interface>
+  <!-- interface-name group_widget.ui -->
+  <requires lib="gtk" version="4.12"/>
+  <template class="GroupWidget" parent="GtkFlowBoxChild">
+    <child>
+      <object class="GtkFrame">
+        <child>
+          <object class="GtkBox" id="box">
+            <property name="spacing">6</property>
+            <property name="margin-start">12</property>
+            <property name="margin-end">12</property>
+            <property name="margin-top">12</property>
+            <property name="margin-bottom">12</property>
+            <child>
+              <object class="GtkImage" id="logo">
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label">
+                <property name="max-width-chars">30</property>
+                <property name="ellipsize">end</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>
