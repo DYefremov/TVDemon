@@ -137,6 +137,10 @@ class AppWindow(Adw.ApplicationWindow):
     categories_flowbox = Gtk.Template.Child()
     # Channels page.
     channels_list_box = Gtk.Template.Child()
+    # Movies page.
+    movies_flowbox = Gtk.Template.Child()
+    # Series page.
+    series_list = Gtk.Template.Child()
     # Providers page.
     providers_list = Gtk.Template.Child()
 
@@ -169,6 +173,10 @@ class AppWindow(Adw.ApplicationWindow):
         self.series_button.connect("clicked", self.show_groups, SERIES_GROUP)
         # Categories.
         self.categories_flowbox.connect("child-activated", self.on_group_activate)
+        # Channels.
+        self.channels_list_box.connect("row-activated", self.play_channel)
+        # Movies.
+        self.movies_flowbox.connect("child-activated", self.on_movie_activate)
         # Shortcuts.
         self.set_help_overlay(ShortcutsWindow())
 
@@ -280,7 +288,7 @@ class AppWindow(Adw.ApplicationWindow):
 
     @idle_function
     def refresh_providers_page(self):
-        [self.providers_list.remove(c) for c in [r for r in self.providers_list]]
+        self.providers_list.remove_all()
 
         for provider in self.providers:
             p_row = Adw.ActionRow()
@@ -316,7 +324,6 @@ class AppWindow(Adw.ApplicationWindow):
         provider = self.active_provider
         if page is Page.START:
             if provider is None:
-                # self.start_page.set_subtitle(translate("No provider selected"))
                 self.tv_label.set_text(translate("TV Channels (0)"))
                 self.movies_label.set_text(translate("Movies (0)"))
                 self.series_label.set_text(translate("Series (0)"))
@@ -325,7 +332,6 @@ class AppWindow(Adw.ApplicationWindow):
                 self.movies_button.set_sensitive(False)
                 self.series_button.set_sensitive(False)
             else:
-                # self.start_page.set_subtitle(provider.name)
                 self.tv_label.set_text(translate(f"TV Channels ({len(provider.channels)})"))
                 self.movies_label.set_text(translate(f"Movies ({len(provider.movies)})"))
                 self.series_label.set_text(translate(f"Series ({len(provider.series)})"))
@@ -383,9 +389,9 @@ class AppWindow(Adw.ApplicationWindow):
         if self.content_type == TV_GROUP:
             self.show_channels(group.channels) if group else self.show_channels(self.active_provider.channels)
         elif self.content_type == MOVIES_GROUP:
-            self.show_vod(group.channels) if group else self.show_vod(self.active_provider.movies)
+            self.show_movies(group.channels) if group else self.show_movies(self.active_provider.movies)
         elif self.content_type == SERIES_GROUP:
-            self.show_vod(group.series) if group else self.show_vod(self.active_provider.series)
+            self.show_movies(group.series) if group else self.show_movies(self.active_provider.series)
 
     # ******************** Channels ******************** #
 
@@ -412,6 +418,86 @@ class AppWindow(Adw.ApplicationWindow):
 
         return widget
 
+    def play_channel(self, box: Gtk.ListBox, row: ChannelWidget):
+        self.active_channel = row.channel
+        self.play_async(row.channel)
+
+    # ******************** Movies ******************** #
+
+    def show_movies(self, items):
+        logos_to_refresh = []
+        self.navigate_to(Page.MOVIES)
+        self.movies_flowbox.remove_all()
+
+        for item in items:
+            logo_path = item.logo_path
+            pixbuf = get_pixbuf_from_file(item.logo_path) if logo_path else None
+            widget = GroupWidget(item, item.name, pixbuf, orientation=Gtk.Orientation.VERTICAL)
+            if logo_path and not pixbuf:
+                logos_to_refresh.append((item, widget.logo))
+
+            self.movies_flowbox.append(widget)
+
+        if len(logos_to_refresh) > 0:
+            self.download_channel_logos(logos_to_refresh)
+
+    def on_movie_activate(self, box: Gtk.FlowBox, widget: GroupWidget):
+        if self.content_type == MOVIES_GROUP:
+            self.active_channel = widget.data
+            self.show_channels(None)
+            self.play_async(widget.data)
+        else:
+            self.show_episodes(widget.data)
+
+    # ******************** Series ******************** #
+
+    def show_series(self, serie: Serie):
+        logos_to_refresh = []
+        self.active_serie = serie
+        # If we are using xtream provider
+        # Load every Episodes of every Season for this Series
+        if self.active_provider.type_id == "xtream":
+            self.xtream.get_series_info_by_id(self.active_serie)
+
+        self.series_list.remove_all()
+        self.navigate_to(Page.SERIES)
+
+        for season_name in serie.seasons.keys():
+            season = serie.seasons[season_name]
+            serie_box = Gtk.Box()
+            serie_box.set_orientation(Gtk.Orientation.VERTICAL)
+            serie_box.set_spacing(6)
+            label = Gtk.Label()
+            label.set_use_markup(True)
+            label.set_markup(translate(f"<b>Season {season_name}</b>"))
+            serie_box.append(label)
+            flow_box = Gtk.FlowBox()
+            serie_box.append(flow_box)
+            self.series_list.append(serie_box)
+            flow_box.connect("child-activated", self.on_serie_activate)
+
+            for episode_name in season.episodes.keys():
+                episode = season.episodes[episode_name]
+                logo_path = episode.logo_path
+                pixbuf = get_pixbuf_from_file(logo_path) if logo_path else None
+                widget = GroupWidget(episode, translate(f"Episode {episode_name}"), pixbuf,
+                                     orientation=Gtk.Orientation.VERTICAL)
+                if logo_path and not pixbuf:
+                    logos_to_refresh.append((episode, widget.logo))
+
+                flow_box.append(widget)
+
+    def on_serie_activate(self, box: Gtk.FlowBox, widget: GroupWidget):
+        self.active_channel = widget.data
+        self.show_channels(None)
+        self.play_async(self.active_channel)
+
+    # ******************** Additional ******************** #
+
+    @async_function
+    def play_async(self, channel: Channel):
+        log(f"Playback not implemented yet! Channel URL: {channel.url}")
+
     @async_function
     def download_channel_logos(self, logos_to_refresh: list):
         headers = {'User-Agent': self.settings.get_string("user-agent"),
@@ -428,7 +514,7 @@ class AppWindow(Adw.ApplicationWindow):
                     response.raw.decode_content = True
                     with open(channel.logo_path, 'wb') as f:
                         shutil.copyfileobj(response.raw, f)
-                    self.refresh_channel_logo(channel, image)
+                        self.refresh_channel_logo(channel, image)
             except Exception as e:
                 log(e)
 
@@ -436,6 +522,11 @@ class AppWindow(Adw.ApplicationWindow):
     def refresh_channel_logo(self, channel: Channel, image: Gtk.Image):
         pixbuf = get_pixbuf_from_file(channel.logo_path, 32)
         image.set_from_pixbuf(pixbuf) if pixbuf else None
+
+    def remove_word(self, word, string):
+        if " " not in string:
+            return
+        return " ".join(w for w in string.split() if w != word)
 
 
 class Application(Adw.Application):

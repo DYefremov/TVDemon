@@ -20,9 +20,10 @@
 # along with TVDemon  If not, see <http://www.gnu.org/licenses/>.
 #
 
-__all__ = ("APP_ID", "log", "Gtk", "Gdk", "Adw", "Gio", "GdkPixbuf", "GLib", "Pango", "GObject", "translate",
-           "APP", "UI_PATH", "Manager", "Provider", "Group", "Channel", "async_function", "idle_function", "get_pixbuf_from_file",
-           "BADGES", "MOVIES_GROUP", "PROVIDERS_PATH", "SERIES_GROUP", "TV_GROUP", "init_logger")
+__all__ = ("APP_ID", "log", "Gtk", "Gdk", "Adw", "Gio", "GdkPixbuf", "GLib", "Pango", "GObject",
+           "APP", "UI_PATH", "Manager", "Provider", "Group", "Channel", "Serie",
+           "translate", "async_function", "idle_function", "get_pixbuf_from_file", "init_logger",
+           "BADGES", "MOVIES_GROUP", "PROVIDERS_PATH", "SERIES_GROUP", "TV_GROUP")
 
 import gettext
 import locale
@@ -136,7 +137,7 @@ def get_pixbuf_from_file(path, size=32) -> GdkPixbuf.Pixbuf:
     try:
         return GdkPixbuf.Pixbuf.new_from_file_at_scale(path, -1, size, 1)
     except GLib.Error:
-        pass # NOP
+        pass  # NOP
 
 
 class Provider:
