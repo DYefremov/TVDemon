@@ -46,6 +46,24 @@ class Page(StrEnum):
     PREFERENCES = "preferences-page"
 
 
+@Gtk.Template(filename=f'{UI_PATH}provider_widget.ui')
+class ProviderWidget(Adw.ActionRow):
+    """ A custom widget for displaying and holding provider data. """
+    __gtype_name__ = "ProviderWidget"
+
+    def __init__(self, provider, **kwargs):
+        super().__init__(**kwargs)
+        self.provider = provider
+
+    @Gtk.Template.Callback()
+    def on_edit(self, button):
+        pass
+
+    @Gtk.Template.Callback()
+    def on_remove(self, button):
+        pass
+
+
 @Gtk.Template(filename=f'{UI_PATH}channel_widget.ui')
 class ChannelWidget(Gtk.ListBoxRow):
     """ A custom widget for displaying and holding channel data. """
@@ -286,35 +304,6 @@ class AppWindow(Adw.ApplicationWindow):
             # self.status_label.set_text(string)
             log(string)
 
-    @idle_function
-    def refresh_providers_page(self):
-        self.providers_list.remove_all()
-
-        for provider in self.providers:
-            p_row = Adw.ActionRow()
-            p_row.set_use_markup(True)
-            p_row.set_title(f"<b>{provider.name}</b>")
-            p_row.set_icon_name("tv-symbolic")
-            labels = []
-            num = len(provider.channels)
-            if num > 0:
-                labels.append(gettext.ngettext("%d TV channel", "%d TV channels", num) % num)
-
-            num = len(provider.movies)
-            if num > 0:
-                labels.append(gettext.ngettext("%d movie", "%d movies", num) % num)
-            num = len(provider.series)
-            if num > 0:
-                labels.append(gettext.ngettext("%d series", "%d series", num) % num)
-
-            if provider == self.active_provider:
-                labels.append("%s %d (active)" % (provider.name, len(provider.channels)))
-            else:
-                labels.append(provider.name)
-
-            p_row.set_subtitle(f"<i>{' '.join(labels)}</i>")
-            self.providers_list.append(p_row)
-
     def navigate_to(self, page: Page):
         if page is Page.START:
             self.navigation_view.pop()
@@ -392,6 +381,37 @@ class AppWindow(Adw.ApplicationWindow):
             self.show_movies(group.channels) if group else self.show_movies(self.active_provider.movies)
         elif self.content_type == SERIES_GROUP:
             self.show_movies(group.series) if group else self.show_movies(self.active_provider.series)
+
+    # ******************** Providers ******************** #
+
+    @idle_function
+    def refresh_providers_page(self):
+        self.providers_list.remove_all()
+
+        for provider in self.providers:
+            p_row = ProviderWidget(provider)
+            p_row.set_title(f"<b>{provider.name}</b>")
+            p_row.set_icon_name("tv-symbolic")
+            labels = []
+            num = len(provider.channels)
+            if num > 0:
+                labels.append(gettext.ngettext("%d TV channel", "%d TV channels", num) % num)
+
+            num = len(provider.movies)
+            if num > 0:
+                labels.append(gettext.ngettext("%d movie", "%d movies", num) % num)
+            num = len(provider.series)
+            if num > 0:
+                labels.append(gettext.ngettext("%d series", "%d series", num) % num)
+
+            if provider == self.active_provider:
+                labels.append("%s %d (active)" % (provider.name, len(provider.channels)))
+            else:
+                labels.append(provider.name)
+
+            p_row.set_subtitle(f"<i>{' '.join(labels)}</i>")
+
+            self.providers_list.append(p_row)
 
     # ******************** Channels ******************** #
 
