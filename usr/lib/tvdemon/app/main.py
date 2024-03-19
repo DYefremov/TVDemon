@@ -43,6 +43,7 @@ class Page(StrEnum):
     MOVIES = "movies-page"
     SERIES = "series-page"
     PROVIDERS = "providers-page"
+    PROVIDER = "provider-properties-page"
     PREFERENCES = "preferences-page"
 
 
@@ -62,6 +63,11 @@ class ProviderWidget(Adw.ActionRow):
     @Gtk.Template.Callback()
     def on_remove(self, button):
         pass
+
+
+@Gtk.Template(filename=f'{UI_PATH}provider_properties_widget.ui')
+class ProviderProperties(Adw.NavigationPage):
+    __gtype_name__ = "ProviderProperties"
 
 
 @Gtk.Template(filename=f'{UI_PATH}channel_widget.ui')

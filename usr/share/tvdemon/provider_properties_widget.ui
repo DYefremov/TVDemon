@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2024 Dmitriy Yefremov <https://github.com/DYefremov>
+
+This file is part of TVDemon.
+
+TVDemon is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+TVDemon is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with TVDemon.  If not, see <http://www.gnu.org/licenses/>.
+
+Author: Dmitriy Yefremov 2024
+
+-->
+<interface>
+  <!-- interface-name group_widget.ui -->
+  <requires lib="gtk" version="4.12"/>
+  <requires lib="libadwaita" version="1.5"/>
+  <template class="ProviderProperties" parent="AdwNavigationPage">
+    <property name="title" translatable="yes">Provider</property>
+    <property name="tag">provider-properties-page</property>
+    <property name="child">
+      <object class="AdwToolbarView">
+        <child type="top">
+          <object class="AdwHeaderBar">
+            <child type="start">
+              <object class="GtkButton">
+                <property name="icon-name">document-save-symbolic</property>
+                <property name="tooltip-text" translatable="yes">Save</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <property name="content">
+          <object class="AdwPreferencesPage">
+            <child>
+              <object class="AdwPreferencesGroup">
+                <property name="title" translatable="yes">Provider</property>
+                <child>
+                  <object class="AdwEntryRow" id="name_entry">
+                    <property name="title" translatable="yes">Name</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwComboRow">
+                    <property name="title" translatable="yes">Type</property>
+                    <property name="model">
+                      <object class="GtkStringList">
+                        <items>
+                          <item comments="url" translatable="yes">M3U URL</item>
+                          <item comments="local" translatable="yes">Local M3U File</item>
+                          <item comments="xtream" translatable="yes">Xtream API</item>
+                        </items>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow">
+                    <property name="title" translatable="yes">Path</property>
+                    <property name="subtitle">Not specified</property>
+                    <property name="subtitle_selectable">True</property>
+                    <property name="activatable">True</property>
+                    <property name="tooltip-text" translatable="yes">Browse...</property>
+                    <signal name="activated" handler="on_provider_path_activated"/>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="icon-name">document-open-symbolic</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwEntryRow" id="url_entry">
+                    <property name="title" translatable="yes">URL</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwPreferencesGroup">
+                    <property name="title">User</property>
+                    <child>
+                      <object class="AdwEntryRow" id="user_entry">
+                        <property name="title" translatable="yes">Login</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwPasswordEntryRow" id="password_entry">
+                        <property name="title" translatable="yes">Password</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwPreferencesGroup">
+                    <property name="title">EPG</property>
+                    <child>
+                      <object class="AdwEntryRow" id="epg_source_entry">
+                        <property name="title" translatable="yes">Source</property>
+                        <child>
+                          <object class="GtkDropDown">
+                            <property name="valign">center</property>
+                            <property name="tooltip-text" translatable="yes">Detected sources</property>
+                            <property name="model">
+                              <object class="GtkStringList" id="epg_sources_list"/>
+                            </property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </property>
+      </object>
+    </property>
+  </template>
+</interface>
