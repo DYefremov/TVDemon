@@ -32,6 +32,8 @@ from typing import List, Tuple
 
 import requests
 
+from .common import log
+
 
 class Channel:
     # Required by TVDemon
