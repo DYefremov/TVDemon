@@ -29,6 +29,7 @@ from enum import StrEnum
 
 import requests
 
+from usr.lib.tvdemon.app.madia import Player
 from .common import *
 from .settings import Settings
 
@@ -161,6 +162,9 @@ class AppWindow(Adw.ApplicationWindow):
     categories_flowbox = Gtk.Template.Child()
     # Channels page.
     channels_list_box = Gtk.Template.Child()
+    playback_stack = Gtk.Template.Child()
+    playback_widget = Gtk.Template.Child()
+    channel_info = Gtk.Template.Child()
     # Movies page.
     movies_flowbox = Gtk.Template.Child()
     # Series page.
@@ -187,6 +191,7 @@ class AppWindow(Adw.ApplicationWindow):
         self.fullscreen = False
         self.player = None
         self.xtream = None
+        self.current_page = Page.START
 
         # Start page.
         self.tv_logo.set_from_file(f"{UI_PATH}pictures/tv.svg")
@@ -203,15 +208,21 @@ class AppWindow(Adw.ApplicationWindow):
         self.movies_flowbox.connect("child-activated", self.on_movie_activate)
         # Shortcuts.
         self.set_help_overlay(ShortcutsWindow())
-
+        # Main
         self.connect("realize", self.on_realized)
 
     def on_realized(self, window: Adw.ApplicationWindow):
         log("Starting...")
         self.reload(Page.START)
+        self.init_playback()
         # Redownload playlists by default
         # This is going to get readjusted
         self._timer_id = GLib.timeout_add_seconds(self.reload_timeout_sec, self.force_reload)
+
+    def init_playback(self):
+        self.player = Player.get_instance("gst", self.playback_widget)
+        self.player.connect("played", self.on_played)
+        self.player.connect("error", self.on_playback_error)
 
     @async_function
     def reload(self, page=None, refresh=False):
@@ -522,7 +533,17 @@ class AppWindow(Adw.ApplicationWindow):
 
     @async_function
     def play_async(self, channel: Channel):
-        log(f"Playback not implemented yet! Channel URL: {channel.url}")
+        if self.player:
+            self.playback_stack.set_visible_child_name("load")
+            self.player.play(channel.url)
+            self.channel_info.set_title(channel.name)
+            self.channel_info.set_subtitle(channel.url)
+
+    def on_played(self, player: Player, status: int):
+        self.playback_stack.set_visible_child_name("playback")
+
+    def on_playback_error(self, player: Player, status: int):
+        log(f"Playback error: {status}")
 
     @async_function
     def download_channel_logos(self, logos_to_refresh: list):

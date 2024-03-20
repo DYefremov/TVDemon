@@ -38,7 +38,7 @@ Author: Dmitriy Yefremov 2024
             <property name="model">
               <object class="GtkStringList">
                 <items>
-                  <item>GStreamer</item>
+                  <item comments="gst">GStreamer</item>
                 </items>
               </object>
             </property>

@@ -66,6 +66,9 @@ def log(message, level=logging.ERROR, debug=False, fmt_message="{}"):
         logger.log(level, message)
 
 
+IS_LINUX = sys.platform == "linux"
+IS_DARWIN = sys.platform == "darwin"
+IS_WIN = sys.platform == "win32"
 IS_FROZEN = getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS")
 
 APP = "tvdemon"
@@ -83,11 +86,14 @@ if not os.path.exists(UI_PATH):
     UI_PATH = f".{UI_PATH}"
     LOCALE_DIR = f".{LOCALE_DIR}"
 
-if sys.platform == "linux":
+if IS_LINUX:
     locale.bindtextdomain(APP, LOCALE_DIR)
-elif sys.platform == "win32":
+elif IS_WIN:
     locale.setlocale(locale.LC_NUMERIC, "C")
     Path(PROVIDERS_PATH).mkdir(parents=True, exist_ok=True)
+else:
+    st = Gtk.Settings().get_default()
+    st.set_property("gtk-decoration-layout", "close,minimize,maximize")
 
 gettext.bindtextdomain(APP, LOCALE_DIR)
 gettext.textdomain(APP)
@@ -284,7 +290,6 @@ class Manager:
                 }
                 try:
                     response = requests.get(provider.url, headers=headers, timeout=(5, 120), stream=True)
-
                     # If there is an answer from the remote server
                     if response.status_code == 200:
                         # Set downloaded size
