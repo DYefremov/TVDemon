@@ -251,20 +251,20 @@ Author: Dmitriy Yefremov 2024
                           <object class="GtkBox" id="channels_box">
                             <child>
                               <object class="GtkScrolledWindow">
-                            <property name="width-request">150</property>
-                            <child>
-                              <object class="GtkListBox" id="channels_list_box">
-                                <property name="visible">True</property>
-                                <child type="placeholder">
-                                  <object class="GtkLabel" id="channels_place_holder_label">
+                                <property name="width-request">150</property>
+                                <child>
+                                  <object class="GtkListBox" id="channels_list_box">
                                     <property name="visible">True</property>
-                                    <property name="can-focus">False</property>
-                                    <property name="label" translatable="yes">No channels</property>
+                                    <child type="placeholder">
+                                      <object class="GtkLabel" id="channels_place_holder_label">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes">No channels</property>
+                                      </object>
+                                    </child>
                                   </object>
                                 </child>
                               </object>
-                            </child>
-                          </object>
                             </child>
                           </object>
                         </child>
@@ -281,7 +281,17 @@ Author: Dmitriy Yefremov 2024
                             <child>
                               <object class="GtkStack" id="playback_stack">
                                 <child>
-                                  <object class="GtkStackPage" id="load_page">
+                                  <object class="GtkStackPage">
+                                    <property name="name">status</property>
+                                    <property name="child">
+                                       <object class="AdwStatusPage" id="playback_status_page">
+                                        <property name="icon-name">tv-symbolic</property>
+                                      </object>
+                                    </property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkStackPage">
                                     <property name="name">load</property>
                                     <property name="child">
                                       <object class="AdwClamp">
@@ -296,7 +306,7 @@ Author: Dmitriy Yefremov 2024
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="GtkStackPage" id="playback_page">
+                                  <object class="GtkStackPage">
                                     <property name="name">playback</property>
                                     <property name="child">
                                       <object class="GtkPicture" id="playback_widget"/>

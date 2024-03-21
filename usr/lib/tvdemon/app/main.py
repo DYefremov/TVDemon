@@ -48,6 +48,12 @@ class Page(StrEnum):
     PREFERENCES = "preferences-page"
 
 
+class PLaybackPage(StrEnum):
+    STATUS = "status"
+    LOAD = "load"
+    PLAYBACK = "playback"
+
+
 @Gtk.Template(filename=f'{UI_PATH}provider_widget.ui')
 class ProviderWidget(Adw.ActionRow):
     """ A custom widget for displaying and holding provider data. """
@@ -164,6 +170,7 @@ class AppWindow(Adw.ApplicationWindow):
     channels_box = Gtk.Template.Child()
     channels_list_box = Gtk.Template.Child()
     playback_stack = Gtk.Template.Child()
+    playback_status_page = Gtk.Template.Child()
     playback_widget = Gtk.Template.Child()
     channel_info = Gtk.Template.Child()
     # Movies page.
@@ -483,8 +490,9 @@ class AppWindow(Adw.ApplicationWindow):
 
         for item in items:
             logo_path = item.logo_path
-            pixbuf = get_pixbuf_from_file(item.logo_path) if logo_path else None
+            pixbuf = get_pixbuf_from_file(item.logo_path, 128) if logo_path else None
             widget = GroupWidget(item, item.name, pixbuf, orientation=Gtk.Orientation.VERTICAL)
+            widget.logo.set_pixel_size(56)
             if logo_path and not pixbuf:
                 logos_to_refresh.append((item, widget.logo))
 
@@ -557,15 +565,17 @@ class AppWindow(Adw.ApplicationWindow):
     @async_function
     def play_async(self, channel: Channel):
         if self.player:
-            self.playback_stack.set_visible_child_name("load")
+            self.playback_stack.set_visible_child_name(PLaybackPage.LOAD)
             self.player.play(channel.url)
             self.channel_info.set_title(channel.name)
             self.channel_info.set_subtitle(channel.url)
 
     def on_played(self, player: Player, status: int):
-        self.playback_stack.set_visible_child_name("playback")
+        self.playback_stack.set_visible_child_name(PLaybackPage.PLAYBACK)
 
     def on_playback_error(self, player: Player, status: int):
+        self.playback_status_page.set_title(translate("Can't Playback!"))
+        self.playback_stack.set_visible_child_name(PLaybackPage.STATUS)
         log(f"Playback error: {status}")
 
     @async_function
