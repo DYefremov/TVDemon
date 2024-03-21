@@ -36,6 +36,7 @@ Author: Dmitriy Yefremov 2024
             <child>
               <object class="GtkImage" id="logo">
                 <property name="icon-name">tv-symbolic</property>
+                <property name="icon-size">2</property>
               </object>
             </child>
             <child>
