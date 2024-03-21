@@ -25,7 +25,7 @@ import gettext
 import os
 import shutil
 import sys
-from enum import StrEnum
+from enum import StrEnum, IntEnum
 
 import requests
 
@@ -54,27 +54,54 @@ class PLaybackPage(StrEnum):
     PLAYBACK = "playback"
 
 
+class ProviderType(IntEnum):
+    URL = 0
+    LOCAL = 1
+    XTREAM = 2
+
+
 @Gtk.Template(filename=f'{UI_PATH}provider_widget.ui')
 class ProviderWidget(Adw.ActionRow):
     """ A custom widget for displaying and holding provider data. """
     __gtype_name__ = "ProviderWidget"
 
-    def __init__(self, provider, **kwargs):
+    def __init__(self, app_window, provider, **kwargs):
         super().__init__(**kwargs)
+        self.app_window = app_window
         self.provider = provider
 
     @Gtk.Template.Callback()
     def on_edit(self, button):
-        pass
+        self.app_window.emit("provider-edit", self)
 
     @Gtk.Template.Callback()
     def on_remove(self, button):
-        pass
+        self.app_window.emit("provider-remove", self)
 
 
 @Gtk.Template(filename=f'{UI_PATH}provider_properties_widget.ui')
 class ProviderProperties(Adw.NavigationPage):
     __gtype_name__ = "ProviderProperties"
+
+    save_button = Gtk.Template.Child()
+    action_switch_action = Gtk.Template.Child()
+    name_entry_row = Gtk.Template.Child()
+    type_combo_row = Gtk.Template.Child()
+    path_action_row = Gtk.Template.Child()
+    url_entry_row = Gtk.Template.Child()
+    user_group = Gtk.Template.Child()
+    user_entry_row = Gtk.Template.Child()
+    password_entry_row = Gtk.Template.Child()
+    epg_source_entry = Gtk.Template.Child()
+    epg_sources_list = Gtk.Template.Child()
+    epg_sources_drop_down = Gtk.Template.Child()
+
+    @Gtk.Template.Callback()
+    def on_type_activated(self, row: Adw.ComboRow, param: GObject):
+        p_type = ProviderType(row.get_selected())
+        self.user_group.set_visible(p_type is ProviderType.XTREAM)
+        self.path_action_row.set_visible(p_type is ProviderType.LOCAL)
+        self.url_entry_row.set_visible(p_type is not ProviderType.LOCAL)
 
 
 @Gtk.Template(filename=f'{UI_PATH}channel_widget.ui')
@@ -181,9 +208,16 @@ class AppWindow(Adw.ApplicationWindow):
     series_list = Gtk.Template.Child()
     # Providers page.
     providers_list = Gtk.Template.Child()
+    provider_properties = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        # Signals.
+        GObject.signal_new("provider-edit", self, GObject.SignalFlags.RUN_FIRST, GObject.TYPE_PYOBJECT,
+                           (GObject.TYPE_PYOBJECT,))
+        GObject.signal_new("provider-remove", self, GObject.SignalFlags.RUN_FIRST, GObject.TYPE_PYOBJECT,
+                           (GObject.TYPE_PYOBJECT,))
+
         self.settings = Settings()
         self.manager = Manager(self.settings)
         self.providers = []
@@ -206,7 +240,6 @@ class AppWindow(Adw.ApplicationWindow):
         # Used for redownloading timer
         self.reload_timeout_sec = 60 * 5
         self._timer_id = -1
-
         # Start page.
         self.tv_logo.set_from_file(f"{UI_PATH}pictures/tv.svg")
         self.movies_logo.set_from_file(f"{UI_PATH}pictures/movies.svg")
@@ -221,6 +254,10 @@ class AppWindow(Adw.ApplicationWindow):
         self.bind_property("is_tv_mode", self.channels_box, "visible")
         # Movies.
         self.movies_flowbox.connect("child-activated", self.on_movie_activate)
+        # Providers.
+        self.connect("provider-edit", self.on_provider_edit)
+        self.connect("provider-remove", self.on_provider_remove)
+        self.provider_properties.save_button.connect("clicked", self.on_provider_save)
         # Shortcuts.
         self.set_help_overlay(ShortcutsWindow())
         # Main
@@ -450,7 +487,7 @@ class AppWindow(Adw.ApplicationWindow):
         self.providers_list.remove_all()
 
         for provider in self.providers:
-            p_row = ProviderWidget(provider)
+            p_row = ProviderWidget(self, provider)
             p_row.set_title(f"<b>{provider.name}</b>")
             p_row.set_icon_name("tv-symbolic")
             labels = []
@@ -473,6 +510,30 @@ class AppWindow(Adw.ApplicationWindow):
             p_row.set_subtitle(f"<i>{' '.join(labels)}</i>")
 
             self.providers_list.append(p_row)
+
+    @Gtk.Template.Callback()
+    def on_provider_add(self, button):
+        self.provider_properties.action_switch_action.set_active(True)
+        self.navigate_to(Page.PROVIDER)
+
+    def on_provider_edit(self, win, widget: ProviderWidget):
+        self.provider_properties.action_switch_action.set_active(False)
+        self.init_provider_properties(widget.provider)
+        self.navigate_to(Page.PROVIDER)
+
+    def on_provider_remove(self, win, widget: ProviderWidget):
+        self.providers_list.remove(widget)
+        self.providers.remove(widget.provider)
+
+    def on_provider_save(self, button):
+        add_action = self.provider_properties.action_switch_action.get_active()
+
+    def init_provider_properties(self, provider: Provider):
+        self.provider_properties.name_entry_row.set_text(provider.name)
+        self.provider_properties.path_action_row.set_subtitle = provider.path
+        self.provider_properties.url_entry_row.set_text(provider.url)
+        self.provider_properties.user_entry_row.set_text(provider.username)
+        self.provider_properties.password_entry_row.set_text(provider.password)
 
     # ******************** Channels ******************** #
 
@@ -601,13 +662,13 @@ class AppWindow(Adw.ApplicationWindow):
 
     def on_playback_mouse_motion(self, controller: Gtk.EventControllerMotion, x: float, y: float):
         if self.is_mouse_cursor_hidden:
-            self.set_cursor(Gdk.Cursor.new_from_name("default"))
+            self.playback_widget.set_cursor(Gdk.Cursor.new_from_name("default"))
             self.is_mouse_cursor_hidden = False
 
             GLib.timeout_add_seconds(self._mouse_hide_interval, self.hide_mouse_cursor)
 
     def hide_mouse_cursor(self):
-        self.set_cursor(Gdk.Cursor.new_from_name("none"))
+        self.playback_widget.set_cursor(Gdk.Cursor.new_from_name("none"))
         self.is_mouse_cursor_hidden = True
 
     def toggle_fullscreen(self):

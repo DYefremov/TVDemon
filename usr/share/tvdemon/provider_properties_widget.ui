@@ -32,7 +32,7 @@ Author: Dmitriy Yefremov 2024
         <child type="top">
           <object class="AdwHeaderBar">
             <child type="start">
-              <object class="GtkButton">
+              <object class="GtkButton" id="save_button">
                 <property name="icon-name">document-save-symbolic</property>
                 <property name="tooltip-text" translatable="yes">Save</property>
               </object>
@@ -45,26 +45,35 @@ Author: Dmitriy Yefremov 2024
               <object class="AdwPreferencesGroup">
                 <property name="title" translatable="yes">Provider</property>
                 <child>
-                  <object class="AdwEntryRow" id="name_entry">
+                  <object class="AdwSwitchRow" id="action_switch_action">
+                    <property name="visible">False</property>
+                    <property name="title" translatable="yes">Action</property>
+                    <property name="subtitle">Add</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwEntryRow" id="name_entry_row">
                     <property name="title" translatable="yes">Name</property>
                   </object>
                 </child>
                 <child>
-                  <object class="AdwComboRow">
+                  <object class="AdwComboRow" id="type_combo_row">
                     <property name="title" translatable="yes">Type</property>
                     <property name="model">
                       <object class="GtkStringList">
                         <items>
-                          <item comments="url" translatable="yes">M3U URL</item>
-                          <item comments="local" translatable="yes">Local M3U File</item>
-                          <item comments="xtream" translatable="yes">Xtream API</item>
+                          <item comments="URL" translatable="yes">M3U URL</item>
+                          <item comments="LOCAL" translatable="yes">Local M3U File</item>
+                          <item comments="XTREAM" translatable="yes">Xtream API</item>
                         </items>
                       </object>
                     </property>
+                    <signal name="notify::selected" handler="on_type_activated"/>
                   </object>
                 </child>
                 <child>
-                  <object class="AdwActionRow">
+                  <object class="AdwActionRow" id="path_action_row">
+                    <property name="visible">False</property>
                     <property name="title" translatable="yes">Path</property>
                     <property name="subtitle">Not specified</property>
                     <property name="subtitle_selectable">True</property>
@@ -79,20 +88,21 @@ Author: Dmitriy Yefremov 2024
                   </object>
                 </child>
                 <child>
-                  <object class="AdwEntryRow" id="url_entry">
+                  <object class="AdwEntryRow" id="url_entry_row">
                     <property name="title" translatable="yes">URL</property>
                   </object>
                 </child>
                 <child>
-                  <object class="AdwPreferencesGroup">
+                  <object class="AdwPreferencesGroup" id="user_group">
+                    <property name="visible">False</property>
                     <property name="title">User</property>
                     <child>
-                      <object class="AdwEntryRow" id="user_entry">
+                      <object class="AdwEntryRow" id="user_entry_row">
                         <property name="title" translatable="yes">Login</property>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwPasswordEntryRow" id="password_entry">
+                      <object class="AdwPasswordEntryRow" id="password_entry_row">
                         <property name="title" translatable="yes">Password</property>
                       </object>
                     </child>
@@ -105,7 +115,8 @@ Author: Dmitriy Yefremov 2024
                       <object class="AdwEntryRow" id="epg_source_entry">
                         <property name="title" translatable="yes">Source</property>
                         <child>
-                          <object class="GtkDropDown">
+                          <object class="GtkDropDown" id="epg_sources_drop_down">
+                            <property name="sensitive">False</property>
                             <property name="valign">center</property>
                             <property name="tooltip-text" translatable="yes">Detected sources</property>
                             <property name="model">

@@ -442,8 +442,14 @@ Author: Dmitriy Yefremov 2024
                           <object class="GtkButton" id="add_provider_button">
                             <property name="icon-name">list-add-symbolic</property>
                             <property name="tooltip-text" translatable="yes">Add a new provider...</property>
-                            <property name="action-name">navigation.push</property>
-                            <property name="action-target">'provider-properties-page'</property>
+                            <signal name="clicked" handler="on_provider_add"/>
+                          </object>
+                        </child>
+                        <child type="start">
+                          <object class="GtkButton" id="reset_providers_button">
+                            <property name="sensitive">False</property>
+                            <property name="icon-name">view-refresh-symbolic</property>
+                            <property name="tooltip-text" translatable="yes">Reset providers</property>
                           </object>
                         </child>
                       </object>
@@ -469,7 +475,7 @@ Author: Dmitriy Yefremov 2024
             </child>
             <!-- Provider properties page -->
             <child>
-              <object class="ProviderProperties"/>
+              <object class="ProviderProperties" id="provider_properties"/>
             </child>
             <!-- Preferences page -->
             <child>
