@@ -167,6 +167,8 @@ class AppWindow(Adw.ApplicationWindow):
     # Categories page.
     categories_flowbox = Gtk.Template.Child()
     # Channels page.
+    channels_header = Gtk.Template.Child()
+    channels_paned = Gtk.Template.Child()
     channels_box = Gtk.Template.Child()
     channels_list_box = Gtk.Template.Child()
     playback_stack = Gtk.Template.Child()
@@ -194,7 +196,7 @@ class AppWindow(Adw.ApplicationWindow):
         self.marked_provider = None
         self.content_type = TV_GROUP  # content being browsed
         self.active_channel = None
-        self.fullscreen = False
+        self.is_full_screen = False
         self.player = None
         self.xtream = None
         self.current_page = Page.START
@@ -224,6 +226,19 @@ class AppWindow(Adw.ApplicationWindow):
         self.navigation_view.connect("pushed", self.on_navigation_view_pushed)
         self.navigation_view.connect("popped", self.on_navigation_view_popped)
         self.connect("realize", self.on_realized)
+        # Activating mouse events for playback widget.
+        controller = Gtk.EventControllerMotion()
+        controller.connect("motion", self.on_playback_mouse_motion)
+        self.playback_widget.add_controller(controller)
+        controller = Gtk.EventControllerScroll()
+        controller.connect("scroll", self.on_playback_mouse_scroll)
+        self.playback_widget.add_controller(controller)
+        controller = Gtk.GestureClick()
+        controller.connect("pressed", self.on_playback_mouse_press)
+        self.playback_widget.add_controller(controller)
+
+        self._mouse_hide_interval = 5  # Delay before hiding the mouse cursor.
+        self._is_mouse_cursor_hidden = True
 
     @GObject.Property(type=bool, default=True)
     def is_tv_mode(self):
@@ -479,7 +494,7 @@ class AppWindow(Adw.ApplicationWindow):
 
     def play_channel(self, box: Gtk.ListBox, row: ChannelWidget):
         self.active_channel = row.channel
-        self.play_async(row.channel)
+        self.play(row.channel)
 
     # ******************** Movies ******************** #
 
@@ -505,7 +520,7 @@ class AppWindow(Adw.ApplicationWindow):
         if self.content_type == MOVIES_GROUP:
             self.active_channel = widget.data
             self.show_channels(None)
-            self.play_async(widget.data)
+            self.play(widget.data)
         else:
             self.show_episodes(widget.data)
 
@@ -550,7 +565,53 @@ class AppWindow(Adw.ApplicationWindow):
     def on_serie_activate(self, box: Gtk.FlowBox, widget: GroupWidget):
         self.active_channel = widget.data
         self.show_channels(None)
-        self.play_async(self.active_channel)
+        self.play(self.active_channel)
+
+    # ******************** Playback ******************** #
+
+    @idle_function
+    def play(self, channel: Channel):
+        if self.player:
+            self.playback_stack.set_visible_child_name(PLaybackPage.LOAD)
+            self.channel_info.set_title(channel.name)
+            self.channel_info.set_subtitle(channel.url)
+            GLib.timeout_add(200, self.player.play, channel.url)
+
+    def on_played(self, player: Player, status: int):
+        self.playback_stack.set_visible_child_name(PLaybackPage.PLAYBACK)
+
+    def on_playback_error(self, player: Player, status: int):
+        self.playback_status_page.set_title(translate("Can't Playback!"))
+        self.playback_stack.set_visible_child_name(PLaybackPage.STATUS)
+        log(f"Playback error: {status}")
+
+    def on_playback_mouse_press(self, gest: Gtk.GestureClick, num: int, x: float, y: float):
+        if num == 2:
+            self.toggle_fullscreen()
+
+    def on_playback_mouse_scroll(self, *args):
+        pass
+
+    def on_playback_mouse_motion(self, controller: Gtk.EventControllerMotion, x: float, y: float):
+        pass
+
+    def toggle_fullscreen(self):
+        self.is_full_screen = not self.is_full_screen
+        if self.is_full_screen:
+            self.channels_header.hide()
+            self.channels_paned.set_margin_start(0)
+            self.channels_paned.set_margin_end(0)
+            if self._is_tv_mode:
+                self.channels_box.hide()
+            self.fullscreen()
+        else:
+            self.channels_header.show()
+            self.channels_paned.set_margin_start(12)
+            self.channels_paned.set_margin_end(12)
+
+            if self._is_tv_mode:
+                self.channels_box.show()
+            self.unfullscreen()
 
     # ******************** Additional ******************** #
 
@@ -561,22 +622,6 @@ class AppWindow(Adw.ApplicationWindow):
 
     def on_navigation_view_popped(self, view: Adw.NavigationView, prev_page: Adw.NavigationPage):
         self.current_page = Page(view.get_visible_page().get_tag())
-
-    @async_function
-    def play_async(self, channel: Channel):
-        if self.player:
-            self.playback_stack.set_visible_child_name(PLaybackPage.LOAD)
-            self.player.play(channel.url)
-            self.channel_info.set_title(channel.name)
-            self.channel_info.set_subtitle(channel.url)
-
-    def on_played(self, player: Player, status: int):
-        self.playback_stack.set_visible_child_name(PLaybackPage.PLAYBACK)
-
-    def on_playback_error(self, player: Player, status: int):
-        self.playback_status_page.set_title(translate("Can't Playback!"))
-        self.playback_stack.set_visible_child_name(PLaybackPage.STATUS)
-        log(f"Playback error: {status}")
 
     @async_function
     def download_channel_logos(self, logos_to_refresh: list):
