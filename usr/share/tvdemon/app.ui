@@ -248,7 +248,9 @@ Author: Dmitriy Yefremov 2024
                         <property name="margin-top">12</property>
                         <property name="margin-bottom">12</property>
                         <child>
-                          <object class="GtkScrolledWindow">
+                          <object class="GtkBox" id="channels_box">
+                            <child>
+                              <object class="GtkScrolledWindow">
                             <property name="width-request">150</property>
                             <child>
                               <object class="GtkListBox" id="channels_list_box">
@@ -261,6 +263,8 @@ Author: Dmitriy Yefremov 2024
                                   </object>
                                 </child>
                               </object>
+                            </child>
+                          </object>
                             </child>
                           </object>
                         </child>

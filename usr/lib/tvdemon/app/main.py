@@ -161,6 +161,7 @@ class AppWindow(Adw.ApplicationWindow):
     # Categories page.
     categories_flowbox = Gtk.Template.Child()
     # Channels page.
+    channels_box = Gtk.Template.Child()
     channels_list_box = Gtk.Template.Child()
     playback_stack = Gtk.Template.Child()
     playback_widget = Gtk.Template.Child()
@@ -174,10 +175,8 @@ class AppWindow(Adw.ApplicationWindow):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        # TODO add to preferences!
-        # Used for redownloading timer
-        self.reload_timeout_sec = 60 * 5
-        self._timer_id = -1
+
+        self._is_tv_mode = True
 
         self.settings = Settings()
         self.manager = Manager(self.settings)
@@ -193,6 +192,11 @@ class AppWindow(Adw.ApplicationWindow):
         self.xtream = None
         self.current_page = Page.START
 
+        # TODO add to preferences!
+        # Used for redownloading timer
+        self.reload_timeout_sec = 60 * 5
+        self._timer_id = -1
+
         # Start page.
         self.tv_logo.set_from_file(f"{UI_PATH}pictures/tv.svg")
         self.movies_logo.set_from_file(f"{UI_PATH}pictures/movies.svg")
@@ -204,12 +208,23 @@ class AppWindow(Adw.ApplicationWindow):
         self.categories_flowbox.connect("child-activated", self.on_group_activate)
         # Channels.
         self.channels_list_box.connect("row-activated", self.play_channel)
+        self.bind_property("is_tv_mode", self.channels_box, "visible")
         # Movies.
         self.movies_flowbox.connect("child-activated", self.on_movie_activate)
         # Shortcuts.
         self.set_help_overlay(ShortcutsWindow())
         # Main
+        self.navigation_view.connect("pushed", self.on_navigation_view_pushed)
+        self.navigation_view.connect("popped", self.on_navigation_view_popped)
         self.connect("realize", self.on_realized)
+
+    @GObject.Property(type=bool, default=True)
+    def is_tv_mode(self):
+        return self._is_tv_mode
+
+    @is_tv_mode.setter
+    def is_tv_mode(self, value):
+        self._is_tv_mode = value
 
     def on_realized(self, window: Adw.ApplicationWindow):
         log("Starting...")
@@ -530,6 +545,14 @@ class AppWindow(Adw.ApplicationWindow):
         self.play_async(self.active_channel)
 
     # ******************** Additional ******************** #
+
+    def on_navigation_view_pushed(self, view: Adw.NavigationView):
+        page = Page(view.get_visible_page().get_tag())
+        self.is_tv_mode = self.current_page not in (Page.MOVIES, Page.SERIES)
+        self.current_page = page
+
+    def on_navigation_view_popped(self, view: Adw.NavigationView, prev_page: Adw.NavigationPage):
+        self.current_page = Page(view.get_visible_page().get_tag())
 
     @async_function
     def play_async(self, channel: Channel):
