@@ -184,9 +184,6 @@ class AppWindow(Adw.ApplicationWindow):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
-        self._is_tv_mode = True
-
         self.settings = Settings()
         self.manager = Manager(self.settings)
         self.providers = []
@@ -201,6 +198,10 @@ class AppWindow(Adw.ApplicationWindow):
         self.xtream = None
         self.current_page = Page.START
 
+        self._is_tv_mode = True
+        # Delay before hiding the mouse cursor.
+        self._mouse_hide_interval = 5
+        self._is_mouse_cursor_hidden = True
         # TODO add to preferences!
         # Used for redownloading timer
         self.reload_timeout_sec = 60 * 5
@@ -236,9 +237,7 @@ class AppWindow(Adw.ApplicationWindow):
         controller = Gtk.GestureClick()
         controller.connect("pressed", self.on_playback_mouse_press)
         self.playback_widget.add_controller(controller)
-
-        self._mouse_hide_interval = 5  # Delay before hiding the mouse cursor.
-        self._is_mouse_cursor_hidden = True
+        self.bind_property("is-mouse-cursor-hidden", self.channel_info, "visible", 4)
 
     @GObject.Property(type=bool, default=True)
     def is_tv_mode(self):
@@ -247,6 +246,14 @@ class AppWindow(Adw.ApplicationWindow):
     @is_tv_mode.setter
     def is_tv_mode(self, value):
         self._is_tv_mode = value
+
+    @GObject.Property(type=bool, default=True)
+    def is_mouse_cursor_hidden(self):
+        return self._is_mouse_cursor_hidden
+
+    @is_mouse_cursor_hidden.setter
+    def is_mouse_cursor_hidden(self, value):
+        self._is_mouse_cursor_hidden = value
 
     def on_realized(self, window: Adw.ApplicationWindow):
         log("Starting...")
@@ -593,7 +600,15 @@ class AppWindow(Adw.ApplicationWindow):
         pass
 
     def on_playback_mouse_motion(self, controller: Gtk.EventControllerMotion, x: float, y: float):
-        pass
+        if self.is_mouse_cursor_hidden:
+            self.set_cursor(Gdk.Cursor.new_from_name("default"))
+            self.is_mouse_cursor_hidden = False
+
+            GLib.timeout_add_seconds(self._mouse_hide_interval, self.hide_mouse_cursor)
+
+    def hide_mouse_cursor(self):
+        self.set_cursor(Gdk.Cursor.new_from_name("none"))
+        self.is_mouse_cursor_hidden = True
 
     def toggle_fullscreen(self):
         self.is_full_screen = not self.is_full_screen
@@ -601,6 +616,7 @@ class AppWindow(Adw.ApplicationWindow):
             self.channels_header.hide()
             self.channels_paned.set_margin_start(0)
             self.channels_paned.set_margin_end(0)
+            self.channels_paned.set_margin_bottom(0)
             if self._is_tv_mode:
                 self.channels_box.hide()
             self.fullscreen()
@@ -608,6 +624,7 @@ class AppWindow(Adw.ApplicationWindow):
             self.channels_header.show()
             self.channels_paned.set_margin_start(12)
             self.channels_paned.set_margin_end(12)
+            self.channels_paned.set_margin_bottom(12)
 
             if self._is_tv_mode:
                 self.channels_box.show()
