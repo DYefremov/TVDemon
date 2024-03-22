@@ -75,7 +75,7 @@ Author: Dmitriy Yefremov 2024
                   <object class="AdwActionRow" id="path_action_row">
                     <property name="visible">False</property>
                     <property name="title" translatable="yes">Path</property>
-                    <property name="subtitle">Not specified</property>
+                    <property name="subtitle" translatable="yes">Not specified</property>
                     <property name="subtitle_selectable">True</property>
                     <property name="activatable">True</property>
                     <property name="tooltip-text" translatable="yes">Browse...</property>

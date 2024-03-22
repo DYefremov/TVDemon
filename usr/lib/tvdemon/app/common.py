@@ -22,7 +22,7 @@
 
 __all__ = ("APP_ID", "log", "Gtk", "Gdk", "Adw", "Gio", "GdkPixbuf", "GLib", "Pango", "GObject",
            "APP", "UI_PATH", "Manager", "Provider", "Group", "Channel", "Serie",
-           "translate", "async_function", "idle_function", "get_pixbuf_from_file", "init_logger",
+           "translate", "async_function", "idle_function", "get_pixbuf_from_file", "init_logger", "select_path",
            "BADGES", "MOVIES_GROUP", "PROVIDERS_PATH", "SERIES_GROUP", "TV_GROUP")
 
 import gettext
@@ -144,6 +144,24 @@ def get_pixbuf_from_file(path, size=32) -> GdkPixbuf.Pixbuf:
         return GdkPixbuf.Pixbuf.new_from_file_at_scale(path, -1, size, 1)
     except GLib.Error:
         pass  # NOP
+
+
+def select_path(callback=None):
+    """ Selects a path asynchronously.
+
+        Calls a callback when completed.
+     """
+
+    def finish_func(dialog: Gtk.FileDialog, task: Gio.Task):
+        try:
+            file = dialog.select_folder_finish(task)
+        except GLib.GError:
+            pass  # NOP
+        else:
+            if callback:
+                callback(file.get_path())
+
+    Gtk.FileDialog().select_folder(callback=finish_func)
 
 
 class Provider:

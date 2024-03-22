@@ -103,6 +103,9 @@ class ProviderProperties(Adw.NavigationPage):
         self.path_action_row.set_visible(p_type is ProviderType.LOCAL)
         self.url_entry_row.set_visible(p_type is not ProviderType.LOCAL)
 
+    @Gtk.Template.Callback()
+    def on_provider_path_activated(self, row: Adw.ActionRow):
+        select_path(row.set_subtitle)
 
 @Gtk.Template(filename=f'{UI_PATH}channel_widget.ui')
 class ChannelWidget(Gtk.ListBoxRow):
@@ -159,15 +162,7 @@ class PreferencesPage(Adw.PreferencesPage):
 
     @Gtk.Template.Callback("on_recordings_path_activated")
     def on_recordings_path_select(self, row: Adw.ActionRow):
-        Gtk.FileDialog().select_folder(callback=self.on_recordings_path_selected)
-
-    def on_recordings_path_selected(self, dialog: Gtk.FileDialog, task: Gio.Task):
-        try:
-            file = dialog.select_folder_finish(task)
-        except GLib.GError:
-            pass  # NOP
-        else:
-            self.recordings_path_row.set_subtitle(file.get_path())
+        select_path(row.set_subtitle)
 
 
 @Gtk.Template(filename=f'{UI_PATH}shortcuts.ui')
@@ -530,7 +525,7 @@ class AppWindow(Adw.ApplicationWindow):
 
     def init_provider_properties(self, provider: Provider):
         self.provider_properties.name_entry_row.set_text(provider.name)
-        self.provider_properties.path_action_row.set_subtitle = provider.path
+        self.provider_properties.path_action_row.set_subtitle(provider.path)
         self.provider_properties.url_entry_row.set_text(provider.url)
         self.provider_properties.user_entry_row.set_text(provider.username)
         self.provider_properties.password_entry_row.set_text(provider.password)
