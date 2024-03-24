@@ -37,6 +37,7 @@ from .settings import Settings
 class Page(StrEnum):
     """ Displayed page. """
     START = "start-page"
+    FAVORITES = "favorites-page"
     CATEGORIES = "categories-page"
     CHANNELS = "channels-page"
     SEARCH = "search-page"

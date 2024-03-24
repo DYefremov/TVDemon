@@ -45,19 +45,14 @@ Author: Dmitriy Yefremov 2024
                         <child type="start">
                           <object class="GtkButton">
                             <property name="child">
-                              <object class="AdwButtonContent">
+                              <object class="AdwButtonContent" id="fav_button_content">
                                 <property name="icon-name">user-bookmarks-symbolic</property>
                                 <property name="label">0</property>
                                 <property name="tooltip-text">Favorites</property>
                               </object>
                             </property>
-                          </object>
-                        </child>
-                        <child type="start">
-                          <object class="GtkButton" id="start_search_button">
-                            <property name="icon-name">edit-find-symbolic</property>
                             <property name="action-name">navigation.push</property>
-                            <property name="action-target">'search-page'</property>
+                            <property name="action-target">'favorites-page'</property>
                           </object>
                         </child>
                         <child type="end">
@@ -213,6 +208,62 @@ Author: Dmitriy Yefremov 2024
                 </property>
               </object>
             </child>
+            <!-- Favorites page -->
+            <child>
+              <object class="AdwNavigationPage">
+                <property name="title" translatable="yes">Favorites</property>
+                <property name="tag">favorites-page</property>
+                <property name="child">
+                  <object class="AdwToolbarView">
+                    <child type="top">
+                      <object class="AdwHeaderBar">
+                        <child type="start">
+                          <object class="GtkButton" id="fav_search_button">
+                            <property name="icon-name">edit-find-symbolic</property>
+                            <property name="action-name">navigation.push</property>
+                            <property name="action-target">'search-page'</property>
+                          </object>
+                        </child>
+                        <child type="start">
+                          <object class="GtkButton">
+                            <property name="child">
+                              <object class="AdwButtonContent">
+                                <property name="icon-name">edit-delete-symbolic</property>
+                                <property name="tooltip-text" translatable="yes">Remove</property>
+                              </object>
+                            </property>
+                          </object>
+                        </child>
+                        <child type="start">
+                          <object class="GtkButton">
+                            <property name="child">
+                              <object class="AdwButtonContent">
+                                <property name="icon-name">edit-clear-all-symbolic</property>
+                                <property name="tooltip-text" translatable="yes">Remove All</property>
+                              </object>
+                            </property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <property name="content">
+                      <object class="GtkScrolledWindow">
+                        <property name="margin-start">12</property>
+                        <property name="margin-end">12</property>
+                        <property name="margin-top">12</property>
+                        <child>
+                          <object class="GtkFlowBox" id="favorites_flowbox">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="valign">start</property>
+                          </object>
+                        </child>
+                      </object>
+                    </property>
+                  </object>
+                </property>
+              </object>
+            </child>
             <!-- Categories page -->
             <child>
               <object class="AdwNavigationPage">
@@ -221,7 +272,16 @@ Author: Dmitriy Yefremov 2024
                 <property name="child">
                   <object class="AdwToolbarView">
                     <child type="top">
-                      <object class="AdwHeaderBar"/>
+                      <object class="AdwHeaderBar">
+                        <child type="start">
+                          <object class="GtkButton" id="categories_search_button">
+                            <property name="visible">False</property>
+                            <property name="icon-name">edit-find-symbolic</property>
+                            <property name="action-name">navigation.push</property>
+                            <property name="action-target">'search-page'</property>
+                          </object>
+                        </child>
+                      </object>
                     </child>
                     <property name="content">
                       <object class="GtkScrolledWindow">
@@ -249,7 +309,18 @@ Author: Dmitriy Yefremov 2024
                 <property name="child">
                   <object class="AdwToolbarView">
                     <child type="top">
-                      <object class="AdwHeaderBar" id="channels_header"/>
+                      <object class="AdwHeaderBar" id="channels_header">
+                        <child type="start">
+                          <object class="GtkButton">
+                            <property name="child">
+                              <object class="AdwButtonContent">
+                                <property name="icon-name">bookmark-new-symbolic</property>
+                                <property name="tooltip-text" translatable="yes">AAdd to favorites</property>
+                              </object>
+                            </property>
+                          </object>
+                        </child>
+                      </object>
                     </child>
                     <property name="content">
                       <object class="GtkPaned" id="channels_paned">
@@ -261,6 +332,7 @@ Author: Dmitriy Yefremov 2024
                             <child>
                               <object class="GtkScrolledWindow">
                                 <property name="width-request">150</property>
+                                <property name="hexpand">True</property>
                                 <child>
                                   <object class="GtkListBox" id="channels_list_box">
                                     <property name="visible">True</property>
