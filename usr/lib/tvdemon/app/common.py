@@ -165,9 +165,11 @@ def select_path(callback=None):
 
 
 class Provider:
+    SEP = ":::"
+
     def __init__(self, name, provider_info):
         if provider_info:
-            self.name, self.type_id, self.url, self.username, self.password, self.epg = provider_info.split(":::")
+            self.name, self.type_id, self.url, self.username, self.password, self.epg = provider_info.split(self.SEP)
         else:
             self.name = name
         self.path = os.path.join(PROVIDERS_PATH, slugify(self.name))
@@ -177,7 +179,10 @@ class Provider:
         self.series = []
 
     def get_info(self):
-        return f"{self.name}:::{self.type_id}:::{self.url}:::{self.username}:::{self.password}:::{self.epg}"
+        return self.SEP.join((self.name, self.type_id, self.url, self.username, self.password, self.epg))
+
+    def set_info(self, provider_info):
+        self.name, self.type_id, self.url, self.username, self.password, self.epg = provider_info.split(self.SEP)
 
 
 class Group:

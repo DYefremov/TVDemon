@@ -60,7 +60,7 @@ class ProviderType(IntEnum):
     XTREAM = 2
 
 
-@Gtk.Template(filename=f'{UI_PATH}provider_widget.ui')
+@Gtk.Template(filename=f"{UI_PATH}provider_widget.ui")
 class ProviderWidget(Adw.ActionRow):
     """ A custom widget for displaying and holding provider data. """
     __gtype_name__ = "ProviderWidget"
@@ -79,7 +79,7 @@ class ProviderWidget(Adw.ActionRow):
         self.app_window.emit("provider-remove", self)
 
 
-@Gtk.Template(filename=f'{UI_PATH}provider_properties_widget.ui')
+@Gtk.Template(filename=f"{UI_PATH}provider_properties_widget.ui")
 class ProviderProperties(Adw.NavigationPage):
     __gtype_name__ = "ProviderProperties"
 
@@ -107,7 +107,8 @@ class ProviderProperties(Adw.NavigationPage):
     def on_provider_path_activated(self, row: Adw.ActionRow):
         select_path(row.set_subtitle)
 
-@Gtk.Template(filename=f'{UI_PATH}channel_widget.ui')
+
+@Gtk.Template(filename=f"{UI_PATH}channel_widget.ui")
 class ChannelWidget(Gtk.ListBoxRow):
     """ A custom widget for displaying and holding channel data. """
     __gtype_name__ = "ChannelWidget"
@@ -126,7 +127,7 @@ class ChannelWidget(Gtk.ListBoxRow):
         self.logo.set_from_pixbuf(logo_pixbuf) if logo_pixbuf else None
 
 
-@Gtk.Template(filename=f'{UI_PATH}group_widget.ui')
+@Gtk.Template(filename=f"{UI_PATH}group_widget.ui")
 class GroupWidget(Gtk.FlowBoxChild):
     """ A custom widget for displaying and holding group data. """
     __gtype_name__ = "GroupWidget"
@@ -148,7 +149,7 @@ class GroupWidget(Gtk.FlowBoxChild):
         return self._data
 
 
-@Gtk.Template(filename=f'{UI_PATH}preferences.ui')
+@Gtk.Template(filename=f"{UI_PATH}preferences.ui")
 class PreferencesPage(Adw.PreferencesPage):
     __gtype_name__ = "PreferencesPage"
 
@@ -165,14 +166,29 @@ class PreferencesPage(Adw.PreferencesPage):
         select_path(row.set_subtitle)
 
 
-@Gtk.Template(filename=f'{UI_PATH}shortcuts.ui')
+@Gtk.Template(filename=f"{UI_PATH}question_dialog.ui")
+class QuestionDialog(Adw.MessageDialog):
+    __gtype_name__ = "QuestionDialog"
+
+    def __init__(self, parent, clb=None, **kwargs):
+        super().__init__(**kwargs)
+        self.set_transient_for(parent)
+        self.clb = clb
+
+    @Gtk.Template.Callback()
+    def on_response(self, dialog, resp):
+        if self.clb:
+            self.clb(dialog.get_default_response() == resp)
+
+
+@Gtk.Template(filename=f"{UI_PATH}shortcuts.ui")
 class ShortcutsWindow(Gtk.ShortcutsWindow):
     __gtype_name__ = "ShortcutsWindow"
 
 
-@Gtk.Template(filename=f'{UI_PATH}app.ui')
+@Gtk.Template(filename=f"{UI_PATH}app.ui")
 class AppWindow(Adw.ApplicationWindow):
-    __gtype_name__ = 'AppWindow'
+    __gtype_name__ = "AppWindow"
 
     navigation_view = Gtk.Template.Child()
     # Start page.
@@ -289,6 +305,10 @@ class AppWindow(Adw.ApplicationWindow):
 
     def on_realized(self, window: Adw.ApplicationWindow):
         log("Starting...")
+        size = self.settings.get_value("main-window-size")
+        if size:
+            self.set_default_size(*size)
+
         self.reload(Page.START)
         self.init_playback()
         # Redownload playlists by default
@@ -507,9 +527,27 @@ class AppWindow(Adw.ApplicationWindow):
             self.providers_list.append(p_row)
 
     @Gtk.Template.Callback()
+    def on_provider_activated(self, list_box: Gtk.ListBox, widget: ProviderWidget):
+        provider = widget.provider
+        self.active_provider = provider
+        self.settings.set_string("active-provider", provider.name)
+        self.navigate_to(Page.START)
+
+    @Gtk.Template.Callback()
     def on_provider_add(self, button):
+        provider = Provider("", Provider.SEP * 5)
+        self.init_provider_properties(provider)
         self.provider_properties.action_switch_action.set_active(True)
         self.navigate_to(Page.PROVIDER)
+
+    @Gtk.Template.Callback()
+    def on_providers_reset(self, button):
+        def cls(confirm=False):
+            if confirm:
+                self.settings.reset("providers")
+                self.reload()
+
+        QuestionDialog(self, cls).present()
 
     def on_provider_edit(self, win, widget: ProviderWidget):
         self.provider_properties.action_switch_action.set_active(False)
@@ -517,11 +555,34 @@ class AppWindow(Adw.ApplicationWindow):
         self.navigate_to(Page.PROVIDER)
 
     def on_provider_remove(self, win, widget: ProviderWidget):
-        self.providers_list.remove(widget)
         self.providers.remove(widget.provider)
+        self.providers_list.remove(widget)
 
     def on_provider_save(self, button):
+        def cls(confirm=False):
+            self.provider_save() if confirm else self.navigation_view.pop()
+
+        QuestionDialog(self, cls).present()
+
+    def provider_save(self):
+        self.navigation_view.pop()
         add_action = self.provider_properties.action_switch_action.get_active()
+        name = self.provider_properties.name_entry_row.get_text()
+        type_id = ProviderType(self.provider_properties.type_combo_row.get_selected()).name.lower()
+        url = self.provider_properties.url_entry_row.get_text()
+        path = self.provider_properties.path_action_row.get_subtitle()
+        user = self.provider_properties.url_entry_row.get_text()
+        password = self.provider_properties.password_entry_row.get_text()
+        epg = self.provider_properties.epg_source_entry.get_text()
+        if add_action:
+            info = Provider.SEP.join((name, type_id, url, user, password, epg))
+            provider = Provider(name, info)
+            self.providers.append(provider)
+        else:
+            pass
+
+        self.settings.set_strv("providers", [provider.get_info() for provider in self.providers])
+        self.reload(refresh=True)
 
     def init_provider_properties(self, provider: Provider):
         self.provider_properties.name_entry_row.set_text(provider.name)
@@ -726,6 +787,11 @@ class AppWindow(Adw.ApplicationWindow):
             return
         return " ".join(w for w in string.split() if w != word)
 
+    @Gtk.Template.Callback()
+    def on_close_window(self, window):
+        self.settings.set_value("main-window-size", self.get_default_size())
+        return False
+
 
 class Application(Adw.Application):
     def __init__(self, **kwargs):
@@ -734,7 +800,6 @@ class Application(Adw.Application):
                          **kwargs)
         self.add_main_option("log", ord("l"), GLib.OptionFlags.NONE, GLib.OptionArg.NONE, "", None)
         self.add_main_option("debug", ord("d"), GLib.OptionFlags.NONE, GLib.OptionArg.STRING, "", None)
-
         # App style.
         # TODO add option.
         self.style_manager = Adw.StyleManager().get_default()
@@ -765,6 +830,9 @@ class Application(Adw.Application):
 
     def do_shutdown(self):
         """  Performs shutdown tasks. """
+        settings = self.window.settings
+        settings.save()
+
         log("Exiting...")
         Gtk.Application.do_shutdown(self)
 
@@ -788,6 +856,7 @@ class Application(Adw.Application):
         pass
 
     def on_close_app(self, action, value):
+        self.window.emit("close-request")
         self.quit()
 
 

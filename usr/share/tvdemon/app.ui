@@ -28,6 +28,7 @@ Author: Dmitriy Yefremov 2024
     <property name="default-width">560</property>
     <property name="default-height">480</property>
     <property name="icon-name">tv-symbolic</property>
+    <signal name="close-request" handler="on_close_window"/>
     <property name="content">
       <object class="GtkBox">
         <child>
@@ -447,9 +448,9 @@ Author: Dmitriy Yefremov 2024
                         </child>
                         <child type="start">
                           <object class="GtkButton" id="reset_providers_button">
-                            <property name="sensitive">False</property>
                             <property name="icon-name">view-refresh-symbolic</property>
                             <property name="tooltip-text" translatable="yes">Reset providers</property>
+                            <signal name="clicked" handler="on_providers_reset"/>
                           </object>
                         </child>
                       </object>
@@ -462,6 +463,8 @@ Author: Dmitriy Yefremov 2024
                         <property name="margin-bottom">50</property>
                         <child>
                           <object class="GtkListBox" id="providers_list">
+                            <property name="activate-on-single-click">True</property>
+                            <signal name="row-activated" handler="on_provider_activated"/>
                             <style>
                               <class name="boxed-list"/>
                             </style>
