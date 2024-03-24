@@ -65,8 +65,7 @@ class ProviderType(IntEnum):
         for p_type in ProviderType:
             if p_type.name == name:
                 return p_type
-
-        raise ValueError(f"'{name}' is not a valid provider type.")
+        return cls.URL
 
 
 @Gtk.Template(filename=f"{UI_PATH}provider_widget.ui")
