@@ -29,7 +29,7 @@ from enum import StrEnum, IntEnum
 
 import requests
 
-from usr.lib.tvdemon.app.madia import Player
+from .madia import Player
 from .common import *
 from .settings import Settings
 
@@ -58,6 +58,15 @@ class ProviderType(IntEnum):
     URL = 0
     LOCAL = 1
     XTREAM = 2
+
+    @classmethod
+    def from_str(cls, name: str):
+        name = name.upper()
+        for p_type in ProviderType:
+            if p_type.name == name:
+                return p_type
+
+        raise ValueError(f"'{name}' is not a valid provider type.")
 
 
 @Gtk.Template(filename=f"{UI_PATH}provider_widget.ui")
@@ -353,7 +362,7 @@ class AppWindow(Adw.ApplicationWindow):
                         self.status(translate(f"Failed to Download playlist from {p_name}"), provider)
                 else:
                     # Load xtream class
-                    from xtream import XTream
+                    from .xtream import XTream
                     # Download via Xtream
                     self.xtream = XTream(provider.name, provider.username, provider.password, provider.url,
                                          hide_adult_content=False, cache_path=PROVIDERS_PATH)
@@ -551,7 +560,8 @@ class AppWindow(Adw.ApplicationWindow):
 
     def on_provider_edit(self, win, widget: ProviderWidget):
         self.provider_properties.action_switch_action.set_active(False)
-        self.init_provider_properties(widget.provider)
+        self.marked_provider = widget.provider
+        self.init_provider_properties(self.marked_provider)
         self.navigate_to(Page.PROVIDER)
 
     def on_provider_remove(self, win, widget: ProviderWidget):
@@ -571,15 +581,15 @@ class AppWindow(Adw.ApplicationWindow):
         type_id = ProviderType(self.provider_properties.type_combo_row.get_selected()).name.lower()
         url = self.provider_properties.url_entry_row.get_text()
         path = self.provider_properties.path_action_row.get_subtitle()
-        user = self.provider_properties.url_entry_row.get_text()
+        user = self.provider_properties.user_entry_row.get_text()
         password = self.provider_properties.password_entry_row.get_text()
         epg = self.provider_properties.epg_source_entry.get_text()
+        info = Provider.SEP.join((name, type_id, url, user, password, epg))
         if add_action:
-            info = Provider.SEP.join((name, type_id, url, user, password, epg))
             provider = Provider(name, info)
             self.providers.append(provider)
         else:
-            pass
+            self.marked_provider.set_info(info)
 
         self.settings.set_strv("providers", [provider.get_info() for provider in self.providers])
         self.reload(refresh=True)
@@ -590,6 +600,7 @@ class AppWindow(Adw.ApplicationWindow):
         self.provider_properties.url_entry_row.set_text(provider.url)
         self.provider_properties.user_entry_row.set_text(provider.username)
         self.provider_properties.password_entry_row.set_text(provider.password)
+        self.provider_properties.type_combo_row.set_selected(ProviderType.from_str(provider.type_id))
 
     # ******************** Channels ******************** #
 
