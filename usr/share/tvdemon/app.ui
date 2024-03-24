@@ -30,8 +30,8 @@ Author: Dmitriy Yefremov 2024
     <property name="icon-name">tv-symbolic</property>
     <signal name="close-request" handler="on_close_window"/>
     <property name="content">
-      <object class="GtkBox">
-        <child>
+      <object class="AdwToolbarView">
+        <property name="content">
           <object class="AdwNavigationView" id="navigation_view">
             <!-- Start page -->
             <child>
@@ -42,6 +42,17 @@ Author: Dmitriy Yefremov 2024
                   <object class="AdwToolbarView">
                     <child type="top">
                       <object class="AdwHeaderBar">
+                        <child type="start">
+                          <object class="GtkButton">
+                            <property name="child">
+                              <object class="AdwButtonContent">
+                                <property name="icon-name">user-bookmarks-symbolic</property>
+                                <property name="label">0</property>
+                                <property name="tooltip-text">Favorites</property>
+                              </object>
+                            </property>
+                          </object>
+                        </child>
                         <child type="start">
                           <object class="GtkButton" id="start_search_button">
                             <property name="icon-name">edit-find-symbolic</property>
@@ -217,7 +228,6 @@ Author: Dmitriy Yefremov 2024
                         <property name="margin-start">12</property>
                         <property name="margin-end">12</property>
                         <property name="margin-top">12</property>
-                        <property name="margin-bottom">12</property>
                         <child>
                           <object class="GtkFlowBox" id="categories_flowbox">
                             <property name="visible">True</property>
@@ -246,7 +256,6 @@ Author: Dmitriy Yefremov 2024
                         <property name="wide-handle">True</property>
                         <property name="margin-start">12</property>
                         <property name="margin-end">12</property>
-                        <property name="margin-bottom">12</property>
                         <child>
                           <object class="GtkBox" id="channels_box">
                             <child>
@@ -387,7 +396,6 @@ Author: Dmitriy Yefremov 2024
                         <property name="margin-start">12</property>
                         <property name="margin-end">12</property>
                         <property name="margin-top">12</property>
-                        <property name="margin-bottom">12</property>
                         <child>
                           <object class="GtkFlowBox" id="movies_flowbox">
                             <property name="visible">True</property>
@@ -416,7 +424,6 @@ Author: Dmitriy Yefremov 2024
                         <property name="margin-start">12</property>
                         <property name="margin-end">12</property>
                         <property name="margin-top">12</property>
-                        <property name="margin-bottom">12</property>
                         <child>
                           <object class="GtkListBox" id="series_list">
                             <style>
@@ -497,6 +504,89 @@ Author: Dmitriy Yefremov 2024
                 </property>
               </object>
             </child>
+          </object>
+        </property>
+        <child type="bottom">
+          <object class="GtkBox" id="status_bar">
+            <child>
+              <object class="GtkLabel" id="status_label">
+                <property name="can-focus">False</property>
+                <property name="halign">start</property>
+                <property name="justify">center</property>
+                <attributes>
+                  <attribute name="style" value="italic"/>
+                  <attribute name="weight" value="thin"/>
+                </attributes>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox" id="playback_bar">
+                <property name="visible">False</property>
+                <property name="spacing">12</property>
+                <property name="margin-start">3</property>
+                <property name="margin-end">3</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label" translatable="yes">Currently playing:</property>
+                    <attributes>
+                      <attribute name="style" value="oblique"/>
+                      <attribute name="weight" value="thin"/>
+                    </attributes>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="playback_label">
+                    <attributes>
+                      <attribute name="style" value="italic"/>
+                      <attribute name="weight" value="bold"/>
+                    </attributes>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox" id="playback_control_box">
+                    <property name="can-focus">False</property>
+                    <property name="spacing">6</property>
+                    <child>
+                      <object class="GtkButton" id="show_button">
+                        <property name="tooltip-text" translatable="yes">Show</property>
+                        <child>
+                          <object class="AdwButtonContent">
+                            <property name="icon-name">view-reveal-symbolic</property>
+                          </object>
+                        </child>
+                        <signal name="clicked" handler="on_playback_show"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="pause_button">
+                        <property name="can-focus">True</property>
+                        <property name="tooltip-text" translatable="yes">Pause</property>
+                        <child>
+                          <object class="AdwButtonContent">
+                            <property name="icon-name">media-playback-pause-symbolic</property>
+                          </object>
+                        </child>
+                        <signal name="clicked" handler="on_playback_pause"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="stop_button">
+                        <property name="tooltip-text" translatable="yes">Stop</property>
+                        <child>
+                          <object class="AdwButtonContent">
+                            <property name="icon-name">media-playback-stop-symbolic</property>
+                          </object>
+                        </child>
+                        <signal name="clicked" handler="on_playback_stop"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <style>
+              <class name="toolbar"/>
+            </style>
           </object>
         </child>
       </object>

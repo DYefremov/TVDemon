@@ -228,6 +228,10 @@ class AppWindow(Adw.ApplicationWindow):
     # Providers page.
     providers_list = Gtk.Template.Child()
     provider_properties = Gtk.Template.Child()
+    # Status bar.
+    status_bar = Gtk.Template.Child()
+    status_label = Gtk.Template.Child()
+    playback_bar = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -411,19 +415,19 @@ class AppWindow(Adw.ApplicationWindow):
         return False
 
     @idle_function
-    def status(self, string, provider=None):
-        if string is None:
-            # self.status_label.set_text("")
-            # self.status_label.hide()
+    def status(self, msg, provider=None):
+        if msg is None:
+            self.status_label.set_text("")
+            self.status_label.hide()
             return
-        # self.status_label.show()
+        self.status_label.show()
         if provider:
-            status = f"{provider.name}: {string}"
-            # self.status_label.set_text(status)
+            status = f"{provider.name}: {msg}"
+            self.status_label.set_text(status)
             log(status)
         else:
-            # self.status_label.set_text(string)
-            log(string)
+            self.status_label.set_text(msg)
+            log(msg)
 
     def navigate_to(self, page: Page):
         if page is Page.START:
@@ -711,6 +715,19 @@ class AppWindow(Adw.ApplicationWindow):
             self.channel_info.set_subtitle(channel.url)
             GLib.timeout_add(200, self.player.play, channel.url)
 
+    @Gtk.Template.Callback()
+    def on_playback_stop(self, button):
+        self.playback_bar.hide()
+        self.player.stop()
+
+    @Gtk.Template.Callback()
+    def on_playback_pause(self, button):
+        self.player.pause()
+
+    @Gtk.Template.Callback()
+    def on_playback_show(self, button):
+        self.navigate_to(Page.CHANNELS)
+
     def on_played(self, player: Player, status: int):
         self.playback_stack.set_visible_child_name(PLaybackPage.PLAYBACK)
 
@@ -743,7 +760,7 @@ class AppWindow(Adw.ApplicationWindow):
             self.channels_header.hide()
             self.channels_paned.set_margin_start(0)
             self.channels_paned.set_margin_end(0)
-            self.channels_paned.set_margin_bottom(0)
+            self.status_bar.hide()
             if self._is_tv_mode:
                 self.channels_box.hide()
             self.fullscreen()
@@ -751,8 +768,7 @@ class AppWindow(Adw.ApplicationWindow):
             self.channels_header.show()
             self.channels_paned.set_margin_start(12)
             self.channels_paned.set_margin_end(12)
-            self.channels_paned.set_margin_bottom(12)
-
+            self.status_bar.show()
             if self._is_tv_mode:
                 self.channels_box.show()
             self.unfullscreen()
