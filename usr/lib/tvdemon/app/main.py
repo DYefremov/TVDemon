@@ -232,6 +232,7 @@ class AppWindow(Adw.ApplicationWindow):
     status_bar = Gtk.Template.Child()
     status_label = Gtk.Template.Child()
     playback_bar = Gtk.Template.Child()
+    playback_label = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -623,7 +624,8 @@ class AppWindow(Adw.ApplicationWindow):
             self.download_channel_logos(logos_to_refresh)
 
     def get_ch_widget(self, channel: Channel, logos_to_refresh: list):
-        pixbuf = get_pixbuf_from_file(channel.logo_path)
+        path = channel.logo_path
+        pixbuf = get_pixbuf_from_file(path) if path else None
         widget = ChannelWidget(channel, pixbuf)
         if not pixbuf:
             logos_to_refresh.append((channel, widget.logo))
@@ -713,6 +715,7 @@ class AppWindow(Adw.ApplicationWindow):
             self.playback_stack.set_visible_child_name(PLaybackPage.LOAD)
             self.channel_info.set_title(channel.name)
             self.channel_info.set_subtitle(channel.url)
+            self.playback_label.set_text(channel.name)
             GLib.timeout_add(200, self.player.play, channel.url)
 
     @Gtk.Template.Callback()
@@ -779,9 +782,11 @@ class AppWindow(Adw.ApplicationWindow):
         page = Page(view.get_visible_page().get_tag())
         self.is_tv_mode = self.current_page not in (Page.MOVIES, Page.SERIES)
         self.current_page = page
+        self.playback_bar.set_visible(self.current_page is not Page.CHANNELS and self.player.is_playing())
 
     def on_navigation_view_popped(self, view: Adw.NavigationView, prev_page: Adw.NavigationPage):
         self.current_page = Page(view.get_visible_page().get_tag())
+        self.playback_bar.set_visible(self.current_page is not Page.CHANNELS and self.player.is_playing())
 
     @async_function
     def download_channel_logos(self, logos_to_refresh: list):

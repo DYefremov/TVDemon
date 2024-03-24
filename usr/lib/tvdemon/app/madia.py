@@ -71,6 +71,9 @@ class Player(GObject.GObject):
     def volume_down(self):
         pass
 
+    def is_playing(self):
+        pass
+
     @staticmethod
     def get_instance(lib: str, widget: Gdk.Paintable):
         if lib == "gst":
@@ -156,6 +159,9 @@ class GstPlayer(Player):
             self._player.set_state(self.STATE.PAUSED)
         elif state == self.STATE.PAUSED:
             self._player.set_state(self.STATE.PLAYING)
+
+    def is_playing(self):
+        return self._player.get_state(self.STATE.NULL).state is self.STATE.PLAYING
 
     def release(self):
         if self._player:
