@@ -26,6 +26,7 @@ __all__ = ("APP_ID", "log", "Gtk", "Gdk", "Adw", "Gio", "GdkPixbuf", "GLib", "Pa
            "BADGES", "MOVIES_GROUP", "PROVIDERS_PATH", "SERIES_GROUP", "TV_GROUP")
 
 import gettext
+import json
 import locale
 import logging
 import os
@@ -81,6 +82,7 @@ BASE_PATH = f"{PREFIX}share{os.sep}"
 UI_PATH = f"{BASE_PATH}tvdemon{os.sep}"
 LOCALE_DIR = f"{BASE_PATH}locale"
 PROVIDERS_PATH = os.path.join(os.path.normpath(GLib.get_user_cache_dir()), APP, "providers")
+FAVORITES_PATH = os.path.join(GLib.get_user_cache_dir(), APP, "favorites")
 
 if not os.path.exists(UI_PATH):
     UI_PATH = f".{UI_PATH}"
@@ -439,6 +441,25 @@ class Manager:
             if line.startswith("#EXTM3U"):
                 return dict(PARAMS.findall(line)).get("x-tvg-url", "")
             return ""
+
+    def load_favorites(self):
+        path = Path(FAVORITES_PATH)
+        try:
+            groups = json.loads(path.read_text()) if path.is_file() else []
+            if not groups:
+                groups.append({"name": "Default", "channels": [], "is_default": True})
+                return groups
+
+            return [Group.from_dict(g) for g in groups]
+        except Exception as e:
+            self.debug(f"Restoring favorites error: {e}")
+
+    def save_favorites(self, groups):
+        """ Stores the current favorites groups. """
+        try:
+            Path(FAVORITES_PATH).write_text(json.dumps(groups, default=vars))
+        except Exception as e:
+            self.debug(f"Storing favorites error: {e}")
 
 
 if __name__ == '__main__':
