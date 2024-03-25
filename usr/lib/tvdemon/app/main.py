@@ -175,6 +175,11 @@ class PreferencesPage(Adw.PreferencesPage):
         select_path(row.set_subtitle)
 
 
+@Gtk.Template(filename=f"{UI_PATH}favorites.ui")
+class FavoritesPage(Adw.NavigationPage):
+    __gtype_name__ = "FavoritesPage"
+
+
 @Gtk.Template(filename=f"{UI_PATH}question_dialog.ui")
 class QuestionDialog(Adw.MessageDialog):
     __gtype_name__ = "QuestionDialog"
