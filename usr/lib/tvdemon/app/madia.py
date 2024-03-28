@@ -103,12 +103,15 @@ class GstPlayer(Player):
         else:
             self.STATE = Gst.State
             self.STAT_RETURN = Gst.StateChangeReturn
-
-            self._player = Gst.ElementFactory.make("playbin", "player")
             # -> gst-plugin-gtk4
             gtk_sink = Gst.ElementFactory.make("gtk4paintablesink")
-            self._player.set_property("video-sink", gtk_sink)
-            self.widget.set_paintable(gtk_sink.props.paintable)
+            if gtk_sink:
+                self._player.set_property("video-sink", gtk_sink)
+                self.widget.set_paintable(gtk_sink.props.paintable)
+            else:
+                msg = f"Error: The Gtk4 plugin for GStreamer is not initialized. Check that it is installed!"
+                log(msg)
+                raise ImportError(msg)
 
             # TODO add to *.css file.
             provider = Gtk.CssProvider()

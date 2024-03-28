@@ -335,9 +335,14 @@ class AppWindow(Adw.ApplicationWindow):
         self._timer_id = GLib.timeout_add_seconds(self.reload_timeout_sec, self.force_reload)
 
     def init_playback(self):
-        self.player = Player.get_instance("gst", self.playback_widget)
-        self.player.connect("played", self.on_played)
-        self.player.connect("error", self.on_playback_error)
+        try:
+            self.player = Player.get_instance("gst", self.playback_widget)
+        except (ImportError, NameError) as e:
+            self.playback_status_page.set_description(str(e))
+            GLib.idle_add(self.on_playback_error, self.player, "Not initialized!")
+        else:
+            self.player.connect("played", self.on_played)
+            self.player.connect("error", self.on_playback_error)
 
     @async_function
     def reload(self, page=None, refresh=False):
@@ -788,11 +793,13 @@ class AppWindow(Adw.ApplicationWindow):
         page = Page(view.get_visible_page().get_tag())
         self.is_tv_mode = self.current_page not in (Page.MOVIES, Page.SERIES)
         self.current_page = page
-        self.playback_bar.set_visible(self.current_page is not Page.CHANNELS and self.player.is_playing())
+        if self.player:
+            self.playback_bar.set_visible(self.current_page is not Page.CHANNELS and self.player.is_playing())
 
     def on_navigation_view_popped(self, view: Adw.NavigationView, prev_page: Adw.NavigationPage):
         self.current_page = Page(view.get_visible_page().get_tag())
-        self.playback_bar.set_visible(self.current_page is not Page.CHANNELS and self.player.is_playing())
+        if self.player:
+            self.playback_bar.set_visible(all(self.current_page is not Page.CHANNELS and self.player.is_playing()))
 
     @async_function
     def download_channel_logos(self, logos_to_refresh: list):
