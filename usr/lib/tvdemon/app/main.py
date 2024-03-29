@@ -799,7 +799,7 @@ class AppWindow(Adw.ApplicationWindow):
     def on_navigation_view_popped(self, view: Adw.NavigationView, prev_page: Adw.NavigationPage):
         self.current_page = Page(view.get_visible_page().get_tag())
         if self.player:
-            self.playback_bar.set_visible(all(self.current_page is not Page.CHANNELS and self.player.is_playing()))
+            self.playback_bar.set_visible(self.current_page is not Page.CHANNELS and self.player.is_playing())
 
     @async_function
     def download_channel_logos(self, logos_to_refresh: list):

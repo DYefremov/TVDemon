@@ -106,6 +106,7 @@ class GstPlayer(Player):
             # -> gst-plugin-gtk4
             gtk_sink = Gst.ElementFactory.make("gtk4paintablesink")
             if gtk_sink:
+                self._player = Gst.ElementFactory.make("playbin", "player")
                 self._player.set_property("video-sink", gtk_sink)
                 self.widget.set_paintable(gtk_sink.props.paintable)
             else:
