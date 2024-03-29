@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2024 Dmitriy Yefremov <https://github.com/DYefremov>
+
+This file is part of TVDemon.
+
+TVDemon is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+TVDemon is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with TVDemon.  If not, see <http://www.gnu.org/licenses/>.
+
+Author: Dmitriy Yefremov 2024
+
+-->
+<interface>
+  <!-- interface-name favorites_group_widget.ui -->
+  <requires lib="gtk" version="4.12"/>
+  <requires lib="libadwaita" version="1.5"/>
+  <template class="FavoritesGroupWidget" parent="AdwActionRow">
+    <property name="use-markup">True</property>
+    <property name="activatable">True</property>
+    <property name="icon-name">user-bookmarks-symbolic</property>
+    <child type="suffix">
+      <object class="GtkBox">
+        <property name="orientation">horizontal</property>
+        <property name="halign">center</property>
+        <property name="valign">center</property>
+        <property name="spacing">6</property>
+        <child>
+          <object class="GtkButton">
+            <property name="icon-name">document-edit-symbolic</property>
+            <property name="tooltip-text" translatable="yes">Edit</property>
+            <signal name="clicked" handler="on_edit"/>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="icon-name">edit-delete-symbolic</property>
+            <property name="tooltip-text" translatable="yes">Remove</property>
+            <signal name="clicked" handler="on_remove"/>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

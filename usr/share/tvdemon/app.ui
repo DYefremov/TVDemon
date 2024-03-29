@@ -210,7 +210,7 @@ Author: Dmitriy Yefremov 2024
             </child>
             <!-- Favorites page -->
             <child>
-              <object class="FavoritesPage"/>
+              <object class="FavoritesPage" id="favorites_page"/>
             </child>
             <!-- Categories page -->
             <child>

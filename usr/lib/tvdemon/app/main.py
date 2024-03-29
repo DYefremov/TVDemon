@@ -147,15 +147,31 @@ class GroupWidget(Gtk.FlowBoxChild):
 
     def __init__(self, data, name, logo_pixbuf=None, orientation=Gtk.Orientation.HORIZONTAL, **kwargs):
         super().__init__(**kwargs)
-        self._data = data
+        self.data = data
         self.name = name
         self.label.set_text(name)
         self.box.set_orientation(orientation)
         self.logo.set_from_pixbuf(logo_pixbuf) if logo_pixbuf else None
 
-    @property
-    def data(self):
-        return self._data
+
+@Gtk.Template(filename=f"{UI_PATH}favorites_group_widget.ui")
+class FavoritesGroupWidget(Adw.ActionRow):
+    """ A custom widget for displaying and holding favorite group data. """
+    __gtype_name__ = "FavoritesGroupWidget"
+
+    def __init__(self, group, **kwargs):
+        super().__init__(**kwargs)
+        self.group = group
+        self.set_title(group.get("name", ""))
+        self.set_subtitle(f"{translate('Channels')}: {len(group.get('channels'))}")
+
+    @Gtk.Template.Callback()
+    def on_edit(self, button):
+        pass
+
+    @Gtk.Template.Callback()
+    def on_remove(self, button):
+        pass
 
 
 @Gtk.Template(filename=f"{UI_PATH}preferences.ui")
@@ -178,6 +194,15 @@ class PreferencesPage(Adw.PreferencesPage):
 @Gtk.Template(filename=f"{UI_PATH}favorites.ui")
 class FavoritesPage(Adw.NavigationPage):
     __gtype_name__ = "FavoritesPage"
+
+    group_list = Gtk.Template.Child()
+
+    @idle_function
+    def set_groups(self, groups):
+        self.group_list.remove_all()
+        for g in groups:
+            w = FavoritesGroupWidget(g)
+            self.group_list.append(w)
 
 
 @Gtk.Template(filename=f"{UI_PATH}question_dialog.ui")
@@ -239,6 +264,8 @@ class AppWindow(Adw.ApplicationWindow):
     status_label = Gtk.Template.Child()
     playback_bar = Gtk.Template.Child()
     playback_label = Gtk.Template.Child()
+    # Favorites.
+    favorites_page = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -346,6 +373,10 @@ class AppWindow(Adw.ApplicationWindow):
 
     @async_function
     def reload(self, page=None, refresh=False):
+        if not refresh:
+            self.status(translate("Loading favorites..."))
+            self.favorites_page.set_groups(self.manager.load_favorites())
+
         self.status(translate("Loading providers..."))
         self.providers = []
         for provider_info in self.settings.get_strv("providers"):

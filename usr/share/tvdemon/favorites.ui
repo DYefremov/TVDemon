@@ -25,7 +25,7 @@ Author: Dmitriy Yefremov 2024
   <requires lib="gtk" version="4.12"/>
   <requires lib="libadwaita" version="1.5"/>
   <template class="FavoritesPage" parent="AdwNavigationPage">
-    <property name="title" translatable="yes">Favorites</property>
+    <property name="title" translatable="yes">Favorite groups</property>
     <property name="tag">favorites-page</property>
     <property name="child">
       <object class="AdwToolbarView">
@@ -37,38 +37,22 @@ Author: Dmitriy Yefremov 2024
                 <property name="tooltip-text" translatable="yes">New Group</property>
               </object>
             </child>
-            <child type="start">
-              <object class="GtkButton">
-                <property name="child">
-                  <object class="AdwButtonContent">
-                    <property name="icon-name">edit-delete-symbolic</property>
-                    <property name="tooltip-text" translatable="yes">Remove</property>
-                  </object>
-                </property>
-              </object>
-            </child>
-            <child type="start">
-              <object class="GtkButton">
-                <property name="child">
-                  <object class="AdwButtonContent">
-                    <property name="icon-name">edit-clear-all-symbolic</property>
-                    <property name="tooltip-text" translatable="yes">Remove All</property>
-                  </object>
-                </property>
-              </object>
-            </child>
           </object>
         </child>
         <property name="content">
           <object class="GtkScrolledWindow">
-            <property name="margin-start">12</property>
-            <property name="margin-end">12</property>
-            <property name="margin-top">12</property>
+            <property name="margin-start">50</property>
+            <property name="margin-end">50</property>
+            <property name="margin-top">50</property>
+            <property name="margin-bottom">50</property>
             <child>
-              <object class="GtkFlowBox" id="favorites_group_flowbox">
+              <object class="GtkListBox" id="group_list">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="valign">start</property>
+                <style>
+                  <class name="boxed-list"/>
+                </style>
               </object>
             </child>
           </object>
