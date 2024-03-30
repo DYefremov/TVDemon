@@ -37,15 +37,60 @@ Author: Dmitriy Yefremov 2024
             <property name="margin-top">6</property>
             <property name="margin-bottom">6</property>
             <child>
-              <object class="GtkImage" id="logo">
-                <property name="icon-name">tv-symbolic</property>
-                <property name="icon-size">2</property>
+              <object class="GtkBox">
+                <property name="orientation">horizontal</property>
+                <property name="spacing">6</property>
+                <child>
+                  <object class="GtkImage" id="logo">
+                    <property name="icon-name">tv-symbolic</property>
+                    <property name="icon-size">2</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label">
+                    <property name="max-width-chars">30</property>
+                    <property name="ellipsize">end</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
-              <object class="GtkLabel" id="label">
-                <property name="max-width-chars">30</property>
-                <property name="ellipsize">end</property>
+              <object class="GtkBox" id="epg_box">
+                <property name="orientation">horizontal</property>
+                <property name="spacing">6</property>
+                <child>
+                  <object class="GtkButton" id="epg_button">
+                    <property name="icon-name">media-view-subtitles-symbolic</property>
+                    <property name="tooltip-text" translatable="yes">Show EPG</property>
+                    <style>
+                      <class name="flat"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="epg_label">
+                    <property name="label">N/A</property>
+                    <property name="ellipsize">end</property>
+                    <property name="halign">start</property>
+                    <property name="hexpand">True</property>
+                    <attributes>
+                      <attribute name="style" value="italic"/>
+                    </attributes>
+                    <style>
+                      <class name="caption"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="fav_button">
+                    <property name="visible">False</property>
+                    <property name="icon-name">user-bookmarks-symbolic</property>
+                    <property name="tooltip-text" translatable="yes">Remove from Favorites</property>
+                    <style>
+                      <class name="flat"/>
+                    </style>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
