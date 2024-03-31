@@ -82,13 +82,10 @@ Author: Dmitriy Yefremov 2024
                   </object>
                 </child>
                 <child>
-                  <object class="GtkButton" id="fav_button">
+                  <object class="GtkImage" id="fav_logo">
                     <property name="visible">False</property>
                     <property name="icon-name">user-bookmarks-symbolic</property>
-                    <property name="tooltip-text" translatable="yes">Remove from Favorites</property>
-                    <style>
-                      <class name="flat"/>
-                    </style>
+                    <property name="icon-size">0</property>
                   </object>
                 </child>
               </object>
