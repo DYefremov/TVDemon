@@ -24,7 +24,7 @@ __all__ = ("Page", "PLaybackPage", "ProviderType", "ProviderWidget", "ProviderPr
            "FavoritesPage", "QuestionDialog", "ShortcutsWindow")
 
 from enum import StrEnum, IntEnum
-from .common import UI_PATH, Adw, Gtk, GObject, idle_function, translate, select_path
+from .common import UI_PATH, Adw, Gtk, GObject, idle_function, translate, select_path, Group
 
 
 class Page(StrEnum):
@@ -191,19 +191,22 @@ class FavoritesGroupWidget(Adw.ActionRow):
     """ A custom widget for displaying and holding favorite group data. """
     __gtype_name__ = "FavoritesGroupWidget"
 
-    def __init__(self, group, **kwargs):
+    remove_button = Gtk.Template.Child()
+
+    def __init__(self, page, group, **kwargs):
         super().__init__(**kwargs)
+        self.page = page
         self.group = group
         self.set_title(group.name)
         self.update_channels_count()
 
     @Gtk.Template.Callback()
     def on_edit(self, button):
-        pass
+        self.page.emit("favorite-group-edit", self)
 
     @Gtk.Template.Callback()
     def on_remove(self, button):
-        pass
+        self.page.emit("favorite-group-remove", self)
 
     def append_channel(self, channel):
         self.group.channels.append(channel)
@@ -226,6 +229,10 @@ class FavoritesPage(Adw.NavigationPage):
                            (GObject.TYPE_PYOBJECT,))
         GObject.signal_new("favorite-group-activated", self, GObject.SignalFlags.RUN_FIRST, GObject.TYPE_PYOBJECT,
                            (GObject.TYPE_PYOBJECT,))
+        GObject.signal_new("favorite-group-remove", self, GObject.SignalFlags.RUN_FIRST, GObject.TYPE_PYOBJECT,
+                           (GObject.TYPE_PYOBJECT,))
+        GObject.signal_new("favorite-group-edit", self, GObject.SignalFlags.RUN_FIRST, GObject.TYPE_PYOBJECT,
+                           (GObject.TYPE_PYOBJECT,))
         GObject.signal_new("favorite-list-updated", self, GObject.SignalFlags.RUN_FIRST, GObject.TYPE_PYOBJECT,
                            (GObject.TYPE_PYOBJECT,))
 
@@ -233,20 +240,28 @@ class FavoritesPage(Adw.NavigationPage):
         self.channels_count = 0
 
         self.connect("favorite-add", self.on_favorite_add)
+        self.connect("favorite-group-remove", self.on_group_remove)
 
     @Gtk.Template.Callback()
     def on_group_activated(self, box: Gtk.ListBox, group_widget: FavoritesGroupWidget):
         self.emit("favorite-group-activated", group_widget.group)
 
+    @Gtk.Template.Callback()
+    def on_new_group(self, button):
+        self.group_list.append(FavoritesGroupWidget(self, Group("New group")))
+        [g.remove_button.set_sensitive(True) for g in self.group_list]
+
     @idle_function
     def set_groups(self, groups):
         self.group_list.remove_all()
         for g in groups:
-            w = FavoritesGroupWidget(g)
+            w = FavoritesGroupWidget(self, g)
             if g.is_default:
                 self.current_group = w
             self.channels_count += len(g.channels)
             self.group_list.append(w)
+
+        self.current_group.remove_button.set_sensitive(len(groups) > 1)
         self.emit("favorite-list-updated", self.channels_count)
 
     def get_groups(self):
@@ -256,6 +271,12 @@ class FavoritesPage(Adw.NavigationPage):
         self.current_group.append_channel(channel)
         self.channels_count += 1
         self.emit("favorite-list-updated", self.channels_count)
+
+    def on_group_remove(self, page, group_widget):
+        self.channels_count -= len(group_widget.group.channels)
+        self.group_list.remove(group_widget)
+        self.current_group = self.group_list.get_first_child()
+        self.current_group.remove_button.set_sensitive(len((list(self.group_list))) > 1)
 
 
 if __name__ == "__main__":
