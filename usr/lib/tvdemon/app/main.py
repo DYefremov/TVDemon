@@ -574,6 +574,7 @@ class AppWindow(Adw.ApplicationWindow):
         self.fav_button_content.set_label(str(count))
 
     def on_favorite_group_activated(self, favorites: FavoritesPage, group: Group):
+        self.content_type = TV_GROUP
         self.show_channels(group.channels)
 
     # ******************** Playback ******************** #
