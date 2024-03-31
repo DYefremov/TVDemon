@@ -266,6 +266,7 @@ Author: Dmitriy Yefremov 2024
                                 <property name="tooltip-text" translatable="yes">AAdd to favorites</property>
                               </object>
                             </property>
+                            <signal name="clicked" handler="on_favorite_add"/>
                           </object>
                         </child>
                       </object>

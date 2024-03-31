@@ -447,7 +447,7 @@ class Manager:
         try:
             groups = json.loads(path.read_text()) if path.is_file() else []
             if not groups:
-                groups.append({"name": "Default", "channels": [], "is_default": True})
+                groups.append(Group.from_dict({"name": "Default", "channels": [], "is_default": True}))
                 return groups
 
             return [Group.from_dict(g) for g in groups]

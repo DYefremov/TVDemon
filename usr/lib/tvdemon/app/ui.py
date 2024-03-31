@@ -147,26 +147,6 @@ class GroupWidget(Gtk.FlowBoxChild):
         self.logo.set_from_pixbuf(logo_pixbuf) if logo_pixbuf else None
 
 
-@Gtk.Template(filename=f"{UI_PATH}favorites_group_widget.ui")
-class FavoritesGroupWidget(Adw.ActionRow):
-    """ A custom widget for displaying and holding favorite group data. """
-    __gtype_name__ = "FavoritesGroupWidget"
-
-    def __init__(self, group, **kwargs):
-        super().__init__(**kwargs)
-        self.group = group
-        self.set_title(group.get("name", ""))
-        self.set_subtitle(f"{translate('Channels')}: {len(group.get('channels'))}")
-
-    @Gtk.Template.Callback()
-    def on_edit(self, button):
-        pass
-
-    @Gtk.Template.Callback()
-    def on_remove(self, button):
-        pass
-
-
 @Gtk.Template(filename=f"{UI_PATH}preferences.ui")
 class PreferencesPage(Adw.PreferencesPage):
     __gtype_name__ = "PreferencesPage"
@@ -182,20 +162,6 @@ class PreferencesPage(Adw.PreferencesPage):
     @Gtk.Template.Callback("on_recordings_path_activated")
     def on_recordings_path_select(self, row: Adw.ActionRow):
         select_path(row.set_subtitle)
-
-
-@Gtk.Template(filename=f"{UI_PATH}favorites.ui")
-class FavoritesPage(Adw.NavigationPage):
-    __gtype_name__ = "FavoritesPage"
-
-    group_list = Gtk.Template.Child()
-
-    @idle_function
-    def set_groups(self, groups):
-        self.group_list.remove_all()
-        for g in groups:
-            w = FavoritesGroupWidget(g)
-            self.group_list.append(w)
 
 
 @Gtk.Template(filename=f"{UI_PATH}question_dialog.ui")
@@ -216,6 +182,80 @@ class QuestionDialog(Adw.MessageDialog):
 @Gtk.Template(filename=f"{UI_PATH}shortcuts.ui")
 class ShortcutsWindow(Gtk.ShortcutsWindow):
     __gtype_name__ = "ShortcutsWindow"
+
+
+# ******************** Favorites ******************** #
+
+@Gtk.Template(filename=f"{UI_PATH}favorites_group_widget.ui")
+class FavoritesGroupWidget(Adw.ActionRow):
+    """ A custom widget for displaying and holding favorite group data. """
+    __gtype_name__ = "FavoritesGroupWidget"
+
+    def __init__(self, group, **kwargs):
+        super().__init__(**kwargs)
+        self.group = group
+        self.set_title(group.name)
+        self.update_channels_count()
+
+    @Gtk.Template.Callback()
+    def on_edit(self, button):
+        pass
+
+    @Gtk.Template.Callback()
+    def on_remove(self, button):
+        pass
+
+    def append_channel(self, channel):
+        self.group.channels.append(channel)
+        self.update_channels_count()
+
+    def update_channels_count(self):
+        self.set_subtitle(f"{translate('Channels')}: {len(self.group.channels)}")
+
+
+@Gtk.Template(filename=f"{UI_PATH}favorites.ui")
+class FavoritesPage(Adw.NavigationPage):
+    __gtype_name__ = "FavoritesPage"
+
+    group_list = Gtk.Template.Child()
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # Signals.
+        GObject.signal_new("favorite-add", self, GObject.SignalFlags.RUN_FIRST, GObject.TYPE_PYOBJECT,
+                           (GObject.TYPE_PYOBJECT,))
+        GObject.signal_new("favorite-group-activated", self, GObject.SignalFlags.RUN_FIRST, GObject.TYPE_PYOBJECT,
+                           (GObject.TYPE_PYOBJECT,))
+        GObject.signal_new("favorite-list-updated", self, GObject.SignalFlags.RUN_FIRST, GObject.TYPE_PYOBJECT,
+                           (GObject.TYPE_PYOBJECT,))
+
+        self.current_group = None
+        self.channels_count = 0
+
+        self.connect("favorite-add", self.on_favorite_add)
+
+    @Gtk.Template.Callback()
+    def on_group_activated(self, box: Gtk.ListBox, group_widget: FavoritesGroupWidget):
+        self.emit("favorite-group-activated", group_widget.group)
+
+    @idle_function
+    def set_groups(self, groups):
+        self.group_list.remove_all()
+        for g in groups:
+            w = FavoritesGroupWidget(g)
+            if g.is_default:
+                self.current_group = w
+            self.channels_count += len(g.channels)
+            self.group_list.append(w)
+        self.emit("favorite-list-updated", self.channels_count)
+
+    def get_groups(self):
+        return [g.group for g in self.group_list]
+
+    def on_favorite_add(self, page, channel):
+        self.current_group.append_channel(channel)
+        self.channels_count += 1
+        self.emit("favorite-list-updated", self.channels_count)
 
 
 if __name__ == "__main__":

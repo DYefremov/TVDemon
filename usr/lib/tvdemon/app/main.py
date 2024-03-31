@@ -73,7 +73,8 @@ class AppWindow(Adw.ApplicationWindow):
     playback_bar = Gtk.Template.Child()
     playback_label = Gtk.Template.Child()
     # Favorites.
-    favorites_page = Gtk.Template.Child()
+    fav_button_content = Gtk.Template.Child()
+    favorites = Gtk.Template.Child("favorites_page")
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -140,6 +141,9 @@ class AppWindow(Adw.ApplicationWindow):
         controller.connect("pressed", self.on_playback_mouse_press)
         self.playback_widget.add_controller(controller)
         self.bind_property("is-mouse-cursor-hidden", self.channel_info, "visible", 4)
+        # Favorites.
+        self.favorites.connect("favorite-list-updated", self.on_favorite_list_updated)
+        self.favorites.connect("favorite-group-activated", self.on_favorite_group_activated)
 
     @GObject.Property(type=bool, default=True)
     def is_tv_mode(self):
@@ -183,7 +187,7 @@ class AppWindow(Adw.ApplicationWindow):
     def reload(self, page=None, refresh=False):
         if not refresh:
             self.status(translate("Loading favorites..."))
-            self.favorites_page.set_groups(self.manager.load_favorites())
+            self.favorites.set_groups(self.manager.load_favorites())
 
         self.status(translate("Loading providers..."))
         self.providers = []
@@ -557,6 +561,21 @@ class AppWindow(Adw.ApplicationWindow):
         self.show_channels(None)
         self.play(self.active_channel)
 
+    # ******************** Favorites ******************* #
+
+    @Gtk.Template.Callback()
+    def on_favorite_add(self, button):
+        if self.active_channel:
+            self.favorites.emit("favorite-add", self.active_channel)
+        else:
+            log("Add favorite error: No channel selected!")
+
+    def on_favorite_list_updated(self, favorites: FavoritesPage, count: int):
+        self.fav_button_content.set_label(str(count))
+
+    def on_favorite_group_activated(self, favorites: FavoritesPage, group: Group):
+        self.show_channels(group.channels)
+
     # ******************** Playback ******************** #
 
     @idle_function
@@ -673,6 +692,7 @@ class AppWindow(Adw.ApplicationWindow):
     @Gtk.Template.Callback()
     def on_close_window(self, window):
         self.settings.set_value("main-window-size", self.get_default_size())
+        self.manager.save_favorites(self.favorites.get_groups())
         return False
 
 

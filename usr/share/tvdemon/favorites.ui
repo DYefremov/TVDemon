@@ -53,6 +53,7 @@ Author: Dmitriy Yefremov 2024
                 <style>
                   <class name="boxed-list"/>
                 </style>
+                <signal name="row-activated" handler="on_group_activated"/>
               </object>
             </child>
           </object>
