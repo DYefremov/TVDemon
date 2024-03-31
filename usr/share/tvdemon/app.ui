@@ -259,13 +259,9 @@ Author: Dmitriy Yefremov 2024
                     <child type="top">
                       <object class="AdwHeaderBar" id="channels_header">
                         <child type="start">
-                          <object class="GtkButton">
-                            <property name="child">
-                              <object class="AdwButtonContent">
-                                <property name="icon-name">bookmark-new-symbolic</property>
-                                <property name="tooltip-text" translatable="yes">AAdd to favorites</property>
-                              </object>
-                            </property>
+                          <object class="AdwSplitButton">
+                            <property name="icon-name">bookmark-new-symbolic</property>
+                            <property name="tooltip-text" translatable="yes">AAdd to favorites</property>
                             <signal name="clicked" handler="on_favorite_add"/>
                           </object>
                         </child>
