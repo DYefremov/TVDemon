@@ -320,18 +320,22 @@ class FavoritesPage(Adw.NavigationPage):
         self.current_group = self.group_list.get_first_child()
         self.current_group.remove_button.set_sensitive(len((list(self.group_list))) > 1)
 
-    def on_favorite_channel_dnd_drop(self, drop: Gtk.DropTarget, user_data, x: float, y: float):
+    def on_favorite_channel_dnd_drop(self, drop: Gtk.DropTarget, user_data: FavoriteChannelWidget, x: float, y: float):
         dest_child = self.group_channels_box.get_child_at_pos(x, y)
         if dest_child:
             index = dest_child.get_index()
-            print(index)
+            self.group_channels_box.remove(user_data)
+            self.group_channels_box.insert(user_data, index)
 
     def on_favorite_channel_dnd_prepare(self, drag_source: Gtk.DragSource, x: float, y: float):
         child = self.group_channels_box.get_child_at_pos(x, y)
         if not child:
             return
 
-        content = Gdk.ContentProvider.new_for_value(GObject.Value(child))
+        if child.logo:
+            drag_source.set_icon(child.logo.get_paintable(), 0, 0)
+
+        content = Gdk.ContentProvider.new_for_value(GObject.Value(FavoriteChannelWidget, child))
         return content
 
 
