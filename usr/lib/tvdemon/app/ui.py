@@ -24,7 +24,8 @@ __all__ = ("Page", "PLaybackPage", "ProviderType", "ProviderWidget", "ProviderPr
            "FavoritesPage", "QuestionDialog", "ShortcutsWindow")
 
 from enum import StrEnum, IntEnum
-from .common import UI_PATH, Adw, Gtk, GObject, idle_function, translate, select_path, Group, get_pixbuf_from_file
+from .common import (UI_PATH, Adw, Gtk, Gdk, GObject, idle_function, translate, select_path, Group,
+                     get_pixbuf_from_file)
 
 
 class Page(StrEnum):
@@ -114,8 +115,6 @@ class ProviderProperties(Adw.NavigationPage):
 class ChannelWidget(Gtk.ListBoxRow):
     """ A custom widget for displaying and holding channel data. """
     __gtype_name__ = "ChannelWidget"
-
-    TARGET = "GTK_LIST_BOX_ROW"
 
     label = Gtk.Template.Child()
     logo = Gtk.Template.Child()
@@ -216,6 +215,22 @@ class FavoritesGroupWidget(Adw.ActionRow):
         self.set_subtitle(f"{translate('Channels')}: {len(self.group.channels)}")
 
 
+@Gtk.Template(filename=f"{UI_PATH}favorite_channel_widget.ui")
+class FavoriteChannelWidget(Gtk.FlowBoxChild):
+    __gtype_name__ = "FavoriteChannelWidget"
+
+    label = Gtk.Template.Child()
+    logo = Gtk.Template.Child()
+
+    def __init__(self, channel, logo_pixbuf=None, **kwargs):
+        super().__init__(**kwargs)
+        self.channel = channel
+
+        self.label.set_text(channel.name)
+        self.set_tooltip_text(channel.name)
+        self.logo.set_from_pixbuf(logo_pixbuf) if logo_pixbuf else None
+
+
 @Gtk.Template(filename=f"{UI_PATH}favorites.ui")
 class FavoritesPage(Adw.NavigationPage):
     __gtype_name__ = "FavoritesPage"
@@ -249,6 +264,14 @@ class FavoritesPage(Adw.NavigationPage):
         self.connect("favorite-add", self.on_favorite_add)
         self.connect("favorite-group-edit", self.on_group_edit)
         self.connect("favorite-group-remove", self.on_group_remove)
+        # Group channels DnD.
+        dnd = Gtk.DropTarget.new(FavoriteChannelWidget, Gdk.DragAction.MOVE)
+        dnd.connect("drop", self.on_favorite_channel_dnd_drop)
+        self.group_channels_box.add_controller(dnd)
+        dnd = Gtk.DragSource.new()
+        dnd.set_actions(Gdk.DragAction.MOVE)
+        dnd.connect("prepare", self.on_favorite_channel_dnd_prepare)
+        self.group_channels_box.add_controller(dnd)
 
     @Gtk.Template.Callback()
     def on_group_activated(self, box: Gtk.ListBox, group_widget: FavoritesGroupWidget):
@@ -268,7 +291,8 @@ class FavoritesPage(Adw.NavigationPage):
                 self.current_group = w
             self.channels_count += len(g.channels)
             self.group_list.append(w)
-
+        if not self.current_group:
+            self.current_group = self.group_list.get_first_child()
         self.current_group.remove_button.set_sensitive(len(groups) > 1)
         self.emit("favorite-list-updated", self.channels_count)
 
@@ -287,7 +311,7 @@ class FavoritesPage(Adw.NavigationPage):
         for ch in group.channels:
             path = ch.logo_path
             pixbuf = get_pixbuf_from_file(path) if path else None
-            self.group_channels_box.append(ChannelWidget(ch, pixbuf))
+            self.group_channels_box.append(FavoriteChannelWidget(ch, pixbuf))
         self.navigation_view.push_by_tag(self.FavoritePage.PROPERTIES)
 
     def on_group_remove(self, page, group_widget):
@@ -295,6 +319,20 @@ class FavoritesPage(Adw.NavigationPage):
         self.group_list.remove(group_widget)
         self.current_group = self.group_list.get_first_child()
         self.current_group.remove_button.set_sensitive(len((list(self.group_list))) > 1)
+
+    def on_favorite_channel_dnd_drop(self, drop: Gtk.DropTarget, user_data, x: float, y: float):
+        dest_child = self.group_channels_box.get_child_at_pos(x, y)
+        if dest_child:
+            index = dest_child.get_index()
+            print(index)
+
+    def on_favorite_channel_dnd_prepare(self, drag_source: Gtk.DragSource, x: float, y: float):
+        child = self.group_channels_box.get_child_at_pos(x, y)
+        if not child:
+            return
+
+        content = Gdk.ContentProvider.new_for_value(GObject.Value(child))
+        return content
 
 
 if __name__ == "__main__":
