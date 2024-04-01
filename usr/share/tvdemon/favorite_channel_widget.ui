@@ -48,8 +48,26 @@ Author: Dmitriy Yefremov 2024
                 </child>
                 <child>
                   <object class="GtkLabel" id="label">
-                    <property name="max-width-chars">30</property>
+                    <property name="max-width-chars">15</property>
                     <property name="ellipsize">end</property>
+                    <property name="hexpand">True</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="show_button">
+                    <property name="sensitive">False</property>
+                    <property name="icon-name">media-playback-start-symbolic</property>
+                    <property name="has-frame">False</property>
+                    <property name="tooltip-text" translatable="yes">Playback</property>
+                    <signal name="clicked" handler="on_playback"/>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="remove_button">
+                    <property name="icon-name">edit-delete-symbolic</property>
+                    <property name="has-frame">False</property>
+                    <property name="tooltip-text" translatable="yes">Remove</property>
+                    <signal name="clicked" handler="on_remove"/>
                   </object>
                 </child>
               </object>

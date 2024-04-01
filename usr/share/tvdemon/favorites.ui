@@ -111,6 +111,7 @@ Author: Dmitriy Yefremov 2024
                     <child>
                       <object class="AdwPreferencesGroup">
                         <property name="title" translatable="yes">Channels</property>
+                        <property name="tooltip-text" translatable="yes">Drag to desired position.</property>
                         <property name="margin-start">12</property>
                         <property name="margin-end">12</property>
                         <property name="margin-top">12</property>
@@ -122,6 +123,7 @@ Author: Dmitriy Yefremov 2024
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <property name="valign">start</property>
+                                <property name="homogeneous">True</property>
                                 <child type="placeholder">
                                   <object class="GtkLabel" id="channels_place_holder_label">
                                     <property name="visible">True</property>

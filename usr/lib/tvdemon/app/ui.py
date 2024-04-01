@@ -227,8 +227,15 @@ class FavoriteChannelWidget(Gtk.FlowBoxChild):
         self.channel = channel
 
         self.label.set_text(channel.name)
-        self.set_tooltip_text(channel.name)
         self.logo.set_from_pixbuf(logo_pixbuf) if logo_pixbuf else None
+
+    @Gtk.Template.Callback()
+    def on_remove(self, button):
+        self.get_parent().remove(self)
+
+    @Gtk.Template.Callback()
+    def on_playback(self, button):
+        pass
 
 
 @Gtk.Template(filename=f"{UI_PATH}favorites.ui")
