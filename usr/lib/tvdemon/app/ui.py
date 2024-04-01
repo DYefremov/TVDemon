@@ -24,7 +24,7 @@ __all__ = ("Page", "PLaybackPage", "ProviderType", "ProviderWidget", "ProviderPr
            "FavoritesPage", "QuestionDialog", "ShortcutsWindow")
 
 from enum import StrEnum, IntEnum
-from .common import UI_PATH, Adw, Gtk, GObject, idle_function, translate, select_path, Group
+from .common import UI_PATH, Adw, Gtk, GObject, idle_function, translate, select_path, Group, get_pixbuf_from_file
 
 
 class Page(StrEnum):
@@ -220,7 +220,14 @@ class FavoritesGroupWidget(Adw.ActionRow):
 class FavoritesPage(Adw.NavigationPage):
     __gtype_name__ = "FavoritesPage"
 
+    class FavoritePage(StrEnum):
+        GROUPS = "groups-page"
+        PROPERTIES = "properties-page"
+
+    navigation_view = Gtk.Template.Child()
     group_list = Gtk.Template.Child()
+    group_channels_box = Gtk.Template.Child()
+    group_name_row = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -240,6 +247,7 @@ class FavoritesPage(Adw.NavigationPage):
         self.channels_count = 0
 
         self.connect("favorite-add", self.on_favorite_add)
+        self.connect("favorite-group-edit", self.on_group_edit)
         self.connect("favorite-group-remove", self.on_group_remove)
 
     @Gtk.Template.Callback()
@@ -271,6 +279,16 @@ class FavoritesPage(Adw.NavigationPage):
         self.current_group.append_channel(channel)
         self.channels_count += 1
         self.emit("favorite-list-updated", self.channels_count)
+
+    def on_group_edit(self, page, group_widget):
+        self.group_channels_box.remove_all()
+        group = group_widget.group
+        self.group_name_row.set_text(group.name)
+        for ch in group.channels:
+            path = ch.logo_path
+            pixbuf = get_pixbuf_from_file(path) if path else None
+            self.group_channels_box.append(ChannelWidget(ch, pixbuf))
+        self.navigation_view.push_by_tag(self.FavoritePage.PROPERTIES)
 
     def on_group_remove(self, page, group_widget):
         self.channels_count -= len(group_widget.group.channels)
