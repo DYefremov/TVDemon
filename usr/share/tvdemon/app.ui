@@ -35,6 +35,7 @@ Author: Dmitriy Yefremov 2024
           <object class="AdwToolbarView">
             <property name="content">
               <object class="AdwNavigationView" id="navigation_view">
+                <property name="animate-transitions">False</property>
                 <!-- Start page -->
                 <child>
                   <object class="AdwNavigationPage" id="start_page">
