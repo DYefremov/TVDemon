@@ -101,6 +101,10 @@ gettext.bindtextdomain(APP, LOCALE_DIR)
 gettext.textdomain(APP)
 translate = gettext.gettext
 
+# Adding a search path for the application icon.
+theme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default())
+theme.add_search_path(f".{BASE_PATH}icons")
+
 # M3U parsing regex
 PARAMS = re.compile(r'(\S+)="(.*?)"')
 EXT_INF = re.compile(r'^#EXTINF:(?P<duration>-?\d+?) ?(?P<params>.*),(?P<title>.*?)$')

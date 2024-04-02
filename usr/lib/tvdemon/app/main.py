@@ -20,6 +20,8 @@
 # along with TVDemon  If not, see <http://www.gnu.org/licenses/>.
 #
 
+__version__ = "2.0.0 Pre-Alpha"
+__author__ = "Dmitriy Yefremov"
 
 import gettext
 import os
@@ -766,7 +768,19 @@ class Application(Adw.Application):
         self.window.navigate_to(Page.PREFERENCES)
 
     def on_about_app(self, action, value):
-        pass
+        about = Adw.AboutWindow()
+        about.set_transient_for(self.window)
+        about.set_application_name("TVDemon")
+        about.set_application_icon("tvdemon")
+        about.set_version(__version__)
+        about.set_copyright(f"Copyright © 2024 {__author__}")
+        about.set_developer_name(__author__)
+        about.set_license_type(Gtk.License.GPL_3_0)
+        about.set_translator_credits(translate("translator-credits"))
+        about.set_website("https://github.com/DYefremov/TVDemon")
+        about.set_comments(('<b>TVDemon</b> based on <a href="https://github.com/linuxmint/hypnotix">Hypnotix</a>\n\n'
+                            'This is an IPTV streaming application with support for live TV, movies and series.'))
+        about.present()
 
     def on_close_app(self, action, value):
         self.window.emit("close-request")

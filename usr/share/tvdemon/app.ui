@@ -27,7 +27,7 @@ Author: Dmitriy Yefremov 2024
   <template class="AppWindow" parent="AdwApplicationWindow">
     <property name="default-width">560</property>
     <property name="default-height">480</property>
-    <property name="icon-name">tv-symbolic</property>
+    <property name="icon-name">tvdemon</property>
     <signal name="close-request" handler="on_close_window"/>
     <property name="content">
       <object class="AdwToastOverlay" id="messages_overlay">
