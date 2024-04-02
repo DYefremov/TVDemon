@@ -27,6 +27,8 @@ import gettext
 import os
 import shutil
 import sys
+from pathlib import Path
+
 import requests
 
 from .madia import Player
@@ -439,13 +441,18 @@ class AppWindow(Adw.ApplicationWindow):
     def provider_save(self):
         self.navigation_view.pop()
         add_action = self.provider_properties.action_switch_action.get_active()
+        provider_type = ProviderType(self.provider_properties.type_combo_row.get_selected())
         name = self.provider_properties.name_entry_row.get_text()
-        type_id = ProviderType(self.provider_properties.type_combo_row.get_selected()).name.lower()
-        url = self.provider_properties.url_entry_row.get_text()
-        path = self.provider_properties.path_action_row.get_subtitle()
+        type_id = provider_type.name.lower()
         user = self.provider_properties.user_entry_row.get_text()
         password = self.provider_properties.password_entry_row.get_text()
         epg = self.provider_properties.epg_source_entry.get_text()
+
+        if provider_type is ProviderType.LOCAL:
+            url = self.provider_properties.path_action_row.get_subtitle()
+        else:
+            url = self.provider_properties.url_entry_row.get_text()
+
         info = Provider.SEP.join((name, type_id, url, user, password, epg))
         if add_action:
             provider = Provider(name, info)
@@ -454,7 +461,7 @@ class AppWindow(Adw.ApplicationWindow):
             self.marked_provider.set_info(info)
 
         self.settings.set_strv("providers", [provider.get_info() for provider in self.providers])
-        self.reload(refresh=True)
+        self.reload(refresh=provider_type is not ProviderType.LOCAL)
 
     def init_provider_properties(self, provider: Provider):
         self.provider_properties.name_entry_row.set_text(provider.name)

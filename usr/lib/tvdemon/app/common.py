@@ -152,22 +152,28 @@ def get_pixbuf_from_file(path, size=32) -> GdkPixbuf.Pixbuf:
         pass  # NOP
 
 
-def select_path(callback=None):
+def select_path(parent, callback=None, select_file=False, filters=None):
     """ Selects a path asynchronously.
 
         Calls a callback when completed.
      """
 
-    def finish_func(dialog: Gtk.FileDialog, task: Gio.Task):
+    def finish_func(d: Gtk.FileDialog, task: Gio.Task):
         try:
-            file = dialog.select_folder_finish(task)
+            file = d.open_finish(task) if select_file else d.select_folder_finish(task)
         except GLib.GError:
             pass  # NOP
         else:
             if callback:
                 callback(file.get_path())
 
-    Gtk.FileDialog().select_folder(callback=finish_func)
+    dialog = Gtk.FileDialog()
+    dialog.set_filters(filters)
+    dialog.set_modal(True)
+    if select_file:
+        dialog.open(parent=parent, callback=finish_func)
+    else:
+        dialog.select_folder(parent=parent, callback=finish_func)
 
 
 class Provider:

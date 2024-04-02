@@ -108,7 +108,7 @@ class ProviderProperties(Adw.NavigationPage):
 
     @Gtk.Template.Callback()
     def on_provider_path_activated(self, row: Adw.ActionRow):
-        select_path(row.set_subtitle)
+        select_path(self.get_root(), callback=row.set_subtitle, select_file=True)
 
 
 @Gtk.Template(filename=f"{UI_PATH}channel_widget.ui")
@@ -161,7 +161,7 @@ class PreferencesPage(Adw.PreferencesPage):
 
     @Gtk.Template.Callback("on_recordings_path_activated")
     def on_recordings_path_select(self, row: Adw.ActionRow):
-        select_path(row.set_subtitle)
+        select_path(self.get_root(), callback=row.set_subtitle)
 
 
 @Gtk.Template(filename=f"{UI_PATH}question_dialog.ui")
