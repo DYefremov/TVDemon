@@ -481,6 +481,7 @@ class AppWindow(Adw.ApplicationWindow):
         path = channel.logo_path
         pixbuf = get_pixbuf_from_file(path) if path else None
         widget = ChannelWidget(channel, pixbuf)
+        widget.fav_logo.set_visible(self.favorites.is_favorite(channel))
         if not pixbuf:
             logos_to_refresh.append((channel, widget.logo))
 
@@ -566,7 +567,10 @@ class AppWindow(Adw.ApplicationWindow):
     @Gtk.Template.Callback()
     def on_favorite_add(self, button):
         if self.active_channel:
-            self.favorites.emit("favorite-add", self.active_channel)
+            if self.favorites.is_favorite(self.active_channel):
+                log("The channel is already in your favorites!")
+            else:
+                self.favorites.emit("favorite-add", self.active_channel)
         else:
             log("Add favorite error: No channel selected!")
 

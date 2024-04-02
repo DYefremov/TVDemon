@@ -25,7 +25,7 @@ __all__ = ("Page", "PLaybackPage", "ProviderType", "ProviderWidget", "ProviderPr
 
 from enum import StrEnum, IntEnum
 from .common import (UI_PATH, Adw, Gtk, Gdk, GObject, idle_function, translate, select_path, Group,
-                     get_pixbuf_from_file)
+                     get_pixbuf_from_file, Channel)
 
 
 class Page(StrEnum):
@@ -118,6 +118,7 @@ class ChannelWidget(Gtk.ListBoxRow):
 
     label = Gtk.Template.Child()
     logo = Gtk.Template.Child()
+    fav_logo = Gtk.Template.Child()
 
     def __init__(self, channel, logo_pixbuf=None, **kwargs):
         super().__init__(**kwargs)
@@ -240,6 +241,10 @@ class FavoriteChannelWidget(Gtk.FlowBoxChild):
 
 @Gtk.Template(filename=f"{UI_PATH}favorites.ui")
 class FavoritesPage(Adw.NavigationPage):
+    """ Favorites page class.
+
+       Processes and holds favorite channels data.
+    """
     __gtype_name__ = "FavoritesPage"
 
     class FavoritePage(StrEnum):
@@ -268,6 +273,7 @@ class FavoritesPage(Adw.NavigationPage):
         self.current_group = None
         self.edit_group = None
         self.channels_count = 0
+        self.urls = set()
 
         self.connect("favorite-add", self.on_favorite_add)
         self.connect("favorite-group-edit", self.on_group_edit)
@@ -331,12 +337,14 @@ class FavoritesPage(Adw.NavigationPage):
     @idle_function
     def set_groups(self, groups):
         self.group_list.remove_all()
+        self.urls.clear()
         for g in groups:
             w = FavoritesGroupWidget(self, g)
             if g.is_default:
                 self.current_group = w
             self.channels_count += len(g.channels)
             self.group_list.append(w)
+            [self.urls.add(c.url) for c in g.channels]
         if not self.current_group:
             self.current_group = self.group_list.get_first_child()
         self.current_group.remove_button.set_sensitive(len(groups) > 1)
@@ -367,6 +375,9 @@ class FavoritesPage(Adw.NavigationPage):
 
         content = Gdk.ContentProvider.new_for_value(GObject.Value(FavoriteChannelWidget, child))
         return content
+
+    def is_favorite(self, channel: Channel):
+        return channel.url in self.urls
 
 
 if __name__ == "__main__":
