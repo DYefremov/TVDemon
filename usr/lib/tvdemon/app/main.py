@@ -72,6 +72,8 @@ class AppWindow(Adw.ApplicationWindow):
     status_label = Gtk.Template.Child()
     playback_bar = Gtk.Template.Child()
     playback_label = Gtk.Template.Child()
+    # Overlay.
+    messages_overlay = Gtk.Template.Child()
     # Favorites.
     fav_button_content = Gtk.Template.Child()
     favorites = Gtk.Template.Child("favorites_page")
@@ -568,11 +570,11 @@ class AppWindow(Adw.ApplicationWindow):
     def on_favorite_add(self, button):
         if self.active_channel:
             if self.favorites.is_favorite(self.active_channel):
-                log("The channel is already in your favorites!")
+                self.show_message("The channel is already in your favorites!")
             else:
                 self.favorites.emit("favorite-add", self.active_channel)
         else:
-            log("Add favorite error: No channel selected!")
+            self.show_message("No channel selected!")
 
     def on_favorite_list_updated(self, favorites: FavoritesPage, count: int):
         self.fav_button_content.set_label(str(count))
@@ -651,6 +653,9 @@ class AppWindow(Adw.ApplicationWindow):
             self.unfullscreen()
 
     # ******************** Additional ******************** #
+
+    def show_message(self, message: str):
+        self.messages_overlay.add_toast(Adw.Toast(title=message))
 
     def on_navigation_view_pushed(self, view: Adw.NavigationView):
         page = Page(view.get_visible_page().get_tag())

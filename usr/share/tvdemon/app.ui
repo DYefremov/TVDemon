@@ -30,582 +30,586 @@ Author: Dmitriy Yefremov 2024
     <property name="icon-name">tv-symbolic</property>
     <signal name="close-request" handler="on_close_window"/>
     <property name="content">
-      <object class="AdwToolbarView">
-        <property name="content">
-          <object class="AdwNavigationView" id="navigation_view">
-            <!-- Start page -->
-            <child>
-              <object class="AdwNavigationPage" id="start_page">
-                <property name="title" translatable="yes">TVDemon</property>
-                <property name="tag">start-page</property>
-                <property name="child">
-                  <object class="AdwToolbarView">
-                    <child type="top">
-                      <object class="AdwHeaderBar">
-                        <child type="start">
-                          <object class="GtkButton">
-                            <property name="child">
-                              <object class="AdwButtonContent" id="fav_button_content">
-                                <property name="icon-name">user-bookmarks-symbolic</property>
-                                <property name="label">0</property>
-                                <property name="tooltip-text">Favorites</property>
-                              </object>
-                            </property>
-                            <property name="action-name">navigation.push</property>
-                            <property name="action-target">'favorites-page'</property>
-                          </object>
-                        </child>
-                        <child type="end">
-                          <object class="GtkMenuButton" id="start_preferences_button">
-                            <property name="icon-name">edit-find-symbolic</property>
-                            <property name="menu-model">app_menu</property>
-                            <property name="icon-name">open-menu-symbolic</property>
-                          </object>
-                        </child>
-                        <child type="end">
-                          <object class="GtkButton" id="start_menu_button">
-                            <property name="icon-name">tv-symbolic</property>
-                            <property name="tooltip-text" translatable="yes">Providers</property>
-                            <property name="action-name">navigation.push</property>
-                            <property name="action-target">'providers-page'</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <property name="content">
-                      <object class="GtkBox" id="start_box">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="halign">center</property>
-                        <property name="valign">center</property>
-                        <property name="orientation">vertical</property>
-                        <property name="margin-start">24</property>
-                        <property name="margin-end">24</property>
-                        <property name="margin-top">24</property>
-                        <property name="margin-bottom">24</property>
-                        <child>
-                          <object class="GtkBox">
-                            <property name="visible">True</property>
-                            <property name="halign">center</property>
-                            <property name="valign">center</property>
-                            <property name="spacing">12</property>
-                            <child>
-                              <object class="GtkButton" id="tv_button">
-                                <property name="visible">True</property>
-                                <property name="sensitive">False</property>
-                                <property name="can-focus">True</property>
-                                <property name="receives-default">True</property>
-                                <child>
-                                  <object class="GtkBox" id="tv_button_box">
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">False</property>
-                                    <property name="orientation">vertical</property>
-                                    <property name="spacing">6</property>
-                                    <property name="margin-start">12</property>
-                                    <property name="margin-end">12</property>
-                                    <property name="margin-top">12</property>
-                                    <property name="margin-bottom">12</property>
-                                    <child>
-                                      <object class="GtkImage" id="tv_logo">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="pixel-size">192</property>
-                                        <property name="icon-name">tv</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel" id="tv_label">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <attributes>
-                                          <attribute name="weight" value="bold"/>
-                                        </attributes>
-                                      </object>
-                                    </child>
+      <object class="AdwToastOverlay" id="messages_overlay">
+        <child>
+          <object class="AdwToolbarView">
+            <property name="content">
+              <object class="AdwNavigationView" id="navigation_view">
+                <!-- Start page -->
+                <child>
+                  <object class="AdwNavigationPage" id="start_page">
+                    <property name="title" translatable="yes">TVDemon</property>
+                    <property name="tag">start-page</property>
+                    <property name="child">
+                      <object class="AdwToolbarView">
+                        <child type="top">
+                          <object class="AdwHeaderBar">
+                            <child type="start">
+                              <object class="GtkButton">
+                                <property name="child">
+                                  <object class="AdwButtonContent" id="fav_button_content">
+                                    <property name="icon-name">user-bookmarks-symbolic</property>
+                                    <property name="label">0</property>
+                                    <property name="tooltip-text">Favorites</property>
                                   </object>
-                                </child>
+                                </property>
+                                <property name="action-name">navigation.push</property>
+                                <property name="action-target">'favorites-page'</property>
                               </object>
                             </child>
-                            <child>
-                              <object class="GtkButton" id="movies_button">
-                                <property name="visible">True</property>
-                                <property name="sensitive">False</property>
-                                <property name="can-focus">True</property>
-                                <property name="receives-default">True</property>
-                                <child>
-                                  <object class="GtkBox" id="movies_button_box">
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">False</property>
-                                    <property name="orientation">vertical</property>
-                                    <property name="spacing">6</property>
-                                    <property name="margin-start">12</property>
-                                    <property name="margin-end">12</property>
-                                    <property name="margin-top">12</property>
-                                    <property name="margin-bottom">12</property>
-                                    <child>
-                                      <object class="GtkImage" id="movies_logo">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="pixel-size">192</property>
-                                        <property name="icon-name">tv</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel" id="movies_label">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <attributes>
-                                          <attribute name="weight" value="bold"/>
-                                        </attributes>
-                                      </object>
-                                    </child>
-                                  </object>
-                                </child>
+                            <child type="end">
+                              <object class="GtkMenuButton" id="start_preferences_button">
+                                <property name="icon-name">edit-find-symbolic</property>
+                                <property name="menu-model">app_menu</property>
+                                <property name="icon-name">open-menu-symbolic</property>
                               </object>
                             </child>
-                            <child>
-                              <object class="GtkButton" id="series_button">
-                                <property name="visible">True</property>
-                                <property name="sensitive">False</property>
-                                <property name="can-focus">True</property>
-                                <property name="receives-default">True</property>
-                                <child>
-                                  <object class="GtkBox" id="series_button_box">
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">False</property>
-                                    <property name="orientation">vertical</property>
-                                    <property name="spacing">6</property>
-                                    <property name="margin-start">12</property>
-                                    <property name="margin-end">12</property>
-                                    <property name="margin-top">12</property>
-                                    <property name="margin-bottom">12</property>
-                                    <child>
-                                      <object class="GtkImage" id="series_logo">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="pixel-size">192</property>
-                                        <property name="icon-name">tv</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel" id="series_label">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <attributes>
-                                          <attribute name="weight" value="bold"/>
-                                        </attributes>
-                                      </object>
-                                    </child>
-                                  </object>
-                                </child>
+                            <child type="end">
+                              <object class="GtkButton" id="start_menu_button">
+                                <property name="icon-name">tv-symbolic</property>
+                                <property name="tooltip-text" translatable="yes">Providers</property>
+                                <property name="action-name">navigation.push</property>
+                                <property name="action-target">'providers-page'</property>
                               </object>
                             </child>
                           </object>
                         </child>
-                      </object>
-                    </property>
-                  </object>
-                </property>
-              </object>
-            </child>
-            <!-- Favorites page -->
-            <child>
-              <object class="FavoritesPage" id="favorites_page"/>
-            </child>
-            <!-- Categories page -->
-            <child>
-              <object class="AdwNavigationPage">
-                <property name="title" translatable="yes">Categories</property>
-                <property name="tag">categories-page</property>
-                <property name="child">
-                  <object class="AdwToolbarView">
-                    <child type="top">
-                      <object class="AdwHeaderBar">
-                        <child type="start">
-                          <object class="GtkButton" id="categories_search_button">
-                            <property name="visible">False</property>
-                            <property name="icon-name">edit-find-symbolic</property>
-                            <property name="action-name">navigation.push</property>
-                            <property name="action-target">'search-page'</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <property name="content">
-                      <object class="GtkScrolledWindow">
-                        <property name="margin-start">12</property>
-                        <property name="margin-end">12</property>
-                        <property name="margin-top">12</property>
-                        <child>
-                          <object class="GtkFlowBox" id="categories_flowbox">
+                        <property name="content">
+                          <object class="GtkBox" id="start_box">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="valign">start</property>
-                          </object>
-                        </child>
-                      </object>
-                    </property>
-                  </object>
-                </property>
-              </object>
-            </child>
-            <!-- Channels page -->
-            <child>
-              <object class="AdwNavigationPage">
-                <property name="title" translatable="yes">Channels</property>
-                <property name="tag">channels-page</property>
-                <property name="child">
-                  <object class="AdwToolbarView">
-                    <child type="top">
-                      <object class="AdwHeaderBar" id="channels_header">
-                        <child type="start">
-                          <object class="AdwSplitButton">
-                            <property name="icon-name">bookmark-new-symbolic</property>
-                            <property name="tooltip-text" translatable="yes">AAdd to favorites</property>
-                            <signal name="clicked" handler="on_favorite_add"/>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <property name="content">
-                      <object class="GtkPaned" id="channels_paned">
-                        <property name="wide-handle">True</property>
-                        <property name="margin-start">12</property>
-                        <property name="margin-end">12</property>
-                        <child>
-                          <object class="GtkBox" id="channels_box">
+                            <property name="halign">center</property>
+                            <property name="valign">center</property>
+                            <property name="orientation">vertical</property>
+                            <property name="margin-start">24</property>
+                            <property name="margin-end">24</property>
+                            <property name="margin-top">24</property>
+                            <property name="margin-bottom">24</property>
                             <child>
-                              <object class="GtkScrolledWindow">
-                                <property name="width-request">200</property>
-                                <property name="hexpand">True</property>
+                              <object class="GtkBox">
+                                <property name="visible">True</property>
+                                <property name="halign">center</property>
+                                <property name="valign">center</property>
+                                <property name="spacing">12</property>
                                 <child>
-                                  <object class="GtkListBox" id="channels_list_box">
+                                  <object class="GtkButton" id="tv_button">
                                     <property name="visible">True</property>
-                                    <child type="placeholder">
-                                      <object class="GtkLabel" id="channels_place_holder_label">
+                                    <property name="sensitive">False</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">True</property>
+                                    <child>
+                                      <object class="GtkBox" id="tv_button_box">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes">No channels</property>
-                                      </object>
-                                    </child>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkOverlay" id="playback_info_overlay">
-                            <child type="overlay">
-                              <object class="AdwClamp">
-                                <property name="valign">end</property>
-                                <property name="margin-bottom">24</property>
-                                <child>
-                                  <object class="AdwActionRow" id="channel_info"/>
-                                </child>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkStack" id="playback_stack">
-                                <child>
-                                  <object class="GtkStackPage">
-                                    <property name="name">status</property>
-                                    <property name="child">
-                                      <object class="AdwStatusPage" id="playback_status_page">
-                                        <property name="icon-name">tv-symbolic</property>
-                                      </object>
-                                    </property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkStackPage">
-                                    <property name="name">load</property>
-                                    <property name="child">
-                                      <object class="AdwClamp">
-                                        <property name="maximum-size">64</property>
+                                        <property name="orientation">vertical</property>
+                                        <property name="spacing">6</property>
+                                        <property name="margin-start">12</property>
+                                        <property name="margin-end">12</property>
+                                        <property name="margin-top">12</property>
+                                        <property name="margin-bottom">12</property>
                                         <child>
-                                          <object class="GtkSpinner">
-                                            <property name="spinning">True</property>
+                                          <object class="GtkImage" id="tv_logo">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="pixel-size">192</property>
+                                            <property name="icon-name">tv</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel" id="tv_label">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <attributes>
+                                              <attribute name="weight" value="bold"/>
+                                            </attributes>
                                           </object>
                                         </child>
                                       </object>
-                                    </property>
+                                    </child>
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="GtkStackPage">
-                                    <property name="name">playback</property>
-                                    <property name="child">
-                                      <object class="GtkPicture" id="playback_widget"/>
-                                    </property>
+                                  <object class="GtkButton" id="movies_button">
+                                    <property name="visible">True</property>
+                                    <property name="sensitive">False</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">True</property>
+                                    <child>
+                                      <object class="GtkBox" id="movies_button_box">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="orientation">vertical</property>
+                                        <property name="spacing">6</property>
+                                        <property name="margin-start">12</property>
+                                        <property name="margin-end">12</property>
+                                        <property name="margin-top">12</property>
+                                        <property name="margin-bottom">12</property>
+                                        <child>
+                                          <object class="GtkImage" id="movies_logo">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="pixel-size">192</property>
+                                            <property name="icon-name">tv</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel" id="movies_label">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <attributes>
+                                              <attribute name="weight" value="bold"/>
+                                            </attributes>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="series_button">
+                                    <property name="visible">True</property>
+                                    <property name="sensitive">False</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">True</property>
+                                    <child>
+                                      <object class="GtkBox" id="series_button_box">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="orientation">vertical</property>
+                                        <property name="spacing">6</property>
+                                        <property name="margin-start">12</property>
+                                        <property name="margin-end">12</property>
+                                        <property name="margin-top">12</property>
+                                        <property name="margin-bottom">12</property>
+                                        <child>
+                                          <object class="GtkImage" id="series_logo">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="pixel-size">192</property>
+                                            <property name="icon-name">tv</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel" id="series_label">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <attributes>
+                                              <attribute name="weight" value="bold"/>
+                                            </attributes>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
                                   </object>
                                 </child>
                               </object>
                             </child>
                           </object>
+                        </property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+                <!-- Favorites page -->
+                <child>
+                  <object class="FavoritesPage" id="favorites_page"/>
+                </child>
+                <!-- Categories page -->
+                <child>
+                  <object class="AdwNavigationPage">
+                    <property name="title" translatable="yes">Categories</property>
+                    <property name="tag">categories-page</property>
+                    <property name="child">
+                      <object class="AdwToolbarView">
+                        <child type="top">
+                          <object class="AdwHeaderBar">
+                            <child type="start">
+                              <object class="GtkButton" id="categories_search_button">
+                                <property name="visible">False</property>
+                                <property name="icon-name">edit-find-symbolic</property>
+                                <property name="action-name">navigation.push</property>
+                                <property name="action-target">'search-page'</property>
+                              </object>
+                            </child>
+                          </object>
                         </child>
+                        <property name="content">
+                          <object class="GtkScrolledWindow">
+                            <property name="margin-start">12</property>
+                            <property name="margin-end">12</property>
+                            <property name="margin-top">12</property>
+                            <child>
+                              <object class="GtkFlowBox" id="categories_flowbox">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">start</property>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
                       </object>
                     </property>
                   </object>
-                </property>
-              </object>
-            </child>
-            <!-- Search page -->
-            <child>
-              <object class="AdwNavigationPage">
-                <property name="title" translatable="yes">Search</property>
-                <property name="tag">search-page</property>
-                <property name="child">
-                  <object class="AdwToolbarView">
-                    <child type="top">
-                      <object class="AdwHeaderBar"/>
-                    </child>
-                    <property name="content">
-                      <object class="AdwStatusPage" id="search_status_page">
-                        <property name="title" translatable="yes">No Results Found</property>
-                        <property name="description" translatable="yes">Try a different search</property>
-                        <property name="icon-name">edit-find-symbolic</property>
+                </child>
+                <!-- Channels page -->
+                <child>
+                  <object class="AdwNavigationPage">
+                    <property name="title" translatable="yes">Channels</property>
+                    <property name="tag">channels-page</property>
+                    <property name="child">
+                      <object class="AdwToolbarView">
+                        <child type="top">
+                          <object class="AdwHeaderBar" id="channels_header">
+                            <child type="start">
+                              <object class="AdwSplitButton">
+                                <property name="icon-name">bookmark-new-symbolic</property>
+                                <property name="tooltip-text" translatable="yes">AAdd to favorites</property>
+                                <signal name="clicked" handler="on_favorite_add"/>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <property name="content">
+                          <object class="GtkPaned" id="channels_paned">
+                            <property name="wide-handle">True</property>
+                            <property name="margin-start">12</property>
+                            <property name="margin-end">12</property>
+                            <child>
+                              <object class="GtkBox" id="channels_box">
+                                <child>
+                                  <object class="GtkScrolledWindow">
+                                    <property name="width-request">200</property>
+                                    <property name="hexpand">True</property>
+                                    <child>
+                                      <object class="GtkListBox" id="channels_list_box">
+                                        <property name="visible">True</property>
+                                        <child type="placeholder">
+                                          <object class="GtkLabel" id="channels_place_holder_label">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="label" translatable="yes">No channels</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkOverlay" id="playback_info_overlay">
+                                <child type="overlay">
+                                  <object class="AdwClamp">
+                                    <property name="valign">end</property>
+                                    <property name="margin-bottom">24</property>
+                                    <child>
+                                      <object class="AdwActionRow" id="channel_info"/>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkStack" id="playback_stack">
+                                    <child>
+                                      <object class="GtkStackPage">
+                                        <property name="name">status</property>
+                                        <property name="child">
+                                          <object class="AdwStatusPage" id="playback_status_page">
+                                            <property name="icon-name">tv-symbolic</property>
+                                          </object>
+                                        </property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkStackPage">
+                                        <property name="name">load</property>
+                                        <property name="child">
+                                          <object class="AdwClamp">
+                                            <property name="maximum-size">64</property>
+                                            <child>
+                                              <object class="GtkSpinner">
+                                                <property name="spinning">True</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkStackPage">
+                                        <property name="name">playback</property>
+                                        <property name="child">
+                                          <object class="GtkPicture" id="playback_widget"/>
+                                        </property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
                       </object>
                     </property>
                   </object>
-                </property>
-              </object>
-            </child>
-            <!-- TV page -->
-            <child>
-              <object class="AdwNavigationPage">
-                <property name="title" translatable="yes">TV</property>
-                <property name="tag">tv-page</property>
-                <property name="child">
-                  <object class="AdwToolbarView">
-                    <child type="top">
-                      <object class="AdwHeaderBar"/>
-                    </child>
-                    <property name="content">
-                      <object class="GtkBox" id="tv_box">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="halign">center</property>
-                        <property name="valign">center</property>
-                        <property name="orientation">vertical</property>
-                        <property name="margin-start">50</property>
-                        <property name="margin-end">50</property>
-                        <property name="margin-top">50</property>
-                        <property name="margin-bottom">50</property>
+                </child>
+                <!-- Search page -->
+                <child>
+                  <object class="AdwNavigationPage">
+                    <property name="title" translatable="yes">Search</property>
+                    <property name="tag">search-page</property>
+                    <property name="child">
+                      <object class="AdwToolbarView">
+                        <child type="top">
+                          <object class="AdwHeaderBar"/>
+                        </child>
+                        <property name="content">
+                          <object class="AdwStatusPage" id="search_status_page">
+                            <property name="title" translatable="yes">No Results Found</property>
+                            <property name="description" translatable="yes">Try a different search</property>
+                            <property name="icon-name">edit-find-symbolic</property>
+                          </object>
+                        </property>
                       </object>
                     </property>
                   </object>
-                </property>
-              </object>
-            </child>
-            <!-- Movies page -->
-            <child>
-              <object class="AdwNavigationPage">
-                <property name="title" translatable="yes">Movies</property>
-                <property name="tag">movies-page</property>
-                <property name="child">
-                  <object class="AdwToolbarView">
-                    <child type="top">
-                      <object class="AdwHeaderBar"/>
-                    </child>
-                    <property name="content">
-                      <object class="GtkScrolledWindow">
-                        <property name="margin-start">12</property>
-                        <property name="margin-end">12</property>
-                        <property name="margin-top">12</property>
-                        <child>
-                          <object class="GtkFlowBox" id="movies_flowbox">
+                </child>
+                <!-- TV page -->
+                <child>
+                  <object class="AdwNavigationPage">
+                    <property name="title" translatable="yes">TV</property>
+                    <property name="tag">tv-page</property>
+                    <property name="child">
+                      <object class="AdwToolbarView">
+                        <child type="top">
+                          <object class="AdwHeaderBar"/>
+                        </child>
+                        <property name="content">
+                          <object class="GtkBox" id="tv_box">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="valign">start</property>
+                            <property name="halign">center</property>
+                            <property name="valign">center</property>
+                            <property name="orientation">vertical</property>
+                            <property name="margin-start">50</property>
+                            <property name="margin-end">50</property>
+                            <property name="margin-top">50</property>
+                            <property name="margin-bottom">50</property>
                           </object>
-                        </child>
+                        </property>
                       </object>
                     </property>
                   </object>
-                </property>
-              </object>
-            </child>
-            <!-- Series page -->
-            <child>
-              <object class="AdwNavigationPage">
-                <property name="title" translatable="yes">Series</property>
-                <property name="tag">series-page</property>
-                <property name="child">
-                  <object class="AdwToolbarView">
-                    <child type="top">
-                      <object class="AdwHeaderBar"/>
-                    </child>
-                    <property name="content">
-                      <object class="GtkScrolledWindow">
-                        <property name="margin-start">12</property>
-                        <property name="margin-end">12</property>
-                        <property name="margin-top">12</property>
-                        <child>
-                          <object class="GtkListBox" id="series_list">
-                            <style>
-                              <class name="boxed-list"/>
-                            </style>
-                          </object>
-                        </child>
-                      </object>
-                    </property>
-                  </object>
-                </property>
-              </object>
-            </child>
-            <!-- Providers page -->
-            <child>
-              <object class="AdwNavigationPage">
-                <property name="title" translatable="yes">Providers</property>
-                <property name="tag">providers-page</property>
-                <property name="child">
-                  <object class="AdwToolbarView">
-                    <child type="top">
-                      <object class="AdwHeaderBar">
-                        <child type="start">
-                          <object class="GtkButton" id="add_provider_button">
-                            <property name="icon-name">list-add-symbolic</property>
-                            <property name="tooltip-text" translatable="yes">Add a new provider...</property>
-                            <signal name="clicked" handler="on_provider_add"/>
-                          </object>
-                        </child>
-                        <child type="start">
-                          <object class="GtkButton" id="reset_providers_button">
-                            <property name="icon-name">view-refresh-symbolic</property>
-                            <property name="tooltip-text" translatable="yes">Reset providers</property>
-                            <signal name="clicked" handler="on_providers_reset"/>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <property name="content">
-                      <object class="GtkScrolledWindow">
-                        <property name="margin-start">50</property>
-                        <property name="margin-end">50</property>
-                        <property name="margin-top">50</property>
-                        <property name="margin-bottom">50</property>
-                        <child>
-                          <object class="GtkListBox" id="providers_list">
-                            <property name="activate-on-single-click">True</property>
-                            <signal name="row-activated" handler="on_provider_activated"/>
-                            <style>
-                              <class name="boxed-list"/>
-                            </style>
-                          </object>
-                        </child>
-                      </object>
-                    </property>
-                  </object>
-                </property>
-              </object>
-            </child>
-            <!-- Provider properties page -->
-            <child>
-              <object class="ProviderProperties" id="provider_properties"/>
-            </child>
-            <!-- Preferences page -->
-            <child>
-              <object class="AdwNavigationPage">
-                <property name="title" translatable="yes">Preferences</property>
-                <property name="tag">preferences-page</property>
-                <property name="child">
-                  <object class="AdwToolbarView">
-                    <child type="top">
-                      <object class="AdwHeaderBar"/>
-                    </child>
-                    <property name="content">
-                      <object class="PreferencesPage"/>
-                    </property>
-                  </object>
-                </property>
-              </object>
-            </child>
-          </object>
-        </property>
-        <child type="bottom">
-          <object class="GtkBox" id="status_bar">
-            <child>
-              <object class="GtkLabel" id="status_label">
-                <property name="can-focus">False</property>
-                <property name="halign">start</property>
-                <property name="justify">center</property>
-                <attributes>
-                  <attribute name="style" value="italic"/>
-                  <attribute name="weight" value="thin"/>
-                </attributes>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox" id="playback_bar">
-                <property name="visible">False</property>
-                <property name="spacing">12</property>
-                <property name="margin-start">3</property>
-                <property name="margin-end">3</property>
-                <property name="halign">end</property>
-                <property name="hexpand">True</property>
+                </child>
+                <!-- Movies page -->
                 <child>
-                  <object class="GtkLabel">
-                    <property name="label" translatable="yes">Currently playing:</property>
+                  <object class="AdwNavigationPage">
+                    <property name="title" translatable="yes">Movies</property>
+                    <property name="tag">movies-page</property>
+                    <property name="child">
+                      <object class="AdwToolbarView">
+                        <child type="top">
+                          <object class="AdwHeaderBar"/>
+                        </child>
+                        <property name="content">
+                          <object class="GtkScrolledWindow">
+                            <property name="margin-start">12</property>
+                            <property name="margin-end">12</property>
+                            <property name="margin-top">12</property>
+                            <child>
+                              <object class="GtkFlowBox" id="movies_flowbox">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="valign">start</property>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+                <!-- Series page -->
+                <child>
+                  <object class="AdwNavigationPage">
+                    <property name="title" translatable="yes">Series</property>
+                    <property name="tag">series-page</property>
+                    <property name="child">
+                      <object class="AdwToolbarView">
+                        <child type="top">
+                          <object class="AdwHeaderBar"/>
+                        </child>
+                        <property name="content">
+                          <object class="GtkScrolledWindow">
+                            <property name="margin-start">12</property>
+                            <property name="margin-end">12</property>
+                            <property name="margin-top">12</property>
+                            <child>
+                              <object class="GtkListBox" id="series_list">
+                                <style>
+                                  <class name="boxed-list"/>
+                                </style>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+                <!-- Providers page -->
+                <child>
+                  <object class="AdwNavigationPage">
+                    <property name="title" translatable="yes">Providers</property>
+                    <property name="tag">providers-page</property>
+                    <property name="child">
+                      <object class="AdwToolbarView">
+                        <child type="top">
+                          <object class="AdwHeaderBar">
+                            <child type="start">
+                              <object class="GtkButton" id="add_provider_button">
+                                <property name="icon-name">list-add-symbolic</property>
+                                <property name="tooltip-text" translatable="yes">Add a new provider...</property>
+                                <signal name="clicked" handler="on_provider_add"/>
+                              </object>
+                            </child>
+                            <child type="start">
+                              <object class="GtkButton" id="reset_providers_button">
+                                <property name="icon-name">view-refresh-symbolic</property>
+                                <property name="tooltip-text" translatable="yes">Reset providers</property>
+                                <signal name="clicked" handler="on_providers_reset"/>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <property name="content">
+                          <object class="GtkScrolledWindow">
+                            <property name="margin-start">50</property>
+                            <property name="margin-end">50</property>
+                            <property name="margin-top">50</property>
+                            <property name="margin-bottom">50</property>
+                            <child>
+                              <object class="GtkListBox" id="providers_list">
+                                <property name="activate-on-single-click">True</property>
+                                <signal name="row-activated" handler="on_provider_activated"/>
+                                <style>
+                                  <class name="boxed-list"/>
+                                </style>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+                <!-- Provider properties page -->
+                <child>
+                  <object class="ProviderProperties" id="provider_properties"/>
+                </child>
+                <!-- Preferences page -->
+                <child>
+                  <object class="AdwNavigationPage">
+                    <property name="title" translatable="yes">Preferences</property>
+                    <property name="tag">preferences-page</property>
+                    <property name="child">
+                      <object class="AdwToolbarView">
+                        <child type="top">
+                          <object class="AdwHeaderBar"/>
+                        </child>
+                        <property name="content">
+                          <object class="PreferencesPage"/>
+                        </property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+              </object>
+            </property>
+            <child type="bottom">
+              <object class="GtkBox" id="status_bar">
+                <child>
+                  <object class="GtkLabel" id="status_label">
+                    <property name="can-focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="justify">center</property>
                     <attributes>
-                      <attribute name="style" value="oblique"/>
+                      <attribute name="style" value="italic"/>
                       <attribute name="weight" value="thin"/>
                     </attributes>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="playback_label">
-                    <attributes>
-                      <attribute name="style" value="italic"/>
-                      <attribute name="weight" value="bold"/>
-                    </attributes>
+                  <object class="GtkBox" id="playback_bar">
+                    <property name="visible">False</property>
+                    <property name="spacing">12</property>
+                    <property name="margin-start">3</property>
+                    <property name="margin-end">3</property>
+                    <property name="halign">end</property>
+                    <property name="hexpand">True</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label" translatable="yes">Currently playing:</property>
+                        <attributes>
+                          <attribute name="style" value="oblique"/>
+                          <attribute name="weight" value="thin"/>
+                        </attributes>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="playback_label">
+                        <attributes>
+                          <attribute name="style" value="italic"/>
+                          <attribute name="weight" value="bold"/>
+                        </attributes>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkBox" id="playback_control_box">
+                        <property name="can-focus">False</property>
+                        <property name="spacing">6</property>
+                        <child>
+                          <object class="GtkButton" id="show_button">
+                            <property name="tooltip-text" translatable="yes">Show</property>
+                            <child>
+                              <object class="AdwButtonContent">
+                                <property name="icon-name">view-reveal-symbolic</property>
+                              </object>
+                            </child>
+                            <signal name="clicked" handler="on_playback_show"/>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="pause_button">
+                            <property name="can-focus">True</property>
+                            <property name="tooltip-text" translatable="yes">Pause</property>
+                            <child>
+                              <object class="AdwButtonContent">
+                                <property name="icon-name">media-playback-pause-symbolic</property>
+                              </object>
+                            </child>
+                            <signal name="clicked" handler="on_playback_pause"/>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="stop_button">
+                            <property name="tooltip-text" translatable="yes">Stop</property>
+                            <child>
+                              <object class="AdwButtonContent">
+                                <property name="icon-name">media-playback-stop-symbolic</property>
+                              </object>
+                            </child>
+                            <signal name="clicked" handler="on_playback_stop"/>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
                   </object>
                 </child>
-                <child>
-                  <object class="GtkBox" id="playback_control_box">
-                    <property name="can-focus">False</property>
-                    <property name="spacing">6</property>
-                    <child>
-                      <object class="GtkButton" id="show_button">
-                        <property name="tooltip-text" translatable="yes">Show</property>
-                        <child>
-                          <object class="AdwButtonContent">
-                            <property name="icon-name">view-reveal-symbolic</property>
-                          </object>
-                        </child>
-                        <signal name="clicked" handler="on_playback_show"/>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="pause_button">
-                        <property name="can-focus">True</property>
-                        <property name="tooltip-text" translatable="yes">Pause</property>
-                        <child>
-                          <object class="AdwButtonContent">
-                            <property name="icon-name">media-playback-pause-symbolic</property>
-                          </object>
-                        </child>
-                        <signal name="clicked" handler="on_playback_pause"/>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="stop_button">
-                        <property name="tooltip-text" translatable="yes">Stop</property>
-                        <child>
-                          <object class="AdwButtonContent">
-                            <property name="icon-name">media-playback-stop-symbolic</property>
-                          </object>
-                        </child>
-                        <signal name="clicked" handler="on_playback_stop"/>
-                      </object>
-                    </child>
-                  </object>
-                </child>
+                <style>
+                  <class name="toolbar"/>
+                </style>
               </object>
             </child>
-            <style>
-              <class name="toolbar"/>
-            </style>
           </object>
         </child>
       </object>
