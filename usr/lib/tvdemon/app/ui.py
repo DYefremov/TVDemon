@@ -266,6 +266,7 @@ class FavoritesPage(Adw.NavigationPage):
                            (GObject.TYPE_PYOBJECT,))
 
         self.current_group = None
+        self.edit_group = None
         self.channels_count = 0
 
         self.connect("favorite-add", self.on_favorite_add)
@@ -289,6 +290,44 @@ class FavoritesPage(Adw.NavigationPage):
         self.group_list.append(FavoritesGroupWidget(self, Group("New group")))
         [g.remove_button.set_sensitive(True) for g in self.group_list]
 
+    @Gtk.Template.Callback()
+    def on_group_save(self, button):
+        QuestionDialog(self.get_root(), self.save_group).present()
+
+    def save_group(self, confirm):
+        if confirm and self.edit_group:
+            group = self.edit_group.group
+            name = self.group_name_row.get_text()
+            channels = [ch.channel for ch in self.group_channels_box]
+            group.name = name
+            ch_count = len(group.channels)
+            if ch_count > len(channels):
+                ch_count -= len(channels)
+                self.channels_count -= ch_count
+                self.emit("favorite-list-updated", self.channels_count)
+
+            group.channels = channels
+            self.edit_group.update_channels_count()
+            self.edit_group.set_title(name)
+            self.navigation_view.pop()
+
+    def on_group_edit(self, page, group_widget):
+        self.group_channels_box.remove_all()
+        self.edit_group = group_widget
+        group = group_widget.group
+        self.group_name_row.set_text(group.name)
+        for ch in group.channels:
+            path = ch.logo_path
+            pixbuf = get_pixbuf_from_file(path) if path else None
+            self.group_channels_box.append(FavoriteChannelWidget(ch, pixbuf))
+        self.navigation_view.push_by_tag(self.FavoritePage.PROPERTIES)
+
+    def on_group_remove(self, page, group_widget):
+        self.channels_count -= len(group_widget.group.channels)
+        self.group_list.remove(group_widget)
+        self.current_group = self.group_list.get_first_child()
+        self.current_group.remove_button.set_sensitive(len((list(self.group_list))) > 1)
+
     @idle_function
     def set_groups(self, groups):
         self.group_list.remove_all()
@@ -310,22 +349,6 @@ class FavoritesPage(Adw.NavigationPage):
         self.current_group.append_channel(channel)
         self.channels_count += 1
         self.emit("favorite-list-updated", self.channels_count)
-
-    def on_group_edit(self, page, group_widget):
-        self.group_channels_box.remove_all()
-        group = group_widget.group
-        self.group_name_row.set_text(group.name)
-        for ch in group.channels:
-            path = ch.logo_path
-            pixbuf = get_pixbuf_from_file(path) if path else None
-            self.group_channels_box.append(FavoriteChannelWidget(ch, pixbuf))
-        self.navigation_view.push_by_tag(self.FavoritePage.PROPERTIES)
-
-    def on_group_remove(self, page, group_widget):
-        self.channels_count -= len(group_widget.group.channels)
-        self.group_list.remove(group_widget)
-        self.current_group = self.group_list.get_first_child()
-        self.current_group.remove_button.set_sensitive(len((list(self.group_list))) > 1)
 
     def on_favorite_channel_dnd_drop(self, drop: Gtk.DropTarget, user_data: FavoriteChannelWidget, x: float, y: float):
         dest_child = self.group_channels_box.get_child_at_pos(x, y)
