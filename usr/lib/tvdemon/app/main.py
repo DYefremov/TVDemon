@@ -155,6 +155,10 @@ class AppWindow(Adw.ApplicationWindow):
         self.media_bar.pause_button.connect("clicked", self.on_playback_pause)
         self.media_bar.backward_button.connect("clicked", self.on_playback_backward)
         self.media_bar.forward_button.connect("clicked", self.on_playback_forward)
+        # Shortcuts.
+        controller = Gtk.EventControllerKey()
+        controller.connect("key-pressed", self.on_key_pressed)
+        self.add_controller(controller)
 
     @GObject.Property(type=bool, default=True)
     def is_tv_mode(self):
@@ -511,6 +515,14 @@ class AppWindow(Adw.ApplicationWindow):
 
         return widget
 
+    def on_previous_channel(self, button=None):
+        if self.current_page is Page.CHANNELS and self.is_tv_mode:
+            pass
+
+    def on_next_channel(self, button=None):
+        if self.current_page is Page.CHANNELS and self.is_tv_mode:
+            pass
+
     def play_channel(self, box: Gtk.ListBox, row: ChannelWidget):
         self.active_channel = row.channel
         self.play(row.channel)
@@ -681,6 +693,20 @@ class AppWindow(Adw.ApplicationWindow):
             self.unfullscreen()
 
     # ******************** Additional ******************** #
+
+    def on_key_pressed(self, controller: Gtk.EventControllerKey, keyval: int, keycode: int, flags: Gdk.ModifierType):
+        ctrl = flags & Gdk.ModifierType.CONTROL_MASK
+
+        if keyval in (Gdk.KEY_f, Gdk.KEY_F, Gdk.KEY_F11) and self.current_page is Page.CHANNELS:
+            self.toggle_fullscreen()
+        elif keyval == Gdk.KEY_Left:
+            self.on_previous_channel()
+        elif keyval == Gdk.KEY_Right:
+            self.on_next_channel()
+        elif ctrl and keyval in (Gdk.KEY_k, Gdk.KEY_K):
+            self.activate_action("win.show-help-overlay")
+        elif ctrl and keyval in (Gdk.KEY_r, Gdk.KEY_R):
+            self.force_reload()
 
     def show_message(self, message: str):
         self.messages_overlay.add_toast(Adw.Toast(title=message))
