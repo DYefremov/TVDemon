@@ -63,7 +63,7 @@ class AppWindow(Adw.ApplicationWindow):
     playback_stack = Gtk.Template.Child()
     playback_status_page = Gtk.Template.Child()
     playback_widget = Gtk.Template.Child()
-    channel_info = Gtk.Template.Child()
+    media_bar = Gtk.Template.Child()
     # Movies page.
     movies_flowbox = Gtk.Template.Child()
     # Series page.
@@ -146,7 +146,7 @@ class AppWindow(Adw.ApplicationWindow):
         controller = Gtk.GestureClick()
         controller.connect("pressed", self.on_playback_mouse_press)
         self.playback_widget.add_controller(controller)
-        self.bind_property("is-mouse-cursor-hidden", self.channel_info, "visible", 4)
+        self.bind_property("is-mouse-cursor-hidden", self.media_bar, "visible", 4)
         # Favorites.
         self.favorites.connect("favorite-list-updated", self.on_favorite_list_updated)
         self.favorites.connect("favorite-group-activated", self.on_favorite_group_activated)
@@ -606,8 +606,8 @@ class AppWindow(Adw.ApplicationWindow):
     def play(self, channel: Channel):
         if self.player:
             self.playback_stack.set_visible_child_name(PLaybackPage.LOAD)
-            self.channel_info.set_title(channel.name)
-            self.channel_info.set_subtitle(channel.url)
+            self.media_bar.set_title(channel.name)
+            self.media_bar.set_subtitle(channel.url)
             self.playback_label.set_text(channel.name)
             GLib.timeout_add(200, self.player.play, channel.url)
 

@@ -164,6 +164,20 @@ class PreferencesPage(Adw.PreferencesPage):
         select_path(self.get_root(), callback=row.set_subtitle)
 
 
+@Gtk.Template(filename=f"{UI_PATH}media_bar.ui")
+class MediaBar(Gtk.Frame):
+    __gtype_name__ = "MediaBar"
+
+    title_label = Gtk.Template.Child()
+    subtitle_label = Gtk.Template.Child()
+
+    def set_title(self, title: str):
+        self.title_label.set_text(title)
+
+    def set_subtitle(self, subtitle: str):
+        self.subtitle_label.set_text(subtitle)
+
+
 @Gtk.Template(filename=f"{UI_PATH}question_dialog.ui")
 class QuestionDialog(Adw.MessageDialog):
     __gtype_name__ = "QuestionDialog"

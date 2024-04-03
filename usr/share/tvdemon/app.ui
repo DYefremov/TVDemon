@@ -300,13 +300,7 @@ Author: Dmitriy Yefremov 2024
                             <child>
                               <object class="GtkOverlay" id="playback_info_overlay">
                                 <child type="overlay">
-                                  <object class="AdwClamp">
-                                    <property name="valign">end</property>
-                                    <property name="margin-bottom">24</property>
-                                    <child>
-                                      <object class="AdwActionRow" id="channel_info"/>
-                                    </child>
-                                  </object>
+                                  <object class="MediaBar" id="media_bar"/>
                                 </child>
                                 <child>
                                   <object class="GtkStack" id="playback_stack">
