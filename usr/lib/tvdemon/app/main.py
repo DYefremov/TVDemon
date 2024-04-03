@@ -474,19 +474,27 @@ class AppWindow(Adw.ApplicationWindow):
     # ******************** Channels ******************** #
 
     def show_channels(self, channels: [Channel]):
-        self.navigate_to(Page.CHANNELS)
         if self.content_type == TV_GROUP:
-            self.update_channels_data(channels, self.channels_list_box)
+            gen = self.update_channels_data(channels, self.channels_list_box)
+            GLib.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_LOW)
+        else:
+            self.navigate_to(Page.CHANNELS)
 
     def update_channels_data(self, channels: list, ch_box: Gtk.ListBox, clear: bool = True):
         if clear:
             ch_box.remove_all()
+            self.navigate_to(Page.CHANNELS)
+            yield True
 
         logos_to_refresh = []
-        list(map(ch_box.append, (self.get_ch_widget(ch, logos_to_refresh) for ch in channels)))
+        for index, ch in enumerate(channels):
+            ch_box.append(self.get_ch_widget(ch, logos_to_refresh))
+            if index % 50 == 0:
+                yield True
 
         if len(logos_to_refresh) > 0:
             self.download_channel_logos(logos_to_refresh)
+        yield True
 
     def get_ch_widget(self, channel: Channel, logos_to_refresh: list):
         path = channel.logo_path
