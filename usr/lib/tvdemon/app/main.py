@@ -517,11 +517,11 @@ class AppWindow(Adw.ApplicationWindow):
 
     def on_previous_channel(self, button=None):
         if self.current_page is Page.CHANNELS and self.is_tv_mode:
-            pass
+            self.on_playback_backward()
 
     def on_next_channel(self, button=None):
         if self.current_page is Page.CHANNELS and self.is_tv_mode:
-            pass
+            self.on_playback_forward()
 
     def play_channel(self, box: Gtk.ListBox, row: ChannelWidget):
         self.active_channel = row.channel
@@ -641,11 +641,22 @@ class AppWindow(Adw.ApplicationWindow):
     def on_playback_show(self, button):
         self.navigate_to(Page.CHANNELS)
 
-    def on_playback_backward(self, button):
-        self.show_message("Not implemented yet!")
+    def on_playback_backward(self, button=None):
+        self.activate_channel(Gtk.DirectionType.UP)
 
-    def on_playback_forward(self, button):
-        self.show_message("Not implemented yet!")
+    def on_playback_forward(self, button=None):
+        self.activate_channel(Gtk.DirectionType.DOWN)
+
+    def activate_channel(self, direction: Gtk.DirectionType):
+        row = self.channels_list_box.get_selected_row()
+        if not row:
+            row = self.channels_list_box.get_row_at_index(0)
+        else:
+            index = row.get_index() + 1 if direction is Gtk.DirectionType.DOWN else row.get_index() - 1
+            row = self.channels_list_box.get_row_at_index(index)
+
+        if row:
+            row.activate()
 
     def on_played(self, player: Player, status: int):
         self.playback_stack.set_visible_child_name(PLaybackPage.PLAYBACK)
