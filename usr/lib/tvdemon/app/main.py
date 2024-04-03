@@ -150,6 +150,11 @@ class AppWindow(Adw.ApplicationWindow):
         # Favorites.
         self.favorites.connect("favorite-list-updated", self.on_favorite_list_updated)
         self.favorites.connect("favorite-group-activated", self.on_favorite_group_activated)
+        # Media bar.
+        self.media_bar.stop_button.connect("clicked", self.on_playback_stop)
+        self.media_bar.pause_button.connect("clicked", self.on_playback_pause)
+        self.media_bar.backward_button.connect("clicked", self.on_playback_backward)
+        self.media_bar.forward_button.connect("clicked", self.on_playback_forward)
 
     @GObject.Property(type=bool, default=True)
     def is_tv_mode(self):
@@ -623,6 +628,12 @@ class AppWindow(Adw.ApplicationWindow):
     @Gtk.Template.Callback()
     def on_playback_show(self, button):
         self.navigate_to(Page.CHANNELS)
+
+    def on_playback_backward(self, button):
+        self.show_message("Not implemented yet!")
+
+    def on_playback_forward(self, button):
+        self.show_message("Not implemented yet!")
 
     def on_played(self, player: Player, status: int):
         self.playback_stack.set_visible_child_name(PLaybackPage.PLAYBACK)

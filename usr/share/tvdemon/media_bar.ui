@@ -42,7 +42,7 @@ Author: Dmitriy Yefremov 2024
           <object class="GtkBox" id="controls_box">
             <property name="halign">center</property>
             <child>
-              <object class="GtkButton">
+              <object class="GtkButton" id="backward_button">
                 <property name="icon-name">media-skip-backward-symbolic</property>
                 <property name="valign">center</property>
                 <style>
@@ -51,7 +51,7 @@ Author: Dmitriy Yefremov 2024
               </object>
             </child>
             <child>
-              <object class="GtkButton">
+              <object class="GtkButton" id="stop_button">
                 <property name="icon-name">media-playback-stop-symbolic</property>
                 <property name="valign">center</property>
                 <style>
@@ -60,7 +60,7 @@ Author: Dmitriy Yefremov 2024
               </object>
             </child>
             <child>
-              <object class="GtkButton">
+              <object class="GtkButton" id="pause_button">
                 <property name="icon-name">media-playback-pause-symbolic</property>
                 <property name="valign">center</property>
                 <style>
@@ -69,7 +69,7 @@ Author: Dmitriy Yefremov 2024
               </object>
             </child>
             <child>
-              <object class="GtkButton">
+              <object class="GtkButton" id="forward_button">
                 <property name="icon-name">media-skip-forward-symbolic</property>
                 <property name="valign">center</property>
                 <style>
