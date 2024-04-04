@@ -438,8 +438,13 @@ class AppWindow(Adw.ApplicationWindow):
         self.navigate_to(Page.PROVIDER)
 
     def on_provider_remove(self, win, widget: ProviderWidget):
-        self.providers.remove(widget.provider)
-        self.providers_list.remove(widget)
+        def clb(resp):
+            if resp:
+                self.providers.remove(widget.provider)
+                self.providers_list.remove(widget)
+                self.settings.set_strv("providers", [provider.get_info() for provider in self.providers])
+
+        QuestionDialog(self, clb).present()
 
     def on_provider_save(self, button):
         def cls(confirm=False):
