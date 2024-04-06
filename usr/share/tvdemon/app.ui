@@ -58,6 +58,14 @@ Author: Dmitriy Yefremov 2024
                                 <property name="action-target">'favorites-page'</property>
                               </object>
                             </child>
+                            <child type="start">
+                              <object class="GtkButton" id="search_button">
+                                <property name="icon-name">edit-find-symbolic</property>
+                                <property name="tooltip-text" translatable="yes">Search</property>
+                                <property name="action-name">navigation.push</property>
+                                <property name="action-target">'search-page'</property>
+                              </object>
+                            </child>
                             <child type="end">
                               <object class="GtkMenuButton" id="start_preferences_button">
                                 <property name="icon-name">edit-find-symbolic</property>
@@ -77,7 +85,6 @@ Author: Dmitriy Yefremov 2024
                         </child>
                         <property name="content">
                           <object class="GtkBox" id="start_box">
-                            <property name="visible">True</property>
                             <property name="can-focus">False</property>
                             <property name="halign">center</property>
                             <property name="valign">center</property>
@@ -88,19 +95,16 @@ Author: Dmitriy Yefremov 2024
                             <property name="margin-bottom">24</property>
                             <child>
                               <object class="GtkBox">
-                                <property name="visible">True</property>
                                 <property name="halign">center</property>
                                 <property name="valign">center</property>
                                 <property name="spacing">12</property>
                                 <child>
                                   <object class="GtkButton" id="tv_button">
-                                    <property name="visible">True</property>
                                     <property name="sensitive">False</property>
                                     <property name="can-focus">True</property>
                                     <property name="receives-default">True</property>
                                     <child>
                                       <object class="GtkBox" id="tv_button_box">
-                                        <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="orientation">vertical</property>
                                         <property name="spacing">6</property>
@@ -110,7 +114,6 @@ Author: Dmitriy Yefremov 2024
                                         <property name="margin-bottom">12</property>
                                         <child>
                                           <object class="GtkImage" id="tv_logo">
-                                            <property name="visible">True</property>
                                             <property name="can-focus">False</property>
                                             <property name="pixel-size">192</property>
                                             <property name="icon-name">tv</property>
@@ -118,7 +121,6 @@ Author: Dmitriy Yefremov 2024
                                         </child>
                                         <child>
                                           <object class="GtkLabel" id="tv_label">
-                                            <property name="visible">True</property>
                                             <property name="can-focus">False</property>
                                             <attributes>
                                               <attribute name="weight" value="bold"/>
@@ -131,13 +133,11 @@ Author: Dmitriy Yefremov 2024
                                 </child>
                                 <child>
                                   <object class="GtkButton" id="movies_button">
-                                    <property name="visible">True</property>
                                     <property name="sensitive">False</property>
                                     <property name="can-focus">True</property>
                                     <property name="receives-default">True</property>
                                     <child>
                                       <object class="GtkBox" id="movies_button_box">
-                                        <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="orientation">vertical</property>
                                         <property name="spacing">6</property>
@@ -147,7 +147,6 @@ Author: Dmitriy Yefremov 2024
                                         <property name="margin-bottom">12</property>
                                         <child>
                                           <object class="GtkImage" id="movies_logo">
-                                            <property name="visible">True</property>
                                             <property name="can-focus">False</property>
                                             <property name="pixel-size">192</property>
                                             <property name="icon-name">tv</property>
@@ -155,7 +154,6 @@ Author: Dmitriy Yefremov 2024
                                         </child>
                                         <child>
                                           <object class="GtkLabel" id="movies_label">
-                                            <property name="visible">True</property>
                                             <property name="can-focus">False</property>
                                             <attributes>
                                               <attribute name="weight" value="bold"/>
@@ -168,13 +166,11 @@ Author: Dmitriy Yefremov 2024
                                 </child>
                                 <child>
                                   <object class="GtkButton" id="series_button">
-                                    <property name="visible">True</property>
                                     <property name="sensitive">False</property>
                                     <property name="can-focus">True</property>
                                     <property name="receives-default">True</property>
                                     <child>
                                       <object class="GtkBox" id="series_button_box">
-                                        <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="orientation">vertical</property>
                                         <property name="spacing">6</property>
@@ -184,7 +180,6 @@ Author: Dmitriy Yefremov 2024
                                         <property name="margin-bottom">12</property>
                                         <child>
                                           <object class="GtkImage" id="series_logo">
-                                            <property name="visible">True</property>
                                             <property name="can-focus">False</property>
                                             <property name="pixel-size">192</property>
                                             <property name="icon-name">tv</property>
@@ -192,7 +187,6 @@ Author: Dmitriy Yefremov 2024
                                         </child>
                                         <child>
                                           <object class="GtkLabel" id="series_label">
-                                            <property name="visible">True</property>
                                             <property name="can-focus">False</property>
                                             <attributes>
                                               <attribute name="weight" value="bold"/>
@@ -223,16 +217,7 @@ Author: Dmitriy Yefremov 2024
                     <property name="child">
                       <object class="AdwToolbarView">
                         <child type="top">
-                          <object class="AdwHeaderBar">
-                            <child type="start">
-                              <object class="GtkButton" id="categories_search_button">
-                                <property name="visible">False</property>
-                                <property name="icon-name">edit-find-symbolic</property>
-                                <property name="action-name">navigation.push</property>
-                                <property name="action-target">'search-page'</property>
-                              </object>
-                            </child>
-                          </object>
+                          <object class="AdwHeaderBar"/>
                         </child>
                         <property name="content">
                           <object class="GtkScrolledWindow">
@@ -241,7 +226,6 @@ Author: Dmitriy Yefremov 2024
                             <property name="margin-top">12</property>
                             <child>
                               <object class="GtkFlowBox" id="categories_flowbox">
-                                <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <property name="valign">start</property>
                               </object>
@@ -264,7 +248,7 @@ Author: Dmitriy Yefremov 2024
                             <child type="start">
                               <object class="AdwSplitButton">
                                 <property name="icon-name">bookmark-new-symbolic</property>
-                                <property name="tooltip-text" translatable="yes">AAdd to favorites</property>
+                                <property name="tooltip-text" translatable="yes">Add to favorites</property>
                                 <signal name="clicked" handler="on_favorite_add"/>
                               </object>
                             </child>
@@ -282,9 +266,7 @@ Author: Dmitriy Yefremov 2024
                                     <property name="width-request">200</property>
                                     <property name="hexpand">True</property>
                                     <child>
-                                      <object class="GtkListBox" id="channels_list_box">
-                                        <property name="visible">True</property>
-                                      </object>
+                                      <object class="GtkListBox" id="channels_list_box"/>
                                     </child>
                                   </object>
                                 </child>
@@ -348,13 +330,47 @@ Author: Dmitriy Yefremov 2024
                     <property name="child">
                       <object class="AdwToolbarView">
                         <child type="top">
-                          <object class="AdwHeaderBar"/>
+                          <object class="AdwHeaderBar">
+                            <property name="title-widget">
+                              <object class="GtkSearchEntry" id="search_entry"/>
+                            </property>
+                          </object>
                         </child>
                         <property name="content">
-                          <object class="AdwStatusPage" id="search_status_page">
-                            <property name="title" translatable="yes">No Results Found</property>
-                            <property name="description" translatable="yes">Try a different search</property>
-                            <property name="icon-name">edit-find-symbolic</property>
+                          <object class="GtkStack" id="search_stack">
+                            <child>
+                              <object class="GtkStackPage">
+                                <property name="name">search-status</property>
+                                <property name="child">
+                                  <object class="AdwStatusPage" id="search_status_page">
+                                    <property name="title" translatable="yes">No Results Found</property>
+                                    <property name="description" translatable="yes">Try a different search</property>
+                                    <property name="icon-name">edit-find-symbolic</property>
+                                  </object>
+                                </property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkStackPage">
+                                <property name="name">search-result</property>
+                                <property name="child">
+                                  <object class="GtkScrolledWindow">
+                                    <property name="margin-start">12</property>
+                                    <property name="margin-end">12</property>
+                                    <property name="margin-top">12</property>
+                                    <property name="margin-bottom">12</property>
+                                    <property name="vexpand">True</property>
+                                    <child>
+                                      <object class="GtkFlowBox" id="search_channels_box">
+                                        <property name="can-focus">False</property>
+                                        <property name="valign">start</property>
+                                        <property name="homogeneous">True</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </property>
+                              </object>
+                            </child>
                           </object>
                         </property>
                       </object>
@@ -373,7 +389,6 @@ Author: Dmitriy Yefremov 2024
                         </child>
                         <property name="content">
                           <object class="GtkBox" id="tv_box">
-                            <property name="visible">True</property>
                             <property name="can-focus">False</property>
                             <property name="halign">center</property>
                             <property name="valign">center</property>
@@ -405,7 +420,6 @@ Author: Dmitriy Yefremov 2024
                             <property name="margin-top">12</property>
                             <child>
                               <object class="GtkFlowBox" id="movies_flowbox">
-                                <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <property name="valign">start</property>
                               </object>
