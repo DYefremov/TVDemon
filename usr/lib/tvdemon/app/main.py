@@ -617,6 +617,14 @@ class AppWindow(Adw.ApplicationWindow):
 
     def on_favorite_list_updated(self, favorites: FavoritesPage, count: int):
         self.fav_button_content.set_label(str(count))
+        gen = self.refresh_channel_info()
+        GLib.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_LOW)
+
+    def refresh_channel_info(self):
+        for index, row in enumerate(self.channels_list_box):
+            row.fav_logo.set_visible(self.favorites.is_favorite(row.channel))
+            if index % 50 == 0:
+                yield True
 
     def on_favorite_group_activated(self, favorites: FavoritesPage, group: Group):
         self.content_type = TV_GROUP

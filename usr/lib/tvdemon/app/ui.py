@@ -323,11 +323,13 @@ class FavoritesPage(Adw.NavigationPage):
             group = self.edit_group.group
             name = self.group_name_row.get_text()
             channels = [ch.channel for ch in self.group_channels_box]
+            urls = {c.url for c in channels}
             group.name = name
             ch_count = len(group.channels)
             if ch_count > len(channels):
                 ch_count -= len(channels)
                 self.channels_count -= ch_count
+                [self.urls.discard(c.url) for c in group.channels if c.url not in urls]
                 self.emit("favorite-list-updated", self.channels_count)
 
             group.channels = channels
@@ -348,9 +350,11 @@ class FavoritesPage(Adw.NavigationPage):
 
     def on_group_remove(self, page, group_widget):
         self.channels_count -= len(group_widget.group.channels)
+        [self.urls.discard(c.url) for c in group_widget.group.channels]
         self.group_list.remove(group_widget)
         self.current_group = self.group_list.get_first_child()
         self.current_group.remove_button.set_sensitive(len((list(self.group_list))) > 1)
+        self.emit("favorite-list-updated", self.channels_count)
 
     @idle_function
     def set_groups(self, groups):
@@ -374,6 +378,7 @@ class FavoritesPage(Adw.NavigationPage):
     def on_favorite_add(self, page, channel):
         self.current_group.append_channel(channel)
         self.channels_count += 1
+        self.urls.add(channel.url)
         self.emit("favorite-list-updated", self.channels_count)
 
     def on_favorite_channel_dnd_drop(self, drop: Gtk.DropTarget, user_data: FavoriteChannelWidget, x: float, y: float):

@@ -284,13 +284,6 @@ Author: Dmitriy Yefremov 2024
                                     <child>
                                       <object class="GtkListBox" id="channels_list_box">
                                         <property name="visible">True</property>
-                                        <child type="placeholder">
-                                          <object class="GtkLabel" id="channels_place_holder_label">
-                                            <property name="visible">True</property>
-                                            <property name="can-focus">False</property>
-                                            <property name="label" translatable="yes">No channels</property>
-                                          </object>
-                                        </child>
                                       </object>
                                     </child>
                                   </object>
