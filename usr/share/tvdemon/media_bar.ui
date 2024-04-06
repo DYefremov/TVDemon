@@ -96,6 +96,9 @@ Author: Dmitriy Yefremov 2024
             <child>
               <object class="GtkLabel" id="subtitle_label">
                 <property name="halign">start</property>
+                <property name="max-width-chars">50</property>
+                <property name="ellipsize">end</property>
+                <property name="selectable">True</property>
                 <style>
                   <class name="dim-label"/>
                 </style>
