@@ -27,6 +27,7 @@ import gettext
 import os
 import shutil
 import sys
+from itertools import chain
 from pathlib import Path
 
 import requests
@@ -81,6 +82,11 @@ class AppWindow(Adw.ApplicationWindow):
     # Favorites.
     fav_button_content = Gtk.Template.Child()
     favorites = Gtk.Template.Child("favorites_page")
+    # Search.
+    search_entry = Gtk.Template.Child()
+    search_stack = Gtk.Template.Child()
+    search_status = Gtk.Template.Child()
+    search_channels_box = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -102,6 +108,7 @@ class AppWindow(Adw.ApplicationWindow):
         self.is_full_screen = False
         self.player = None
         self.xtream = None
+        self.search_running = False
         self.current_page = Page.START
 
         self._is_tv_mode = True
@@ -305,8 +312,8 @@ class AppWindow(Adw.ApplicationWindow):
         else:
             self.navigation_view.push_by_tag(page)
 
-        provider = self.active_provider
         if page is Page.START:
+            provider = self.active_provider
             if provider is None:
                 self.tv_label.set_text(translate("TV Channels (0)"))
                 self.movies_label.set_text(translate("Movies (0)"))
@@ -716,14 +723,49 @@ class AppWindow(Adw.ApplicationWindow):
                 self.channels_box.show()
             self.unfullscreen()
 
+    # ******************** Search ************************ #
+
+    @Gtk.Template.Callback()
+    def on_search(self, entry: Gtk.Entry):
+        self.search_running = False
+        self.update_search()
+
+    def update_search(self):
+        self.search_running = True
+        self.search_channels_box.remove_all()
+        gen = self.get_channel_search()
+        GLib.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_LOW)
+
+    def get_channel_search(self):
+        txt = self.search_entry.get_text().upper()
+        if not txt:
+            return False
+
+        found = []
+
+        for ch in chain(self.active_provider.channels, self.active_provider.movies, self.active_provider.series):
+            if txt in ch.name.upper():
+                found.append(ch)
+            yield self.search_running
+
+        if found:
+            for ch in found:
+                path = ch.logo_path
+                pixbuf = get_pixbuf_from_file(path) if path else None
+                self.search_channels_box.append(FlowChannelWidget(ch, pixbuf))
+                yield self.search_running
+            self.search_stack.set_visible_child_name(SearchPage.RESULT)
+        else:
+            self.search_status.set_title(translate("No Results found"))
+            self.search_status.set_description(translate("Try a different search..."))
+            self.search_stack.set_visible_child_name(SearchPage.STATUS)
+
     # ******************** Additional ******************** #
 
     def on_key_pressed(self, controller: Gtk.EventControllerKey, keyval: int, keycode: int, flags: Gdk.ModifierType):
         ctrl = flags & Gdk.ModifierType.CONTROL_MASK
 
-        if keyval in (Gdk.KEY_f, Gdk.KEY_F, Gdk.KEY_F11) and self.current_page is Page.CHANNELS:
-            self.toggle_fullscreen()
-        elif keyval == Gdk.KEY_Left:
+        if keyval == Gdk.KEY_Left:
             self.on_previous_channel()
         elif keyval == Gdk.KEY_Right:
             self.on_next_channel()
@@ -731,6 +773,11 @@ class AppWindow(Adw.ApplicationWindow):
             self.activate_action("win.show-help-overlay")
         elif ctrl and keyval in (Gdk.KEY_r, Gdk.KEY_R):
             self.force_reload()
+        elif ctrl and keyval in (Gdk.KEY_f, Gdk.KEY_F):
+            if self.current_page is not Page.SEARCH:
+                self.navigate_to(Page.SEARCH)
+        if all((not ctrl, self.current_page is Page.CHANNELS, keyval in (Gdk.KEY_f, Gdk.KEY_F, Gdk.KEY_F11))):
+            self.toggle_fullscreen()
 
     def show_message(self, message: str):
         self.messages_overlay.add_toast(Adw.Toast(title=message))

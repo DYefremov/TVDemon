@@ -19,8 +19,8 @@
 # along with TVDemon  If not, see <http://www.gnu.org/licenses/>.
 #
 
-__all__ = ("Page", "PLaybackPage", "ProviderType", "ProviderWidget", "ProviderProperties",
-           "ChannelWidget", "GroupWidget", "FavoritesGroupWidget", "PreferencesPage",
+__all__ = ("Page", "PLaybackPage", "SearchPage", "ProviderType", "ProviderWidget", "ProviderProperties",
+           "ChannelWidget", "GroupWidget", "FlowChannelWidget", "FavoritesGroupWidget", "PreferencesPage",
            "FavoritesPage", "QuestionDialog", "ShortcutsWindow")
 
 from enum import StrEnum, IntEnum
@@ -47,6 +47,11 @@ class PLaybackPage(StrEnum):
     STATUS = "status"
     LOAD = "load"
     PLAYBACK = "playback"
+
+
+class SearchPage(StrEnum):
+    STATUS = "search-status"
+    RESULT = "search-result"
 
 
 class ProviderType(IntEnum):
@@ -234,19 +239,23 @@ class FavoritesGroupWidget(Adw.ActionRow):
         self.set_subtitle(f"{translate('Channels')}: {len(self.group.channels)}")
 
 
-@Gtk.Template(filename=f"{UI_PATH}favorite_channel_widget.ui")
-class FavoriteChannelWidget(Gtk.FlowBoxChild):
-    __gtype_name__ = "FavoriteChannelWidget"
+@Gtk.Template(filename=f"{UI_PATH}flow_channel_widget.ui")
+class FlowChannelWidget(Gtk.FlowBoxChild):
+    __gtype_name__ = "FlowChannelWidget"
 
     label = Gtk.Template.Child()
     logo = Gtk.Template.Child()
+    show_button = Gtk.Template.Child()
+    remove_button = Gtk.Template.Child()
 
-    def __init__(self, channel, logo_pixbuf=None, **kwargs):
+    def __init__(self, channel, logo_pixbuf=None, show_buttons=False, **kwargs):
         super().__init__(**kwargs)
         self.channel = channel
 
         self.label.set_text(channel.name)
         self.logo.set_from_pixbuf(logo_pixbuf) if logo_pixbuf else None
+        self.show_button.set_visible(show_buttons)
+        self.remove_button.set_visible(show_buttons)
 
     @Gtk.Template.Callback()
     def on_remove(self, button):
@@ -297,7 +306,7 @@ class FavoritesPage(Adw.NavigationPage):
         self.connect("favorite-group-edit", self.on_group_edit)
         self.connect("favorite-group-remove", self.on_group_remove)
         # Group channels DnD.
-        dnd = Gtk.DropTarget.new(FavoriteChannelWidget, Gdk.DragAction.MOVE)
+        dnd = Gtk.DropTarget.new(FlowChannelWidget, Gdk.DragAction.MOVE)
         dnd.connect("drop", self.on_favorite_channel_dnd_drop)
         self.group_channels_box.add_controller(dnd)
         dnd = Gtk.DragSource.new()
@@ -345,7 +354,7 @@ class FavoritesPage(Adw.NavigationPage):
         for ch in group.channels:
             path = ch.logo_path
             pixbuf = get_pixbuf_from_file(path) if path else None
-            self.group_channels_box.append(FavoriteChannelWidget(ch, pixbuf))
+            self.group_channels_box.append(FlowChannelWidget(ch, pixbuf, True))
         self.navigation_view.push_by_tag(self.FavoritePage.PROPERTIES)
 
     def on_group_remove(self, page, group_widget):
@@ -381,7 +390,7 @@ class FavoritesPage(Adw.NavigationPage):
         self.urls.add(channel.url)
         self.emit("favorite-list-updated", self.channels_count)
 
-    def on_favorite_channel_dnd_drop(self, drop: Gtk.DropTarget, user_data: FavoriteChannelWidget, x: float, y: float):
+    def on_favorite_channel_dnd_drop(self, drop: Gtk.DropTarget, user_data: FlowChannelWidget, x: float, y: float):
         dest_child = self.group_channels_box.get_child_at_pos(x, y)
         if dest_child:
             index = dest_child.get_index()
@@ -396,7 +405,7 @@ class FavoritesPage(Adw.NavigationPage):
         if child.logo:
             drag_source.set_icon(child.logo.get_paintable(), 0, 0)
 
-        content = Gdk.ContentProvider.new_for_value(GObject.Value(FavoriteChannelWidget, child))
+        content = Gdk.ContentProvider.new_for_value(GObject.Value(FlowChannelWidget, child))
         return content
 
     def is_favorite(self, channel: Channel):

@@ -21,9 +21,9 @@ Author: Dmitriy Yefremov 2024
 
 -->
 <interface>
-  <!-- interface-name favorite_channel_widget.ui -->
+  <!-- interface-name flow_channel_widget.ui -->
   <requires lib="gtk" version="4.12"/>
-  <template class="FavoriteChannelWidget" parent="GtkFlowBoxChild">
+  <template class="FlowChannelWidget" parent="GtkFlowBoxChild">
     <child>
       <object class="GtkFrame">
         <property name="margin-start">3</property>
