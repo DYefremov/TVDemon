@@ -1,2 +1,2 @@
 #!/bin/sh
-/usr/lib/tvdemon/run.py &
+/usr/lib/tvdemon/tvdemon.py &
