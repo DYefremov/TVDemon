@@ -1,6 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-EXE_NAME = 'run.py'
+EXE_NAME = 'tvdemon.py'
 DIR_PATH = os.getcwd()
 PATH_EXE = [os.path.join(DIR_PATH, EXE_NAME)]
 
@@ -26,7 +26,7 @@ a = Analysis([EXE_NAME],
              hooksconfig={
                 "gi": {
                     "module-versions": {
-                        "Gtk": "3.0"
+                        "Gtk": "4.0"
                     },
                 },
              },
@@ -44,6 +44,7 @@ exe = EXE(pyz,
           name='TVDemon',
           debug=False,
           bootloader_ignore_signals=False,
+		  contents_directory='.',
           strip=False,
           upx=True,
           console=False, icon='tvdemon.ico')
