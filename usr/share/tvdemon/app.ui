@@ -228,6 +228,7 @@ Author: Dmitriy Yefremov 2024
                               <object class="GtkFlowBox" id="categories_flowbox">
                                 <property name="can-focus">False</property>
                                 <property name="valign">start</property>
+                                <signal name="child-activated" handler="on_group_activated"/>
                               </object>
                             </child>
                           </object>
@@ -266,7 +267,9 @@ Author: Dmitriy Yefremov 2024
                                     <property name="width-request">200</property>
                                     <property name="hexpand">True</property>
                                     <child>
-                                      <object class="GtkListBox" id="channels_list_box"/>
+                                      <object class="GtkListBox" id="channels_list_box">
+                                        <signal name="row-activated" handler="play_channel"/>
+                                      </object>
                                     </child>
                                   </object>
                                 </child>
@@ -351,6 +354,7 @@ Author: Dmitriy Yefremov 2024
                                 <property name="child">
                                   <object class="AdwStatusPage" id="search_status">
                                     <property name="icon-name">edit-find-symbolic</property>
+                                    <property name="title" translatable="yes">Search in TV, Movies and Series</property>
                                   </object>
                                 </property>
                               </object>
@@ -370,6 +374,7 @@ Author: Dmitriy Yefremov 2024
                                         <property name="can-focus">False</property>
                                         <property name="valign">start</property>
                                         <property name="homogeneous">True</property>
+                                        <signal name="child-activated" handler="on_searched_channel_activated"/>
                                       </object>
                                     </child>
                                   </object>
@@ -427,6 +432,7 @@ Author: Dmitriy Yefremov 2024
                               <object class="GtkFlowBox" id="movies_flowbox">
                                 <property name="can-focus">False</property>
                                 <property name="valign">start</property>
+                                <signal name="child-activated" handler="on_movie_activate"/>
                               </object>
                             </child>
                           </object>

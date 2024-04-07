@@ -126,13 +126,8 @@ class AppWindow(Adw.ApplicationWindow):
         self.tv_button.connect("clicked", self.show_groups, TV_GROUP)
         self.movies_button.connect("clicked", self.show_groups, MOVIES_GROUP)
         self.series_button.connect("clicked", self.show_groups, SERIES_GROUP)
-        # Categories.
-        self.categories_flowbox.connect("child-activated", self.on_group_activate)
         # Channels.
-        self.channels_list_box.connect("row-activated", self.play_channel)
         self.bind_property("is_tv_mode", self.channels_box, "visible")
-        # Movies.
-        self.movies_flowbox.connect("child-activated", self.on_movie_activate)
         # Providers.
         self.connect("provider-edit", self.on_provider_edit)
         self.connect("provider-remove", self.on_provider_remove)
@@ -372,9 +367,10 @@ class AppWindow(Adw.ApplicationWindow):
         self.navigate_to(Page.CATEGORIES)
 
         if not found_groups:
-            self.on_group_activate()
+            self.on_group_activated()
 
-    def on_group_activate(self, box=None, group_widget=None):
+    @Gtk.Template.Callback()
+    def on_group_activated(self, box=None, group_widget=None):
         group = group_widget.data if group_widget else None
         self.active_group = group
         if self.content_type == TV_GROUP:
@@ -535,6 +531,7 @@ class AppWindow(Adw.ApplicationWindow):
         if self.current_page is Page.CHANNELS and self.is_tv_mode:
             self.on_playback_forward()
 
+    @Gtk.Template.Callback()
     def play_channel(self, box: Gtk.ListBox, row: ChannelWidget):
         self.active_channel = row.channel
         self.play(row.channel)
@@ -559,6 +556,7 @@ class AppWindow(Adw.ApplicationWindow):
         if len(logos_to_refresh) > 0:
             self.download_channel_logos(logos_to_refresh)
 
+    @Gtk.Template.Callback()
     def on_movie_activate(self, box: Gtk.FlowBox, widget: GroupWidget):
         if self.content_type == MOVIES_GROUP:
             self.active_channel = widget.data
@@ -760,6 +758,12 @@ class AppWindow(Adw.ApplicationWindow):
             self.search_status.set_description(translate("Try a different search..."))
             self.search_stack.set_visible_child_name(SearchPage.STATUS)
 
+    @Gtk.Template.Callback()
+    def on_searched_channel_activated(self, box: Gtk.FlowBox, widget: FlowChannelWidget):
+        self.active_channel = widget.channel
+        self.navigate_to(Page.CHANNELS)
+        self.play(self.active_channel)
+
     # ******************** Additional ******************** #
 
     def on_key_pressed(self, controller: Gtk.EventControllerKey, keyval: int, keycode: int, flags: Gdk.ModifierType):
@@ -784,7 +788,7 @@ class AppWindow(Adw.ApplicationWindow):
 
     def on_navigation_view_pushed(self, view: Adw.NavigationView):
         page = Page(view.get_visible_page().get_tag())
-        self.is_tv_mode = self.current_page not in (Page.MOVIES, Page.SERIES)
+        self.is_tv_mode = self.current_page not in (Page.MOVIES, Page.SERIES, Page.SEARCH)
         self.current_page = page
         if self.player:
             self.playback_bar.set_visible(self.current_page is not Page.CHANNELS and self.player.is_playing())
