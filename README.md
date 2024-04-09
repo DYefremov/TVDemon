@@ -4,7 +4,7 @@
 # TVDemon
 ### TVDemon based on [Hypnotix](https://github.com/linuxmint/hypnotix).  
 This is an IPTV streaming application with support for live TV, movies and series.
-![shadow](https://private-user-images.githubusercontent.com/7511379/320309005-5b83286b-3f08-4a63-bb1e-a0bbec64c8fe.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MTI1MTg5MjQsIm5iZiI6MTcxMjUxODYyNCwicGF0aCI6Ii83NTExMzc5LzMyMDMwOTAwNS01YjgzMjg2Yi0zZjA4LTRhNjMtYmIxZS1hMGJiZWM2NGM4ZmUucG5nP1gtQW16LUFsZ29yaXRobT1BV1M0LUhNQUMtU0hBMjU2JlgtQW16LUNyZWRlbnRpYWw9QUtJQVZDT0RZTFNBNTNQUUs0WkElMkYyMDI0MDQwNyUyRnVzLWVhc3QtMSUyRnMzJTJGYXdzNF9yZXF1ZXN0JlgtQW16LURhdGU9MjAyNDA0MDdUMTkzNzA0WiZYLUFtei1FeHBpcmVzPTMwMCZYLUFtei1TaWduYXR1cmU9MTI1NmE1NWUzMzVlNGFlZmY1ZDEyYTY1NDI2OGVkMmFiZGUwZDA2MmQ0NDQzZTJjNmJkNjM4MTdjZmFjYmVkMCZYLUFtei1TaWduZWRIZWFkZXJzPWhvc3QmYWN0b3JfaWQ9MCZrZXlfaWQ9MCZyZXBvX2lkPTAifQ.L8aQJrXXwwqDdIwsSn-IF0tuxSh_Bx_h3-5ngsM2gKw)
+![TVDemon](https://raw.githubusercontent.com/DYefremov/TVDemon/gh-pages/assets/TVDemon.png)
 It can support multiple IPTV providers of the following types:
 
 - M3U URL
