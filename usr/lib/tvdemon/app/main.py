@@ -54,6 +54,7 @@ class AppWindow(Adw.ApplicationWindow):
     series_logo = Gtk.Template.Child()
     series_label = Gtk.Template.Child()
     series_button = Gtk.Template.Child()
+    active_provider_info = Gtk.Template.Child()
     # Categories page.
     categories_flowbox = Gtk.Template.Child()
     # Channels page.
@@ -275,6 +276,7 @@ class AppWindow(Adw.ApplicationWindow):
         # If there are more than 1 providers and no Active Provider, set to the first one
         if len(self.providers) > 0 and self.active_provider is None:
             self.active_provider = self.providers[0]
+            self.active_provider_info.set_title(self.active_provider.name)
 
         self.refresh_providers_page()
 
@@ -313,10 +315,10 @@ class AppWindow(Adw.ApplicationWindow):
                 self.tv_label.set_text(translate("TV Channels (0)"))
                 self.movies_label.set_text(translate("Movies (0)"))
                 self.series_label.set_text(translate("Series (0)"))
-                self.preferences_button.set_sensitive(False)
                 self.tv_button.set_sensitive(False)
                 self.movies_button.set_sensitive(False)
                 self.series_button.set_sensitive(False)
+                self.active_provider_info.set_title(translate("No provider selected"))
             else:
                 self.tv_label.set_text(translate(f"TV Channels ({len(provider.channels)})"))
                 self.movies_label.set_text(translate(f"Movies ({len(provider.movies)})"))
@@ -414,6 +416,7 @@ class AppWindow(Adw.ApplicationWindow):
     @Gtk.Template.Callback()
     def on_provider_activated(self, list_box: Gtk.ListBox, widget: ProviderWidget):
         provider = widget.provider
+        self.active_provider_info.set_title(provider.name)
         self.active_provider = provider
         self.settings.set_string("active-provider", provider.name)
         self.navigate_to(Page.START)

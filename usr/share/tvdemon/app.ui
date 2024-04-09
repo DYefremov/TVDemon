@@ -84,113 +84,117 @@ Author: Dmitriy Yefremov 2024
                           </object>
                         </child>
                         <property name="content">
-                          <object class="GtkBox" id="start_box">
-                            <property name="can-focus">False</property>
+                          <object class="AdwPreferencesGroup" id="active_provider_info">
                             <property name="halign">center</property>
                             <property name="valign">center</property>
-                            <property name="orientation">vertical</property>
                             <property name="margin-start">24</property>
                             <property name="margin-end">24</property>
                             <property name="margin-top">24</property>
                             <property name="margin-bottom">24</property>
                             <child>
-                              <object class="GtkBox">
-                                <property name="halign">center</property>
-                                <property name="valign">center</property>
-                                <property name="spacing">12</property>
+                              <object class="GtkBox" id="start_box">
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
                                 <child>
-                                  <object class="GtkButton" id="tv_button">
-                                    <property name="sensitive">False</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="receives-default">True</property>
+                                  <object class="GtkBox">
+                                    <property name="halign">center</property>
+                                    <property name="valign">center</property>
+                                    <property name="spacing">12</property>
                                     <child>
-                                      <object class="GtkBox" id="tv_button_box">
-                                        <property name="can-focus">False</property>
-                                        <property name="orientation">vertical</property>
-                                        <property name="spacing">6</property>
-                                        <property name="margin-start">12</property>
-                                        <property name="margin-end">12</property>
-                                        <property name="margin-top">12</property>
-                                        <property name="margin-bottom">12</property>
+                                      <object class="GtkButton" id="tv_button">
+                                        <property name="sensitive">False</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="receives-default">True</property>
                                         <child>
-                                          <object class="GtkImage" id="tv_logo">
+                                          <object class="GtkBox" id="tv_button_box">
                                             <property name="can-focus">False</property>
-                                            <property name="pixel-size">192</property>
-                                            <property name="icon-name">tv</property>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="GtkLabel" id="tv_label">
-                                            <property name="can-focus">False</property>
-                                            <attributes>
-                                              <attribute name="weight" value="bold"/>
-                                            </attributes>
+                                            <property name="orientation">vertical</property>
+                                            <property name="spacing">6</property>
+                                            <property name="margin-start">12</property>
+                                            <property name="margin-end">12</property>
+                                            <property name="margin-top">12</property>
+                                            <property name="margin-bottom">12</property>
+                                            <child>
+                                              <object class="GtkImage" id="tv_logo">
+                                                <property name="can-focus">False</property>
+                                                <property name="pixel-size">192</property>
+                                                <property name="icon-name">tv</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel" id="tv_label">
+                                                <property name="can-focus">False</property>
+                                                <attributes>
+                                                  <attribute name="weight" value="bold"/>
+                                                </attributes>
+                                              </object>
+                                            </child>
                                           </object>
                                         </child>
                                       </object>
                                     </child>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="movies_button">
-                                    <property name="sensitive">False</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="receives-default">True</property>
                                     <child>
-                                      <object class="GtkBox" id="movies_button_box">
-                                        <property name="can-focus">False</property>
-                                        <property name="orientation">vertical</property>
-                                        <property name="spacing">6</property>
-                                        <property name="margin-start">12</property>
-                                        <property name="margin-end">12</property>
-                                        <property name="margin-top">12</property>
-                                        <property name="margin-bottom">12</property>
+                                      <object class="GtkButton" id="movies_button">
+                                        <property name="sensitive">False</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="receives-default">True</property>
                                         <child>
-                                          <object class="GtkImage" id="movies_logo">
+                                          <object class="GtkBox" id="movies_button_box">
                                             <property name="can-focus">False</property>
-                                            <property name="pixel-size">192</property>
-                                            <property name="icon-name">tv</property>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="GtkLabel" id="movies_label">
-                                            <property name="can-focus">False</property>
-                                            <attributes>
-                                              <attribute name="weight" value="bold"/>
-                                            </attributes>
+                                            <property name="orientation">vertical</property>
+                                            <property name="spacing">6</property>
+                                            <property name="margin-start">12</property>
+                                            <property name="margin-end">12</property>
+                                            <property name="margin-top">12</property>
+                                            <property name="margin-bottom">12</property>
+                                            <child>
+                                              <object class="GtkImage" id="movies_logo">
+                                                <property name="can-focus">False</property>
+                                                <property name="pixel-size">192</property>
+                                                <property name="icon-name">tv</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel" id="movies_label">
+                                                <property name="can-focus">False</property>
+                                                <attributes>
+                                                  <attribute name="weight" value="bold"/>
+                                                </attributes>
+                                              </object>
+                                            </child>
                                           </object>
                                         </child>
                                       </object>
                                     </child>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="series_button">
-                                    <property name="sensitive">False</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="receives-default">True</property>
                                     <child>
-                                      <object class="GtkBox" id="series_button_box">
-                                        <property name="can-focus">False</property>
-                                        <property name="orientation">vertical</property>
-                                        <property name="spacing">6</property>
-                                        <property name="margin-start">12</property>
-                                        <property name="margin-end">12</property>
-                                        <property name="margin-top">12</property>
-                                        <property name="margin-bottom">12</property>
+                                      <object class="GtkButton" id="series_button">
+                                        <property name="sensitive">False</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="receives-default">True</property>
                                         <child>
-                                          <object class="GtkImage" id="series_logo">
+                                          <object class="GtkBox" id="series_button_box">
                                             <property name="can-focus">False</property>
-                                            <property name="pixel-size">192</property>
-                                            <property name="icon-name">tv</property>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="GtkLabel" id="series_label">
-                                            <property name="can-focus">False</property>
-                                            <attributes>
-                                              <attribute name="weight" value="bold"/>
-                                            </attributes>
+                                            <property name="orientation">vertical</property>
+                                            <property name="spacing">6</property>
+                                            <property name="margin-start">12</property>
+                                            <property name="margin-end">12</property>
+                                            <property name="margin-top">12</property>
+                                            <property name="margin-bottom">12</property>
+                                            <child>
+                                              <object class="GtkImage" id="series_logo">
+                                                <property name="can-focus">False</property>
+                                                <property name="pixel-size">192</property>
+                                                <property name="icon-name">tv</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel" id="series_label">
+                                                <property name="can-focus">False</property>
+                                                <attributes>
+                                                  <attribute name="weight" value="bold"/>
+                                                </attributes>
+                                              </object>
+                                            </child>
                                           </object>
                                         </child>
                                       </object>
@@ -200,6 +204,7 @@ Author: Dmitriy Yefremov 2024
                               </object>
                             </child>
                           </object>
+
                         </property>
                       </object>
                     </property>
