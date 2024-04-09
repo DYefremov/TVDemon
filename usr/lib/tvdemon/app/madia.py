@@ -93,7 +93,8 @@ class GstPlayer(Player):
 
             gi.require_version("Gst", "1.0")
             gi.require_version("GstVideo", "1.0")
-            from gi.repository import Gst
+            gi.require_version("GstPlayer", "1.0")
+            from gi.repository import Gst, GstVideo, GstPlayer
             # Initialization of GStreamer.
             # For Arch linux -> gst-plugin-gtk4
             Gst.init(sys.argv)
