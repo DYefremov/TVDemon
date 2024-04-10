@@ -168,6 +168,38 @@ class PreferencesPage(Adw.PreferencesPage):
     def on_recordings_path_select(self, row: Adw.ActionRow):
         select_path(self.get_root(), callback=row.set_subtitle)
 
+    @property
+    def useragent(self):
+        return self.useragent_entry.get_text()
+
+    @useragent.setter
+    def useragent(self, value):
+        self.useragent_entry.set_text(value)
+
+    @property
+    def referer(self) -> str:
+        return self.referer_entry.get_text()
+
+    @referer.setter
+    def referer(self, value: str):
+        self.referer_entry.set_text(value)
+
+    @property
+    def recordings_path(self) -> str:
+        return self.recordings_path_row.get_subtitle()
+
+    @recordings_path.setter
+    def recordings_path(self, value: str):
+        self.recordings_path_row.set_subtitle(value)
+
+    @property
+    def playback_library(self) -> int:
+        return self.media_lib_row.get_selected()
+
+    @playback_library.setter
+    def playback_library(self, value: int):
+        self.media_lib_row.set_selected(value)
+
 
 @Gtk.Template(filename=f"{UI_PATH}media_bar.ui")
 class MediaBar(Gtk.Frame):

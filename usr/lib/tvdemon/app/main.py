@@ -88,6 +88,8 @@ class AppWindow(Adw.ApplicationWindow):
     search_stack = Gtk.Template.Child()
     search_status = Gtk.Template.Child()
     search_channels_box = Gtk.Template.Child()
+    # Preferences.
+    preferences_page = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -766,6 +768,27 @@ class AppWindow(Adw.ApplicationWindow):
         self.active_channel = widget.channel
         self.navigate_to(Page.CHANNELS)
         self.play(self.active_channel)
+
+    # ******************** Preferences ******************* #
+
+    @Gtk.Template.Callback()
+    def on_preferences_showing(self, page: Adw.NavigationPage):
+        self.preferences_page.useragent = self.settings.get_string("user-agent")
+        self.preferences_page.referer = self.settings.get_string("http-referer")
+        self.preferences_page.recordings_path = self.settings.get_string("recordings-path")
+        self.preferences_page.playback_library = self.settings.get_value("playback-library")
+
+    @Gtk.Template.Callback()
+    def on_preferences_save(self, button):
+        def clb(resp):
+            if resp:
+                self.settings.set_string("user-agent", self.preferences_page.useragent)
+                self.settings.set_string("http-referer", self.preferences_page.referer)
+                self.settings.set_string("recordings-path", self.preferences_page.recordings_path)
+                self.settings.set_value("playback-library", self.preferences_page.playback_library)
+                self.navigation_view.pop()
+
+        QuestionDialog(self, clb).present()
 
     # ******************** Additional ******************** #
 

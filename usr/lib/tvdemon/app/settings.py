@@ -28,7 +28,7 @@ from typing import Any
 class Defaults(dict):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self["playback-library"] = "GStreamer"
+        self["playback-library"] = 0
         self["mpv-options"] = "hwdec=auto-safe"
         self["recordings-path"] = str(Path.home())
         self["user-agent"] = "Mozilla/5.0"

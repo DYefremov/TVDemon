@@ -532,13 +532,22 @@ Author: Dmitriy Yefremov 2024
                     <property name="child">
                       <object class="AdwToolbarView">
                         <child type="top">
-                          <object class="AdwHeaderBar"/>
+                          <object class="AdwHeaderBar">
+                            <child type="start">
+                              <object class="GtkButton" id="save_preferences_button">
+                                <property name="icon-name">document-save-symbolic</property>
+                                <property name="tooltip-text" translatable="yes">Save</property>
+                                <signal name="clicked" handler="on_preferences_save"/>
+                              </object>
+                            </child>
+                          </object>
                         </child>
                         <property name="content">
-                          <object class="PreferencesPage"/>
+                          <object class="PreferencesPage" id="preferences_page"/>
                         </property>
                       </object>
                     </property>
+                    <signal name="showing" handler="on_preferences_showing"/>
                   </object>
                 </child>
               </object>
