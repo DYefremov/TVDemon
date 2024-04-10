@@ -27,6 +27,52 @@ Author: Dmitriy Yefremov 2024
   <template class="PreferencesPage" parent="AdwPreferencesPage">
     <property name="width-request">560</property>
     <property name="height-request">420</property>
+    <!--  Application -->
+    <child>
+      <object class="AdwPreferencesGroup">
+        <property name="title">Application</property>
+        <child>
+          <object class="AdwSpinRow" id="reload_interval_spin">
+            <property name="title" translatable="yes">Providers reload interval</property>
+            <property name="subtitle" translatable="yes">Hours</property>
+            <property name="adjustment">
+              <object class="GtkAdjustment">
+                <property name="lower">1</property>
+                <property name="upper">48</property>
+                <property name="value">1</property>
+                <property name="page-increment">5</property>
+                <property name="step-increment">1</property>
+              </object>
+            </property>
+
+          </object>
+        </child>
+        <child>
+          <object class="AdwSwitchRow" id="dark_mode_switch">
+            <property name="title" translatable="yes">Prefer dark mode</property>
+            <property name="tooltip-text" translatable="yes">This option only works when used with light desktop themes
+              which support dark mode.
+            </property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <!--  Network -->
+    <child>
+      <object class="AdwPreferencesGroup">
+        <property name="title">Network</property>
+        <child>
+          <object class="AdwEntryRow" id="useragent_entry">
+            <property name="title">User Agent</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwEntryRow" id="referer_entry">
+            <property name="title">Referer</property>
+          </object>
+        </child>
+      </object>
+    </child>
     <!--  Playback -->
     <child>
       <object class="AdwPreferencesGroup">
@@ -63,21 +109,6 @@ Author: Dmitriy Yefremov 2024
                 <property name="icon-name">document-open-symbolic</property>
               </object>
             </child>
-          </object>
-        </child>
-      </object>
-    </child>
-    <child>
-      <object class="AdwPreferencesGroup">
-        <property name="title">Network</property>
-        <child>
-          <object class="AdwEntryRow" id="useragent_entry">
-            <property name="title">User Agent</property>
-          </object>
-        </child>
-        <child>
-          <object class="AdwEntryRow" id="referer_entry">
-            <property name="title">Referer</property>
           </object>
         </child>
       </object>

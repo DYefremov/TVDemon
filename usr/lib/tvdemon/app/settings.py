@@ -28,7 +28,7 @@ from typing import Any
 class Defaults(dict):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self["playback-library"] = 0
+        self["playback-library"] = 0  # GStreamer
         self["mpv-options"] = "hwdec=auto-safe"
         self["recordings-path"] = str(Path.home())
         self["user-agent"] = "Mozilla/5.0"
@@ -37,6 +37,8 @@ class Defaults(dict):
         self["providers"] = [
             "Free-TV:::url:::https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8:::::::::'"]
         self["main-window-size"] = (700, 500)
+        self["reload-interval"] = 3600  # 1 Hour
+        self["dark-mode"] = False  # 1 Hour
 
 
 class Settings(dict):

@@ -118,9 +118,8 @@ class AppWindow(Adw.ApplicationWindow):
         # Delay before hiding the mouse cursor.
         self._mouse_hide_interval = 5
         self._is_mouse_cursor_hidden = True
-        # TODO add to preferences!
         # Used for redownloading timer
-        self.reload_timeout_sec = 60 * 5
+        self.reload_timeout_sec = self.settings.get_value("reload-interval")
         self._timer_id = -1
         # Start page.
         self.tv_logo.set_from_file(f"{UI_PATH}pictures/tv.svg")
@@ -190,7 +189,6 @@ class AppWindow(Adw.ApplicationWindow):
         self.reload(Page.START)
         self.init_playback()
         # Redownload playlists by default
-        # This is going to get readjusted
         self._timer_id = GLib.timeout_add_seconds(self.reload_timeout_sec, self.force_reload)
 
     def init_playback(self):
@@ -259,11 +257,6 @@ class AppWindow(Adw.ApplicationWindow):
                         provider.movies = self.xtream.movies
                         provider.series = self.xtream.series
                         provider.groups = self.xtream.groups
-                        # Change redownload timeout
-                        self.reload_timeout_sec = 60 * 60 * 2  # 2 hours
-                        if self._timer_id:
-                            GLib.source_remove(self._timer_id)
-                        self._timer_id = GLib.timeout_add_seconds(self.reload_timeout_sec, self.force_reload)
                         # If no errors, approve provider
                         if provider.name == self.settings.get_string("active-provider"):
                             self.active_provider = provider
@@ -773,6 +766,8 @@ class AppWindow(Adw.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_preferences_showing(self, page: Adw.NavigationPage):
+        self.preferences_page.reload_interval = self.settings.get_value("reload-interval")
+        self.preferences_page.dark_mode = self.settings.get_value("dark-mode")
         self.preferences_page.useragent = self.settings.get_string("user-agent")
         self.preferences_page.referer = self.settings.get_string("http-referer")
         self.preferences_page.recordings_path = self.settings.get_string("recordings-path")
@@ -782,6 +777,8 @@ class AppWindow(Adw.ApplicationWindow):
     def on_preferences_save(self, button):
         def clb(resp):
             if resp:
+                self.settings.set_value("reload-interval", self.preferences_page.reload_interval)
+                self.settings.set_value("dark-mode", self.preferences_page.dark_mode)
                 self.settings.set_string("user-agent", self.preferences_page.useragent)
                 self.settings.set_string("http-referer", self.preferences_page.referer)
                 self.settings.set_string("recordings-path", self.preferences_page.recordings_path)
@@ -868,17 +865,18 @@ class Application(Adw.Application):
                          **kwargs)
         self.add_main_option("log", ord("l"), GLib.OptionFlags.NONE, GLib.OptionArg.NONE, "", None)
         self.add_main_option("debug", ord("d"), GLib.OptionFlags.NONE, GLib.OptionArg.STRING, "", None)
-        # App style.
-        # TODO add option.
-        self.style_manager = Adw.StyleManager().get_default()
-        self.style_manager.set_color_scheme(Adw.ColorScheme.PREFER_DARK)
 
+        self.style_manager = Adw.StyleManager().get_default()
         self.window = None
         self.init_actions()
 
     def do_activate(self):
         if not self.window:
             self.window = AppWindow(application=self)
+
+        # App style.
+        if self.window.settings.get_value("dark-mode"):
+            self.style_manager.set_color_scheme(Adw.ColorScheme.PREFER_DARK)
 
         self.window.present()
 
@@ -930,7 +928,8 @@ class Application(Adw.Application):
         about.set_developer_name(__author__)
         about.set_license_type(Gtk.License.GPL_3_0)
         about.set_translator_credits(translate("translator-credits"))
-        about.set_website("https://github.com/DYefremov/TVDemon")
+        about.set_website("https://dyefremov.github.io/TVDemon/")
+        about.set_support_url("https://github.com/DYefremov/TVDemon")
         about.set_comments(('<b>TVDemon</b> based on <a href="https://github.com/linuxmint/hypnotix">Hypnotix</a>\n\n'
                             'This is an IPTV streaming application with support for live TV, movies and series.'))
         about.present()

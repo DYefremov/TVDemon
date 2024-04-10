@@ -156,6 +156,8 @@ class GroupWidget(Gtk.FlowBoxChild):
 class PreferencesPage(Adw.PreferencesPage):
     __gtype_name__ = "PreferencesPage"
 
+    reload_interval_spin = Gtk.Template.Child()
+    dark_mode_switch = Gtk.Template.Child()
     media_lib_row = Gtk.Template.Child()
     recordings_path_row = Gtk.Template.Child()
     useragent_entry = Gtk.Template.Child()
@@ -167,6 +169,22 @@ class PreferencesPage(Adw.PreferencesPage):
     @Gtk.Template.Callback("on_recordings_path_activated")
     def on_recordings_path_select(self, row: Adw.ActionRow):
         select_path(self.get_root(), callback=row.set_subtitle)
+
+    @property
+    def reload_interval(self) -> int:
+        return int(self.reload_interval_spin.get_value()) * 3600
+
+    @reload_interval.setter
+    def reload_interval(self, value: int):
+        self.reload_interval_spin.set_value(value // 3600)
+
+    @property
+    def dark_mode(self) -> bool:
+        return self.dark_mode_switch.get_active()
+
+    @dark_mode.setter
+    def dark_mode(self, value: bool):
+        return self.dark_mode_switch.set_active(value)
 
     @property
     def useragent(self):
