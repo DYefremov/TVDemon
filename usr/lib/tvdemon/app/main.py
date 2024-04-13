@@ -156,6 +156,7 @@ class AppWindow(Adw.ApplicationWindow):
         self.favorites.connect("favorite-list-updated", self.on_favorite_list_updated)
         self.favorites.connect("favorite-groups-updated", self.on_favorite_groups_updated)
         self.favorites.connect("favorite-group-activated", self.on_favorite_group_activated)
+        self.favorites.connect("favorites-error", self.on_favorites_error)
         # Media bar.
         self.media_bar.stop_button.connect("clicked", self.on_playback_stop)
         self.media_bar.pause_button.connect("clicked", self.on_playback_pause)
@@ -635,6 +636,9 @@ class AppWindow(Adw.ApplicationWindow):
         self.content_type = TV_GROUP
         self.show_channels(group.channels)
 
+    def on_favorites_error(self, favorites: FavoritesPage, message: str):
+        self.show_message(message)
+
     def on_favorite_groups_updated(self, favorites: FavoritesPage, groups: list):
         menu = Gio.Menu()
         detail_level = Gio.SimpleAction.new_stateful("active-fav-group", GLib.VariantType.new("s"),
@@ -827,7 +831,7 @@ class AppWindow(Adw.ApplicationWindow):
             self.toggle_fullscreen()
 
     def show_message(self, message: str):
-        self.messages_overlay.add_toast(Adw.Toast(title=message))
+        self.messages_overlay.add_toast(Adw.Toast(title=translate(message)))
 
     def on_navigation_view_pushed(self, view: Adw.NavigationView):
         page = Page(view.get_visible_page().get_tag())
