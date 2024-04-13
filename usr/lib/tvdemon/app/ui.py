@@ -344,6 +344,10 @@ class FavoritesPage(Adw.NavigationPage):
                            (GObject.TYPE_PYOBJECT,))
         GObject.signal_new("favorite-group-edit", self, GObject.SignalFlags.RUN_FIRST, GObject.TYPE_PYOBJECT,
                            (GObject.TYPE_PYOBJECT,))
+        GObject.signal_new("favorite-group-set-default", self, GObject.SignalFlags.RUN_FIRST, GObject.TYPE_PYOBJECT,
+                           (GObject.TYPE_PYOBJECT,))
+        GObject.signal_new("favorite-groups-updated", self, GObject.SignalFlags.RUN_FIRST, GObject.TYPE_PYOBJECT,
+                           (GObject.TYPE_PYOBJECT,))
         GObject.signal_new("favorite-list-updated", self, GObject.SignalFlags.RUN_FIRST, GObject.TYPE_PYOBJECT,
                            (GObject.TYPE_PYOBJECT,))
 
@@ -355,6 +359,7 @@ class FavoritesPage(Adw.NavigationPage):
         self.connect("favorite-add", self.on_favorite_add)
         self.connect("favorite-group-edit", self.on_group_edit)
         self.connect("favorite-group-remove", self.on_group_remove)
+        self.connect("favorite-group-set-default", self.on_favorite_group_set_default)
         # Group channels DnD.
         dnd = Gtk.DropTarget.new(FlowChannelWidget, Gdk.DragAction.MOVE)
         dnd.connect("drop", self.on_favorite_channel_dnd_drop)
@@ -372,6 +377,7 @@ class FavoritesPage(Adw.NavigationPage):
     def on_new_group(self, button):
         self.group_list.append(FavoritesGroupWidget(self, Group("New group")))
         [g.remove_button.set_sensitive(True) for g in self.group_list]
+        self.emit("favorite-groups-updated", self.get_groups())
 
     @Gtk.Template.Callback()
     def on_group_save(self, button):
@@ -380,10 +386,14 @@ class FavoritesPage(Adw.NavigationPage):
     def save_group(self, confirm):
         if confirm and self.edit_group:
             group = self.edit_group.group
-            name = self.group_name_row.get_text()
             channels = [ch.channel for ch in self.group_channels_box]
             urls = {c.url for c in channels}
+
+            name = self.group_name_row.get_text()
+            if group.name != name:
+                self.emit("favorite-groups-updated", self.get_groups())
             group.name = name
+
             ch_count = len(group.channels)
             if ch_count > len(channels):
                 ch_count -= len(channels)
@@ -414,6 +424,15 @@ class FavoritesPage(Adw.NavigationPage):
         self.current_group = self.group_list.get_first_child()
         self.current_group.remove_button.set_sensitive(len((list(self.group_list))) > 1)
         self.emit("favorite-list-updated", self.channels_count)
+        self.emit("favorite-groups-updated", self.get_groups())
+
+    def on_favorite_group_set_default(self, page, group_name):
+        for gw in self.group_list:
+            grp = gw.group
+            is_default = grp.name == group_name
+            grp.is_default = is_default
+            if is_default:
+                self.current_group = gw
 
     @idle_function
     def set_groups(self, groups):
@@ -430,6 +449,7 @@ class FavoritesPage(Adw.NavigationPage):
             self.current_group = self.group_list.get_first_child()
         self.current_group.remove_button.set_sensitive(len(groups) > 1)
         self.emit("favorite-list-updated", self.channels_count)
+        self.emit("favorite-groups-updated", groups)
 
     def get_groups(self):
         return [g.group for g in self.group_list]

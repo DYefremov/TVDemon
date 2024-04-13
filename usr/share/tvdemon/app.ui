@@ -252,9 +252,10 @@ Author: Dmitriy Yefremov 2024
                         <child type="top">
                           <object class="AdwHeaderBar" id="channels_header">
                             <child type="start">
-                              <object class="AdwSplitButton">
+                              <object class="AdwSplitButton" id="add_fav_button">
                                 <property name="icon-name">bookmark-new-symbolic</property>
                                 <property name="tooltip-text" translatable="yes">Add to favorites</property>
+                                <property name="dropdown-tooltip" translatable="yes">Active group</property>
                                 <signal name="clicked" handler="on_favorite_add"/>
                               </object>
                             </child>

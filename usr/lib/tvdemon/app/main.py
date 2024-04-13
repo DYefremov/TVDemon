@@ -82,6 +82,7 @@ class AppWindow(Adw.ApplicationWindow):
     messages_overlay = Gtk.Template.Child()
     # Favorites.
     fav_button_content = Gtk.Template.Child()
+    add_fav_button = Gtk.Template.Child()
     favorites = Gtk.Template.Child("favorites_page")
     # Search.
     search_entry = Gtk.Template.Child()
@@ -153,6 +154,7 @@ class AppWindow(Adw.ApplicationWindow):
         self.bind_property("is-mouse-cursor-hidden", self.media_bar, "visible", 4)
         # Favorites.
         self.favorites.connect("favorite-list-updated", self.on_favorite_list_updated)
+        self.favorites.connect("favorite-groups-updated", self.on_favorite_groups_updated)
         self.favorites.connect("favorite-group-activated", self.on_favorite_group_activated)
         # Media bar.
         self.media_bar.stop_button.connect("clicked", self.on_playback_stop)
@@ -271,7 +273,6 @@ class AppWindow(Adw.ApplicationWindow):
         # If there are more than 1 providers and no Active Provider, set to the first one
         if len(self.providers) > 0 and self.active_provider is None:
             self.active_provider = self.providers[0]
-            self.active_provider_info.set_title(self.active_provider.name)
 
         self.refresh_providers_page()
 
@@ -321,6 +322,7 @@ class AppWindow(Adw.ApplicationWindow):
                 self.tv_button.set_sensitive(len(provider.channels) > 0)
                 self.movies_button.set_sensitive(len(provider.movies) > 0)
                 self.series_button.set_sensitive(len(provider.series) > 0)
+                self.active_provider_info.set_title(provider.name)
 
     def get_badge_pixbuf(self, name) -> GdkPixbuf.Pixbuf:
         """ Returns group badge. """
@@ -632,6 +634,24 @@ class AppWindow(Adw.ApplicationWindow):
     def on_favorite_group_activated(self, favorites: FavoritesPage, group: Group):
         self.content_type = TV_GROUP
         self.show_channels(group.channels)
+
+    def on_favorite_groups_updated(self, favorites: FavoritesPage, groups: list):
+        menu = Gio.Menu()
+        detail_level = Gio.SimpleAction.new_stateful("active-fav-group", GLib.VariantType.new("s"),
+                                                     GLib.Variant.new_string("Default"))
+        detail_level.connect("activate", self.on_fav_group_activated)
+        self.add_action(detail_level)
+        for g in groups:
+            item = Gio.MenuItem.new(g.name)
+            item.set_action_and_target_value("win.active-fav-group", GLib.Variant.new_string(g.name))
+            if g.is_default:
+                detail_level.set_state(GLib.Variant.new_string(g.name))
+            menu.append_item(item)
+        self.add_fav_button.set_menu_model(menu)
+
+    def on_fav_group_activated(self, action: Gio.SimpleAction, target: GLib.Variant):
+        action.set_state(target)
+        self.favorites.emit("favorite-group-set-default", target.get_string())
 
     # ******************** Playback ******************** #
 
