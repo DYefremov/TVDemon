@@ -77,7 +77,11 @@ APP_NAME = "TVDemon"
 APP_ID = f"by.{APP}dff.{APP_NAME}"
 GLib.set_application_name(APP_NAME)
 
+# Prefix.
 PREFIX = "" if IS_FROZEN else f"{os.sep}usr{os.sep}"
+if IS_FROZEN and IS_DARWIN:  # ->  macOS bundle.
+    PREFIX = f"{Path(sys._MEIPASS).parent}{os.sep}Resources{os.sep}"
+
 BASE_PATH = f"{PREFIX}share{os.sep}"
 UI_PATH = f"{BASE_PATH}tvdemon{os.sep}"
 LOCALE_DIR = f"{BASE_PATH}locale"
