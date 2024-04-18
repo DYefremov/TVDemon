@@ -389,14 +389,15 @@ class FavoritesPage(Adw.NavigationPage):
         if confirm and self.edit_group:
             group = self.edit_group.group
             name = self.group_name_row.get_text()
-            if name in self.get_group_names():
-                self.emit("favorites-error", "A group with that name exists!")
-                return
 
             if group.name != name:
-                self.emit("favorite-groups-updated", self.get_groups())
-            group.name = name
+                if name in self.get_group_names():
+                    self.emit("favorites-error", "A group with that name exists!")
+                    return
 
+                self.emit("favorite-groups-updated", self.get_groups())
+
+            group.name = name
             channels = [ch.channel for ch in self.group_channels_box]
             urls = {c.url for c in channels}
             ch_count = len(group.channels)
