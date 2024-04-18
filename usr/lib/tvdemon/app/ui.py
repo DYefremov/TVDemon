@@ -229,6 +229,7 @@ class MediaBar(Gtk.Frame):
     pause_button = Gtk.Template.Child()
     backward_button = Gtk.Template.Child()
     forward_button = Gtk.Template.Child()
+    volume_button = Gtk.Template.Child()
 
     def set_title(self, title: str):
         self.title_label.set_text(title)

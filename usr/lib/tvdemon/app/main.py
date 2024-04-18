@@ -162,6 +162,7 @@ class AppWindow(Adw.ApplicationWindow):
         self.media_bar.pause_button.connect("clicked", self.on_playback_pause)
         self.media_bar.backward_button.connect("clicked", self.on_playback_backward)
         self.media_bar.forward_button.connect("clicked", self.on_playback_forward)
+        self.media_bar.volume_button.connect("value-changed", self.on_volume_changed)
         # Shortcuts.
         controller = Gtk.EventControllerKey()
         controller.connect("key-pressed", self.on_key_pressed)
@@ -706,12 +707,16 @@ class AppWindow(Adw.ApplicationWindow):
         self.playback_stack.set_visible_child_name(PLaybackPage.STATUS)
         log(f"Playback error: {status}")
 
+    def on_volume_changed(self, player: Player, volume: float):
+        self.player.set_volume(volume)
+
     def on_playback_mouse_press(self, gest: Gtk.GestureClick, num: int, x: float, y: float):
         if num == 2:
             self.toggle_fullscreen()
 
     def on_playback_mouse_scroll(self, controller: Gtk.EventControllerScroll, dx: float, dy: float):
         self.player.volume_up() if dy < 0 else self.player.volume_down()
+        self.media_bar.volume_button.set_value(self.player.get_volume())
 
     def on_playback_mouse_motion(self, controller: Gtk.EventControllerMotion, x: float, y: float):
         if self.is_mouse_cursor_hidden:
