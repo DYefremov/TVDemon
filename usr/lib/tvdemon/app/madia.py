@@ -128,6 +128,8 @@ class GstPlayer(Player):
             bus.connect("message::state-changed", self.on_state_changed)
             bus.connect("message::eos", self.on_eos)
 
+            self.set_volume(0.0)
+
     @classmethod
     def get_instance(cls, widget):
         if not cls.__INSTANCE:
@@ -164,6 +166,17 @@ class GstPlayer(Player):
             self._player.set_state(self.STATE.PAUSED)
         elif state == self.STATE.PAUSED:
             self._player.set_state(self.STATE.PLAYING)
+
+    def set_volume(self, value: float):
+        self._player.set_property("volume", value)
+
+    def volume_up(self):
+        volume = self._player.get_property("volume") + 0.1
+        self.set_volume(1.0 if volume >= 1 else volume)
+
+    def volume_down(self):
+        volume = self._player.get_property("volume") - 0.1
+        self.set_volume(0.0 if volume <= 0 else volume)
 
     def is_playing(self):
         return self._player.get_state(self.STATE.NULL).state is self.STATE.PLAYING

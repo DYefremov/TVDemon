@@ -145,6 +145,7 @@ class AppWindow(Adw.ApplicationWindow):
         controller.connect("motion", self.on_playback_mouse_motion)
         self.playback_widget.add_controller(controller)
         controller = Gtk.EventControllerScroll()
+        controller.set_flags(Gtk.EventControllerScrollFlags.VERTICAL)
         controller.connect("scroll", self.on_playback_mouse_scroll)
         self.playback_widget.add_controller(controller)
         controller = Gtk.GestureClick()
@@ -709,8 +710,8 @@ class AppWindow(Adw.ApplicationWindow):
         if num == 2:
             self.toggle_fullscreen()
 
-    def on_playback_mouse_scroll(self, *args):
-        pass
+    def on_playback_mouse_scroll(self, controller: Gtk.EventControllerScroll, dx: float, dy: float):
+        self.player.volume_up() if dy < 0 else self.player.volume_down()
 
     def on_playback_mouse_motion(self, controller: Gtk.EventControllerMotion, x: float, y: float):
         if self.is_mouse_cursor_hidden:
