@@ -1,0 +1,30 @@
+# Maintainer: Dmitriy Yefremov <https://github.com/DYefremov>
+
+pkgname=TVDemon-git
+pkgver=2.0.0
+pkgrel=1
+pkgdesc="An IPTV streaming application with support for live TV, movies and series."
+arch=('any')
+url="https://github.com/DYefremov/TVDemon"
+license=('GPL3')
+source=("git+$url.git")
+sha256sums=('SKIP')
+
+depends=(
+    'gtk4>=4.12' 
+    'libadwaita>=1.15'
+    'python>=3.11'
+    'hicolor-icon-theme'
+    'python-gobject'
+    'python-requests'
+    'gstreamer'
+    'gst-plugins-base'
+    'gst-plugins-good'
+    'gst-plugins-bad'
+    'gst-plugin-gtk4'
+)
+
+package() {
+  cd ${pkgname/-git}
+  cp -r usr/ "$pkgdir/"
+}
