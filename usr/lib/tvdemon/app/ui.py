@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2022-2024 Dmitriy Yefremov <https://github.com/DYefremov>
+# Copyright © 2022-2024 Dmitriy Yefremov <https://github.com/DYefremov>
 #
 #
 # This file is part of TVDemon.
@@ -18,12 +18,18 @@
 # You should have received a copy of the GNU General Public License
 # along with TVDemon  If not, see <http://www.gnu.org/licenses/>.
 #
+# Author: Dmitriy Yefremov
+#
 
 __all__ = ("Page", "PLaybackPage", "SearchPage", "ProviderType", "ProviderWidget", "ProviderProperties",
            "ChannelWidget", "GroupWidget", "FlowChannelWidget", "FavoritesGroupWidget", "PreferencesPage",
            "FavoritesPage", "QuestionDialog", "ShortcutsWindow")
 
+from datetime import datetime
 from enum import StrEnum, IntEnum
+from html import escape
+
+from .epg import EpgEvent, EPG_START_FMT, EPG_END_FMT
 from .common import (UI_PATH, Adw, Gtk, Gdk, GObject, idle_function, translate, select_path, Group,
                      get_pixbuf_from_file, Channel)
 
@@ -124,6 +130,7 @@ class ChannelWidget(Gtk.ListBoxRow):
     label = Gtk.Template.Child()
     logo = Gtk.Template.Child()
     fav_logo = Gtk.Template.Child()
+    epg_label = Gtk.Template.Child()
 
     def __init__(self, channel, logo_pixbuf=None, **kwargs):
         super().__init__(**kwargs)
@@ -132,6 +139,15 @@ class ChannelWidget(Gtk.ListBoxRow):
         self.label.set_text(channel.name)
         self.set_tooltip_text(channel.name)
         self.logo.set_from_pixbuf(logo_pixbuf) if logo_pixbuf else None
+
+    def set_epg(self, event: EpgEvent):
+        if event.start:
+            start = datetime.fromtimestamp(event.start).strftime(EPG_START_FMT)
+            end = datetime.fromtimestamp(event.end).strftime(EPG_END_FMT)
+            sep = "-"
+            self.epg_label.set_markup((f'{escape(event.channel)}\n\n'
+                                       f'<span size="small" weight="bold">{escape(event.title)}</span>\n'
+                                       f'<span size="small" style="italic">{start} {sep} {end}</span>'))
 
 
 @Gtk.Template(filename=f"{UI_PATH}group_widget.ui")

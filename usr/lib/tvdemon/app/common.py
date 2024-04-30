@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2022-2024 Dmitriy Yefremov <https://github.com/DYefremov>
-#               2020-2022 Linux Mint <root@linuxmint.com>
-#
+# Copyright © 2022-2024 Dmitriy Yefremov <https://github.com/DYefremov>
+#             2020-2022 Linux Mint <root@linuxmint.com>
 #
 # This file is part of TVDemon.
 #
@@ -260,6 +259,7 @@ class Channel:
             res = match.groupdict()
             if 'params' in res:
                 params = dict(PARAMS.findall(res['params']))
+                self.id = params.get("tvg-id", None)
                 if "tvg-name" in params and params['tvg-name'].strip() != "":
                     self.name = params['tvg-name'].strip()
                 if "tvg-logo" in params and params['tvg-logo'].strip() != "":

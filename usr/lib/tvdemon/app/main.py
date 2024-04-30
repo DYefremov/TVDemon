@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2022-2024 Dmitriy Yefremov <https://github.com/DYefremov>
-#               2020-2022 Linux Mint <root@linuxmint.com>
+# Copyright © 2022-2024 Dmitriy Yefremov <https://github.com/DYefremov>
+#             2020-2022 Linux Mint <root@linuxmint.com>
 #
 #
 # This file is part of TVDemon.
@@ -31,6 +31,7 @@ from itertools import chain
 
 import requests
 
+from .epg import EpgCache
 from .madia import Player
 from .common import *
 from .ui import *
@@ -120,7 +121,6 @@ class AppWindow(Adw.ApplicationWindow):
         self._is_mouse_cursor_hidden = True
         # Used for redownloading timer
         self.reload_timeout_sec = self.settings.get_value("reload-interval")
-        self._timer_id = -1
         # Start page.
         self.tv_logo.set_from_file(f"{UI_PATH}pictures/tv.svg")
         self.movies_logo.set_from_file(f"{UI_PATH}pictures/movies.svg")
@@ -167,6 +167,9 @@ class AppWindow(Adw.ApplicationWindow):
         controller = Gtk.EventControllerKey()
         controller.connect("key-pressed", self.on_key_pressed)
         self.add_controller(controller)
+        # EPG.
+        self._epg_timer_id = -1
+        self._epg_cache = EpgCache()
 
     @GObject.Property(type=bool, default=True)
     def is_tv_mode(self):
@@ -193,7 +196,8 @@ class AppWindow(Adw.ApplicationWindow):
         self.reload(Page.START)
         self.init_playback()
         # Redownload playlists by default
-        self._timer_id = GLib.timeout_add_seconds(self.reload_timeout_sec, self.force_reload)
+        GLib.timeout_add_seconds(self.reload_timeout_sec, self.force_reload)
+        self._epg_timer_id = GLib.timeout_add_seconds(5, self.refresh_epg)
 
     def init_playback(self):
         try:
@@ -815,6 +819,19 @@ class AppWindow(Adw.ApplicationWindow):
                 self.navigation_view.pop()
 
         QuestionDialog(self, clb).present()
+
+    # ********************** EPG ************************* #
+
+    def refresh_epg(self):
+        gen = self.refresh_epg_data()
+        GLib.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_LOW)
+
+        return True
+
+    def refresh_epg_data(self):
+        for w in self.channels_list_box:
+            w.set_epg(self._epg_cache.get_current_event(w.channel.id))
+            yield w
 
     # ******************** Additional ******************** #
 
