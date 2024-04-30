@@ -22,7 +22,7 @@
 __all__ = ("APP_ID", "log", "Gtk", "Gdk", "Adw", "Gio", "GdkPixbuf", "GLib", "Pango", "GObject",
            "APP", "UI_PATH", "Manager", "Provider", "Group", "Channel", "Serie",
            "translate", "async_function", "idle_function", "get_pixbuf_from_file", "init_logger", "select_path",
-           "BADGES", "MOVIES_GROUP", "PROVIDERS_PATH", "SERIES_GROUP", "TV_GROUP")
+           "BADGES", "MOVIES_GROUP", "PROVIDERS_PATH", "EPG_PATH", "SERIES_GROUP", "TV_GROUP")
 
 import gettext
 import json
@@ -84,8 +84,10 @@ if IS_FROZEN and IS_DARWIN:  # ->  macOS bundle.
 BASE_PATH = f"{PREFIX}share{os.sep}"
 UI_PATH = f"{BASE_PATH}tvdemon{os.sep}"
 LOCALE_DIR = f"{BASE_PATH}locale"
-PROVIDERS_PATH = os.path.join(os.path.normpath(GLib.get_user_cache_dir()), APP, "providers")
-FAVORITES_PATH = os.path.join(GLib.get_user_cache_dir(), APP, "favorites")
+CACHE_PATH = GLib.get_user_cache_dir()
+PROVIDERS_PATH = os.path.join(os.path.normpath(CACHE_PATH), APP, "providers")
+FAVORITES_PATH = os.path.join(CACHE_PATH, APP, "favorites")
+EPG_PATH = os.path.join(CACHE_PATH, APP, "epg")
 
 if not os.path.exists(UI_PATH):
     UI_PATH = f".{UI_PATH}"

@@ -145,8 +145,7 @@ class ChannelWidget(Gtk.ListBoxRow):
             start = datetime.fromtimestamp(event.start).strftime(EPG_START_FMT)
             end = datetime.fromtimestamp(event.end).strftime(EPG_END_FMT)
             sep = "-"
-            self.epg_label.set_markup((f'{escape(event.channel)}\n\n'
-                                       f'<span size="small" weight="bold">{escape(event.title)}</span>\n'
+            self.epg_label.set_markup((f'<span size="small" weight="bold">{escape(event.title)}</span>\n'
                                        f'<span size="small" style="italic">{start} {sep} {end}</span>'))
 
 

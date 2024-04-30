@@ -30,12 +30,13 @@ import xml.etree.ElementTree as ET
 from collections import namedtuple, defaultdict
 from dataclasses import dataclass
 from datetime import datetime
+from hashlib import sha1
 from tempfile import NamedTemporaryFile
 from urllib.parse import urlparse
 
 import requests
 
-from .common import log, IS_WIN
+from .common import log, IS_WIN, async_function, EPG_PATH, Provider, Channel
 
 EPG_START_FMT = "%a, %H:%M"
 EPG_END_FMT = "%H:%M"
@@ -52,12 +53,14 @@ class EpgEvent:
 
 
 class AbstractEpgCache(abc.ABC):
-    def __init__(self, path: str = None, url: str = None):
+    def __init__(self, provider: Provider):
         super().__init__()
+        self.provider = provider
         self.events = {}
 
-        self.url = url
-        self.path = path
+        self._reader = None
+        self.url = None
+        self.path = None
 
     @abc.abstractmethod
     def reset(self) -> None: pass
@@ -71,17 +74,51 @@ class AbstractEpgCache(abc.ABC):
     @abc.abstractmethod
     def get_current_events(self, service_id) -> list: pass
 
+    @staticmethod
+    def get_gz_file_name(url):
+        return f'{EPG_PATH}{os.sep}{sha1(url.encode("utf-8", errors="ignore")).hexdigest()}_epg.gz'
+
 
 class EpgCache(AbstractEpgCache):
 
+    def __init__(self, provider: Provider):
+        super().__init__(provider)
+        self.init()
+
+    def init(self):
+        self.url = self.provider.epg
+        self.path = self.get_gz_file_name(self.url)
+        self._reader = XmlTvReader(self.path, url=self.url)
+        self.load_data()
+
+    @async_function
+    def load_data(self):
+        if os.path.isfile(self.path):
+            # Difference calculation between the current time and file modification.
+            dif = datetime.now() - datetime.fromtimestamp(os.path.getmtime(self.path))
+            # We will update daily.
+            self._reader.download(self._reader.parse) if dif.days > 0 else self._reader.parse()
+        else:
+            self._reader.download(self._reader.parse)
+
+        self.update_epg_data()
+
     def reset(self) -> None:
-        pass
+        log("Reset EPG cache...")
+        self.init()
 
     def update_epg_data(self) -> bool:
-        pass
+        log("Updating EPG data...")
 
-    def get_current_event(self, service_id) -> EpgEvent:
-        return self.events.get(service_id, EpgEvent())
+        ids = {c.id or c.name for c in self.provider.channels}
+        for name, events in self._reader.get_current_events(ids).items():
+            self.events[name] = events
+
+    def get_current_event(self, channel: Channel) -> EpgEvent:
+        events = self.events.get(channel.id, self.events.get(channel.name, None))
+        if events:
+            return events[0]
+        return EpgEvent()
 
     def get_current_events(self, service_id) -> list:
         return []

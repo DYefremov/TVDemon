@@ -169,7 +169,7 @@ class AppWindow(Adw.ApplicationWindow):
         self.add_controller(controller)
         # EPG.
         self._epg_timer_id = -1
-        self._epg_cache = EpgCache()
+        self._epg_cache = None
 
     @GObject.Property(type=bool, default=True)
     def is_tv_mode(self):
@@ -197,7 +197,6 @@ class AppWindow(Adw.ApplicationWindow):
         self.init_playback()
         # Redownload playlists by default
         GLib.timeout_add_seconds(self.reload_timeout_sec, self.force_reload)
-        self._epg_timer_id = GLib.timeout_add_seconds(5, self.refresh_epg)
 
     def init_playback(self):
         try:
@@ -281,6 +280,12 @@ class AppWindow(Adw.ApplicationWindow):
             self.active_provider = self.providers[0]
 
         self.refresh_providers_page()
+
+        if self._epg_timer_id >= 0:
+            GLib.source_remove(self._epg_timer_id)
+
+        if self.active_provider.epg:
+            self.init_epg()
 
         if page:
             self.navigate_to(page)
@@ -493,6 +498,7 @@ class AppWindow(Adw.ApplicationWindow):
         self.provider_properties.user_entry_row.set_text(provider.username)
         self.provider_properties.password_entry_row.set_text(provider.password)
         self.provider_properties.type_combo_row.set_selected(ProviderType.from_str(provider.type_id))
+        self.provider_properties.epg_source_entry.set_text(provider.epg or "")
 
     # ******************** Channels ******************** #
 
@@ -822,6 +828,15 @@ class AppWindow(Adw.ApplicationWindow):
 
     # ********************** EPG ************************* #
 
+    def init_epg(self):
+        if self._epg_cache:
+            self._epg_cache.provider = self.active_provider
+            self._epg_cache.reset()
+        else:
+            self._epg_cache = EpgCache(self.active_provider)
+
+        self._epg_timer_id = GLib.timeout_add_seconds(5, self.refresh_epg)
+
     def refresh_epg(self):
         gen = self.refresh_epg_data()
         GLib.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_LOW)
@@ -830,7 +845,7 @@ class AppWindow(Adw.ApplicationWindow):
 
     def refresh_epg_data(self):
         for w in self.channels_list_box:
-            w.set_epg(self._epg_cache.get_current_event(w.channel.id))
+            w.set_epg(self._epg_cache.get_current_event(w.channel))
             yield w
 
     # ******************** Additional ******************** #
