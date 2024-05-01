@@ -427,6 +427,7 @@ class AppWindow(Adw.ApplicationWindow):
         self.active_provider_info.set_title(provider.name)
         self.active_provider = provider
         self.settings.set_string("active-provider", provider.name)
+        self.reload()
         self.navigate_to(Page.START)
 
     @Gtk.Template.Callback()
