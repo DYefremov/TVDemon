@@ -66,7 +66,7 @@ class AbstractEpgCache(abc.ABC):
     def reset(self) -> None: pass
 
     @abc.abstractmethod
-    def update_epg_data(self) -> bool: pass
+    def update_epg_data(self) -> None: pass
 
     @abc.abstractmethod
     def get_current_event(self, service_id) -> EpgEvent: pass
@@ -107,7 +107,7 @@ class EpgCache(AbstractEpgCache):
         log("Reset EPG cache...")
         self.init()
 
-    def update_epg_data(self) -> bool:
+    def update_epg_data(self) -> None:
         log("Updating EPG data...")
 
         ids = {c.id or c.name for c in self.provider.channels}
@@ -233,7 +233,7 @@ class XmlTvReader(Reader):
         utc = dt.timestamp()
         offset = datetime.now() - dt
 
-        for srv in filter(lambda s: any(name in names for name in s.names), self._cache.values()):
+        for srv in filter(lambda s: s.id in names or any(n in names for n in s.names), self._cache.values()):
             [self.process_event(ev, events, offset, srv) for ev in filter(lambda s: s.duration > utc, srv.events)]
 
         return events
