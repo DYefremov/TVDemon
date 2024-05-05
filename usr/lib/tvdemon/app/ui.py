@@ -30,7 +30,7 @@ from enum import StrEnum, IntEnum
 from html import escape
 
 from .epg import EpgEvent, EPG_START_FMT, EPG_END_FMT
-from .common import (UI_PATH, Adw, Gtk, Gdk, GObject, idle_function, translate, select_path, Group,
+from .common import (UI_PATH, Adw, Gtk, Gdk, GObject, GLib, idle_function, translate, select_path, Group,
                      get_pixbuf_from_file, Channel)
 
 
@@ -528,8 +528,28 @@ class EpgPage(Adw.NavigationPage):
     """ EPG page class. """
     __gtype_name__ = "EpgPage"
 
-    def show_channel_epg(self, channel: Channel):
-        pass
+    event_list = Gtk.Template.Child()
+
+    def show_channel_epg(self, events: list | None):
+        self.event_list.remove_all()
+        if events:
+            gen = self.update_epg(events)
+            GLib.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_LOW)
+
+    def update_epg(self, events: list | None):
+        for e in events:
+            self.event_list.append(self.get_epg_row(e))
+            yield True
+
+    def get_epg_row(self, e):
+        row = Adw.ActionRow()
+        row.set_icon_name("media-view-subtitles-symbolic")
+        row.set_title(e.title)
+        start = datetime.fromtimestamp(e.start).strftime(EPG_START_FMT)
+        end = datetime.fromtimestamp(e.end).strftime(EPG_END_FMT)
+        desc = f"\n{start} - {end} \n\n {e.desc or ''}"
+        row.set_subtitle(desc)
+        return row
 
 
 if __name__ == "__main__":

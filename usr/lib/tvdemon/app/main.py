@@ -859,7 +859,7 @@ class AppWindow(Adw.ApplicationWindow):
             yield w
 
     def on_show_channel_epg(self, win: Adw.ApplicationWindow, channel: Channel):
-        self.epg_page.show_channel_epg(channel)
+        self.epg_page.show_channel_epg(self._epg_cache.get_current_events(channel))
         self.navigate_to(Page.EPG)
 
     # ******************** Additional ******************** #

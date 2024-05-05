@@ -69,10 +69,10 @@ class AbstractEpgCache(abc.ABC):
     def update_epg_data(self) -> None: pass
 
     @abc.abstractmethod
-    def get_current_event(self, service_id) -> EpgEvent: pass
+    def get_current_event(self, channel: Channel) -> EpgEvent: pass
 
     @abc.abstractmethod
-    def get_current_events(self, service_id) -> list: pass
+    def get_current_events(self, channel: Channel) -> list | None: pass
 
     @staticmethod
     def get_gz_file_name(url):
@@ -115,13 +115,13 @@ class EpgCache(AbstractEpgCache):
             self.events[name] = events
 
     def get_current_event(self, channel: Channel) -> EpgEvent:
-        events = self.events.get(channel.id, self.events.get(channel.name, None))
+        events = self.get_current_events(channel)
         if events:
             return events[0]
         return EpgEvent()
 
-    def get_current_events(self, service_id) -> list:
-        return []
+    def get_current_events(self, channel: Channel) -> list | None:
+        return self.events.get(channel.id, self.events.get(channel.name, None))
 
 
 class Reader(metaclass=abc.ABCMeta):

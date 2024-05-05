@@ -33,9 +33,18 @@ Author: Dmitriy Yefremov 2024
           <object class="AdwHeaderBar"/>
         </child>
         <property name="content">
-          <object class="AdwStatusPage">
-            <property name="title">Not implemented yet!</property>
-            <property name="icon-name">face-sad-symbolic</property>
+          <object class="GtkScrolledWindow">
+            <property name="margin-start">50</property>
+            <property name="margin-end">50</property>
+            <property name="margin-top">50</property>
+            <property name="margin-bottom">50</property>
+            <child>
+              <object class="GtkListBox" id="event_list">
+                <style>
+                  <class name="boxed-list"/>
+                </style>
+              </object>
+            </child>
           </object>
         </property>
       </object>
