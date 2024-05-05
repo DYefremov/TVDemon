@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright (C) 2024 Dmitriy Yefremov <https://github.com/DYefremov>
+Copyright © 2024 Dmitriy Yefremov <https://github.com/DYefremov>
 
 This file is part of TVDemon.
 
@@ -62,6 +62,7 @@ Author: Dmitriy Yefremov 2024
                   <object class="GtkButton" id="epg_button">
                     <property name="icon-name">media-view-subtitles-symbolic</property>
                     <property name="tooltip-text" translatable="yes">Show EPG</property>
+                    <signal name="clicked" handler="on_epg_show"/>
                     <style>
                       <class name="flat"/>
                     </style>

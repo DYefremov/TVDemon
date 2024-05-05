@@ -42,6 +42,7 @@ class Page(StrEnum):
     CHANNELS = "channels-page"
     SEARCH = "search-page"
     TV = "tv-page"
+    EPG = "epg-page"
     MOVIES = "movies-page"
     SERIES = "series-page"
     PROVIDERS = "providers-page"
@@ -139,6 +140,10 @@ class ChannelWidget(Gtk.ListBoxRow):
         self.label.set_text(channel.name)
         self.set_tooltip_text(channel.name)
         self.logo.set_from_pixbuf(logo_pixbuf) if logo_pixbuf else None
+
+    @Gtk.Template.Callback()
+    def on_epg_show(self, button: Gtk.Button):
+        self.get_root().emit("show-channel-epg", self.channel)
 
     def set_epg(self, event: EpgEvent):
         if event.start:
@@ -516,6 +521,15 @@ class FavoritesPage(Adw.NavigationPage):
 
     def is_favorite(self, channel: Channel):
         return channel.url in self.urls
+
+
+@Gtk.Template(filename=f"{UI_PATH}epg.ui")
+class EpgPage(Adw.NavigationPage):
+    """ EPG page class. """
+    __gtype_name__ = "EpgPage"
+
+    def show_channel_epg(self, channel: Channel):
+        pass
 
 
 if __name__ == "__main__":

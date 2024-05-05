@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright © 2024 Dmitriy Yefremov <https://github.com/DYefremov>
+
+This file is part of TVDemon.
+
+TVDemon is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+TVDemon is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with TVDemon.  If not, see <http://www.gnu.org/licenses/>.
+
+Author: Dmitriy Yefremov 2024
+
+-->
+<interface>
+  <!-- interface-name epg.ui -->
+  <requires lib="gtk" version="4.12"/>
+  <requires lib="libadwaita" version="1.5"/>
+  <template class="EpgPage" parent="AdwNavigationPage">
+    <property name="title" translatable="yes">EPG</property>
+    <property name="tag">epg-page</property>
+    <property name="child">
+      <object class="AdwToolbarView">
+        <child type="top">
+          <object class="AdwHeaderBar"/>
+        </child>
+        <property name="content">
+          <object class="AdwStatusPage">
+            <property name="title">Not implemented yet!</property>
+            <property name="icon-name">face-sad-symbolic</property>
+          </object>
+        </property>
+      </object>
+    </property>
+  </template>
+</interface>

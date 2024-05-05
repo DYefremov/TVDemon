@@ -58,6 +58,7 @@ class AppWindow(Adw.ApplicationWindow):
     # Categories page.
     categories_flowbox = Gtk.Template.Child()
     # Channels page.
+    channels_page = Gtk.Template.Child()
     channels_header = Gtk.Template.Child()
     channels_paned = Gtk.Template.Child()
     channels_box = Gtk.Template.Child()
@@ -91,6 +92,8 @@ class AppWindow(Adw.ApplicationWindow):
     search_channels_box = Gtk.Template.Child()
     # Preferences.
     preferences_page = Gtk.Template.Child()
+    # EPG
+    epg_page = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -98,6 +101,8 @@ class AppWindow(Adw.ApplicationWindow):
         GObject.signal_new("provider-edit", self, GObject.SignalFlags.RUN_FIRST, GObject.TYPE_PYOBJECT,
                            (GObject.TYPE_PYOBJECT,))
         GObject.signal_new("provider-remove", self, GObject.SignalFlags.RUN_FIRST, GObject.TYPE_PYOBJECT,
+                           (GObject.TYPE_PYOBJECT,))
+        GObject.signal_new("show-channel-epg", self, GObject.SignalFlags.RUN_FIRST, GObject.TYPE_PYOBJECT,
                            (GObject.TYPE_PYOBJECT,))
 
         self.settings = Settings()
@@ -170,6 +175,7 @@ class AppWindow(Adw.ApplicationWindow):
         # EPG.
         self._epg_timer_id = -1
         self._epg_cache = None
+        self.connect("show-channel-epg", self.on_show_channel_epg)
 
     @GObject.Property(type=bool, default=True)
     def is_tv_mode(self):
@@ -691,7 +697,10 @@ class AppWindow(Adw.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_playback_show(self, button):
-        self.navigate_to(Page.CHANNELS)
+        if self.channels_page in self.navigation_view.get_navigation_stack():
+            self.navigation_view.pop()
+        else:
+            self.navigate_to(Page.CHANNELS)
 
     def on_playback_backward(self, button=None):
         self.activate_channel(Gtk.DirectionType.UP)
@@ -848,6 +857,10 @@ class AppWindow(Adw.ApplicationWindow):
         for w in self.channels_list_box:
             w.set_epg(self._epg_cache.get_current_event(w.channel))
             yield w
+
+    def on_show_channel_epg(self, win: Adw.ApplicationWindow, channel: Channel):
+        self.epg_page.show_channel_epg(channel)
+        self.navigate_to(Page.EPG)
 
     # ******************** Additional ******************** #
 
