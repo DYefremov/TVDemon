@@ -27,10 +27,29 @@ Author: Dmitriy Yefremov 2024
   <template class="EpgPage" parent="AdwNavigationPage">
     <property name="title" translatable="yes">EPG</property>
     <property name="tag">epg-page</property>
+    <signal name="showing" handler="on_showing"/>
+    <signal name="hidden" handler="on_hidden"/>
     <property name="child">
       <object class="AdwToolbarView">
         <child type="top">
-          <object class="AdwHeaderBar"/>
+          <object class="AdwHeaderBar">
+            <child type="start">
+              <object class="GtkButton" id="search_button">
+                <property name="icon-name">edit-find-symbolic</property>
+                <property name="tooltip-text" translatable="yes">Search</property>
+                <signal name="clicked" handler="on_search_button_clicked"/>
+              </object>
+            </child>
+            <child type="start">
+              <object class="GtkSearchEntry" id="search_entry">
+                <property name="visible" bind-source="search_button" bind-property="visible" bind-flags="invert-boolean">False</property>
+                <property name="placeholder-text" translatable="yes">Search...</property>
+                <property name="search-delay">1000</property>
+                <signal name="search-changed" handler="on_search"/>
+                <signal name="stop-search" handler="on_search_stop"/>
+              </object>
+            </child>
+          </object>
         </child>
         <property name="content">
           <object class="GtkScrolledWindow">

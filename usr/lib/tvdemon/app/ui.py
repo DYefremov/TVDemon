@@ -529,9 +529,39 @@ class EpgPage(Adw.NavigationPage):
     __gtype_name__ = "EpgPage"
 
     event_list = Gtk.Template.Child()
+    search_button = Gtk.Template.Child()
+    search_entry = Gtk.Template.Child()
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.event_list.set_filter_func(self.filter_func)
+
+    @Gtk.Template.Callback()
+    def on_showing(self, page: Adw.NavigationPage):
+        self.event_list.remove_all()
+
+    @Gtk.Template.Callback()
+    def on_hidden(self, page: Adw.NavigationPage):
+        self.on_search_stop(self.search_entry)
+
+    @Gtk.Template.Callback()
+    def on_search_button_clicked(self, button: Gtk.Button):
+        button.set_visible(False)
+
+    @Gtk.Template.Callback()
+    def on_search(self, entry: Gtk.SearchEntry):
+        self.event_list.invalidate_filter()
+
+    @Gtk.Template.Callback()
+    def on_search_stop(self, entry: Gtk.SearchEntry):
+        entry.set_text("")
+        self.search_button.set_visible(True)
+
+    def filter_func(self, row: Adw.ActionRow):
+        txt = self.search_entry.get_text().upper()
+        return any((not txt,  txt in row.get_title().upper(), txt in row.get_subtitle().upper()))
 
     def show_channel_epg(self, events: list | None):
-        self.event_list.remove_all()
         if events:
             gen = self.update_epg(events)
             GLib.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_LOW)
