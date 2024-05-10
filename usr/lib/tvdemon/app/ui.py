@@ -559,7 +559,7 @@ class EpgPage(Adw.NavigationPage):
 
     def filter_func(self, row: Adw.ActionRow):
         txt = self.search_entry.get_text().upper()
-        return any((not txt,  txt in row.get_title().upper(), txt in row.get_subtitle().upper()))
+        return any((not txt, txt in row.get_title().upper(), txt in row.get_subtitle().upper()))
 
     def show_channel_epg(self, events: list | None):
         if events:
@@ -579,6 +579,8 @@ class EpgPage(Adw.NavigationPage):
         end = datetime.fromtimestamp(e.end).strftime(EPG_END_FMT)
         desc = f"\n{start} - {end} \n\n {e.desc or ''}"
         row.set_subtitle(desc)
+        row.set_subtitle_lines(1)
+        row.set_tooltip_text(desc)
         return row
 
 
