@@ -3,7 +3,6 @@
 # Copyright © 2022-2024 Dmitriy Yefremov <https://github.com/DYefremov>
 #             2020-2022 Linux Mint <root@linuxmint.com>
 #
-#
 # This file is part of TVDemon.
 #
 # TVDemon is free software: you can redistribute it and/or modify
@@ -176,6 +175,11 @@ class AppWindow(Adw.ApplicationWindow):
         self._epg_timer_id = -1
         self._epg_cache = None
         self.connect("show-channel-epg", self.on_show_channel_epg)
+        # Style.
+        provider = Gtk.CssProvider()
+        provider.load_from_path(f"{UI_PATH}style.css")
+        display = Gdk.Display.get_default()
+        Gtk.StyleContext.add_provider_for_display(display, provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
     @GObject.Property(type=bool, default=True)
     def is_tv_mode(self):

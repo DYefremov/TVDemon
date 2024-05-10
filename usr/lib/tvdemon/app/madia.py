@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2023 Dmitriy Yefremov <https://github.com/DYefremov>
+# Copyright © 2023 Dmitriy Yefremov <https://github.com/DYefremov>
 #
 #
 # This file is part of TVDemon.
@@ -117,13 +117,6 @@ class GstPlayer(Player):
                 msg = f"Error: The Gtk4 plugin for GStreamer is not initialized. Check that it is installed!"
                 log(msg)
                 raise ImportError(msg)
-
-            # TODO add to *.css file.
-            provider = Gtk.CssProvider()
-            provider.load_from_data(".black { background: rgba(0,0,0,1);}", -1)
-            Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), provider,
-                                                      Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-            self.widget.add_css_class("black")
 
             bus = self._player.get_bus()
             bus.add_signal_watch()

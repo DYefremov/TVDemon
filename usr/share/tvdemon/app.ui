@@ -317,7 +317,9 @@ Author: Dmitriy Yefremov 2024
                                       <object class="GtkStackPage">
                                         <property name="name">playback</property>
                                         <property name="child">
-                                          <object class="GtkPicture" id="playback_widget"/>
+                                          <object class="GtkPicture" id="playback_widget">
+                                            <property name="name">playback</property>
+                                          </object>
                                         </property>
                                       </object>
                                     </child>
