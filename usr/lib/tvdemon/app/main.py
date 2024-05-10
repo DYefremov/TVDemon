@@ -123,6 +123,10 @@ class AppWindow(Adw.ApplicationWindow):
         # Delay before hiding the mouse cursor.
         self._mouse_hide_interval = 5
         self._is_mouse_cursor_hidden = True
+        # Mouse cursor position. Used for small 'hack'
+        # on macOS and some Linux distro to prevent 'phantom' cursor wake up.
+        # Perhaps this will be fixed in future Gtk4 updates.
+        self._mouse_pos = (0, 0)
         # Used for redownloading timer
         self.reload_timeout_sec = self.settings.get_value("reload-interval")
         # Start page.
@@ -148,6 +152,8 @@ class AppWindow(Adw.ApplicationWindow):
         controller = Gtk.EventControllerMotion()
         controller.connect("motion", self.on_playback_mouse_motion)
         self.playback_widget.add_controller(controller)
+        self.default_cursor = Gdk.Cursor.new_from_name("default")
+        self.blank_cursor = Gdk.Cursor.new_from_name("none")
         controller = Gtk.EventControllerScroll()
         controller.set_flags(Gtk.EventControllerScrollFlags.VERTICAL)
         controller.connect("scroll", self.on_playback_mouse_scroll)
@@ -743,15 +749,17 @@ class AppWindow(Adw.ApplicationWindow):
         self.media_bar.volume_button.set_value(self.player.get_volume())
 
     def on_playback_mouse_motion(self, controller: Gtk.EventControllerMotion, x: float, y: float):
-        if self.is_mouse_cursor_hidden:
-            self.playback_widget.set_cursor(Gdk.Cursor.new_from_name("default"))
-            self.is_mouse_cursor_hidden = False
-
-            GLib.timeout_add_seconds(self._mouse_hide_interval, self.hide_mouse_cursor)
+        pos = int(x), int(y)
+        if pos != self._mouse_pos:
+            self._mouse_pos = pos
+            if self.is_mouse_cursor_hidden:
+                self.playback_widget.set_cursor(self.default_cursor)
+                self.is_mouse_cursor_hidden = False
+                GLib.timeout_add_seconds(self._mouse_hide_interval, self.hide_mouse_cursor)
 
     def hide_mouse_cursor(self):
-        self.playback_widget.set_cursor(Gdk.Cursor.new_from_name("none"))
         self.is_mouse_cursor_hidden = True
+        self.playback_widget.set_cursor(self.blank_cursor)
 
     def toggle_fullscreen(self):
         self.is_full_screen = not self.is_full_screen
