@@ -88,6 +88,27 @@ Author: Dmitriy Yefremov 2024
                 </style>
               </object>
             </child>
+            <child>
+              <object class="GtkButton" id="epg_button">
+                <property name="valign">center</property>
+                <property name="margin-start">12</property>
+                <property name="icon-name">media-view-subtitles-symbolic</property>
+                <property name="tooltip-text" translatable="yes">Show EPG</property>
+                <style>
+                  <class name="flat"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="fullscreen_button">
+                <property name="icon-name">view-fullscreen-symbolic</property>
+                <property name="valign">center</property>
+                <property name="tooltip-text" translatable="yes">Fullscreen</property>
+                <style>
+                  <class name="flat"/>
+                </style>
+              </object>
+            </child>
           </object>
         </child>
         <child>

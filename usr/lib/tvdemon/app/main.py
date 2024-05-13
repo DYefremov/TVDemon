@@ -173,6 +173,9 @@ class AppWindow(Adw.ApplicationWindow):
         self.media_bar.backward_button.connect("clicked", self.on_playback_backward)
         self.media_bar.forward_button.connect("clicked", self.on_playback_forward)
         self.media_bar.volume_button.connect("value-changed", self.on_volume_changed)
+        self.media_bar.fullscreen_button.connect("clicked", self.toggle_fullscreen)
+        self.media_bar.epg_button.connect("clicked", lambda b: self.on_show_channel_epg(self, self.active_channel))
+        self.bind_property("is_tv_mode", self.media_bar.epg_button, "visible")
         # Shortcuts.
         controller = Gtk.EventControllerKey()
         controller.connect("key-pressed", self.on_key_pressed)
@@ -761,7 +764,7 @@ class AppWindow(Adw.ApplicationWindow):
         self.is_mouse_cursor_hidden = True
         self.playback_widget.set_cursor(self.blank_cursor)
 
-    def toggle_fullscreen(self):
+    def toggle_fullscreen(self, button=None):
         self.is_full_screen = not self.is_full_screen
         if self.is_full_screen:
             self.channels_header.hide()
