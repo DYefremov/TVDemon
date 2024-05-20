@@ -874,7 +874,11 @@ class AppWindow(Adw.ApplicationWindow):
             yield w
 
     def on_show_channel_epg(self, win: Adw.ApplicationWindow, channel: Channel):
-        self.epg_page.show_channel_epg(self._epg_cache.get_current_events(channel))
+        if self._epg_cache:
+            self.epg_page.show_channel_epg(self._epg_cache.get_current_events(channel))
+        else:
+            self.show_message("No EPG source initialized!")
+
         self.navigate_to(Page.EPG)
 
     # ******************** Additional ******************** #
