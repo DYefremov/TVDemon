@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
+import os
 import sys
 
 if __name__ == "__main__":
     if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
-        import os
-        import ssl
         from multiprocessing import freeze_support
-        from usr.lib.tvdemon.app.main import run_app
 
-        os.environ["PYTHONUTF8"] = "1"
-        ssl._create_default_https_context = ssl._create_unverified_context
-
+        os.environ["GIO_EXTRA_MODULES"] = os.path.join(sys._MEIPASS, "lib", "gio", "modules")
         freeze_support()
-        run_app()
+
+    from usr.lib.tvdemon.app.main import run_app
+
+    run_app()

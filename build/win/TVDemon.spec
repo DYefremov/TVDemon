@@ -10,7 +10,6 @@ block_cipher = None
 excludes = ['youtube_dl',
             'tkinter']
 
-
 ui_files = [('usr\\share\\tvdemon', 'share\\tvdemon'),
            ('usr\\share\\icons\\hicolor\\scalable\\apps\\tvdemon.svg',
             'share\\icons\\hicolor\\scalable\\apps')]
@@ -18,9 +17,9 @@ ui_files = [('usr\\share\\tvdemon', 'share\\tvdemon'),
 
 a = Analysis([EXE_NAME],
              pathex=PATH_EXE,
-             binaries=[],
+             binaries=[('C:\\msys64\\mingw64\\lib\\gio\\modules\\*', 'lib\\gio\\modules')],
              datas=ui_files,
-             hiddenimports=['ctypes.wintypes'],
+             hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
              hooksconfig={
@@ -47,7 +46,8 @@ exe = EXE(pyz,
 		  contents_directory='.',
           strip=False,
           upx=True,
-          console=False, icon='tvdemon.ico')
+          console=False,
+          icon='tvdemon.ico')
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,
