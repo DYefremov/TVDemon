@@ -42,6 +42,7 @@ class Page(StrEnum):
     CHANNELS = "channels-page"
     SEARCH = "search-page"
     TV = "tv-page"
+    OVERVIEW = "overview-page"
     EPG = "epg-page"
     MOVIES = "movies-page"
     SERIES = "series-page"

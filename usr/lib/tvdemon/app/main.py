@@ -66,6 +66,8 @@ class AppWindow(Adw.ApplicationWindow):
     playback_status_page = Gtk.Template.Child()
     playback_widget = Gtk.Template.Child()
     media_bar = Gtk.Template.Child()
+    # Channels overview page.
+    overview_flowbox = Gtk.Template.Child()
     # Movies page.
     movies_flowbox = Gtk.Template.Child()
     # Series page.
@@ -120,6 +122,7 @@ class AppWindow(Adw.ApplicationWindow):
         self.current_page = Page.START
 
         self._is_tv_mode = True
+        self.TV_PAGES = {Page.MOVIES, Page.SERIES, Page.SEARCH, Page.OVERVIEW}
         # Delay before hiding the mouse cursor.
         self._mouse_hide_interval = 5
         self._is_mouse_cursor_hidden = True
@@ -393,10 +396,7 @@ class AppWindow(Adw.ApplicationWindow):
             name = group.name.lower().replace("(", " ").replace(")", " ")
             self.categories_flowbox.append(GroupWidget(group, label, self.get_badge_pixbuf(name)))
 
-        self.navigate_to(Page.CATEGORIES)
-
-        if not found_groups:
-            self.on_group_activated()
+        self.navigate_to(Page.CATEGORIES) if found_groups else self.on_group_activated()
 
     @Gtk.Template.Callback()
     def on_group_activated(self, box=None, group_widget=None):
@@ -414,6 +414,7 @@ class AppWindow(Adw.ApplicationWindow):
     @idle_function
     def refresh_providers_page(self):
         self.providers_list.remove_all()
+        self.overview_flowbox.remove_all()
 
         for provider in self.providers:
             p_row = ProviderWidget(self, provider)
@@ -639,6 +640,36 @@ class AppWindow(Adw.ApplicationWindow):
         self.active_channel = widget.data
         self.show_channels(None)
         self.play(self.active_channel)
+
+    # ******************** Overview ******************* #
+
+    @Gtk.Template.Callback()
+    def on_overview_showing(self, page: Adw.NavigationPage):
+        for w in self.overview_flowbox:
+            break
+        else:
+            gen = self.update_overview_page(self.active_provider.channels, self.overview_flowbox)
+            GLib.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_LOW)
+
+    @Gtk.Template.Callback()
+    def on_channel_activated(self, box: Gtk.FlowBox, widget: Gtk.FlowBoxChild):
+        self.active_channel = widget.get_child().channel
+        self.navigate_to(Page.CHANNELS)
+        self.play(self.active_channel)
+
+    def update_overview_page(self, channels: list, ch_box: Gtk.FlowBox, clear: bool = True):
+        if clear:
+            ch_box.remove_all()
+            yield True
+
+        logos_to_refresh = []
+        for index, ch in enumerate(channels):
+            ch_box.append(self.get_ch_widget(ch, logos_to_refresh))
+            yield True
+
+        if len(logos_to_refresh) > 0:
+            self.download_channel_logos(logos_to_refresh)
+        yield True
 
     # ******************** Favorites ******************* #
 
@@ -905,7 +936,7 @@ class AppWindow(Adw.ApplicationWindow):
 
     def on_navigation_view_pushed(self, view: Adw.NavigationView):
         page = Page(view.get_visible_page().get_tag())
-        self.is_tv_mode = self.current_page not in (Page.MOVIES, Page.SERIES, Page.SEARCH)
+        self.is_tv_mode = self.current_page not in self.TV_PAGES
         self.current_page = page
         if self.player:
             self.playback_bar.set_visible(self.current_page is not Page.CHANNELS and self.player.is_playing())
