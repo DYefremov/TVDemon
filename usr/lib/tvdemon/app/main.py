@@ -68,6 +68,7 @@ class AppWindow(Adw.ApplicationWindow):
     media_bar = Gtk.Template.Child()
     # Channels overview page.
     overview_flowbox = Gtk.Template.Child()
+    overview_button = Gtk.Template.Child()
     # Movies page.
     movies_flowbox = Gtk.Template.Child()
     # Series page.
@@ -376,6 +377,7 @@ class AppWindow(Adw.ApplicationWindow):
 
     def show_groups(self, widget, content_type):
         self.content_type = content_type
+        self.overview_button.set_visible(content_type == TV_GROUP)
         self.active_group = None
         found_groups = False
 
