@@ -28,7 +28,6 @@ Author: Dmitriy Yefremov 2024
       <object class="GtkFrame">
         <property name="margin-start">3</property>
         <property name="margin-end">3</property>
-        <property name="tooltip-text" translatable="yes">Drag to desired position.</property>
         <child>
           <object class="GtkBox" id="box">
             <property name="orientation">vertical</property>

@@ -843,9 +843,7 @@ class AppWindow(Adw.ApplicationWindow):
 
         if found:
             for ch in found:
-                path = ch.logo_path
-                pixbuf = get_pixbuf_from_file(path) if path else None
-                self.search_channels_box.append(FlowChannelWidget(ch, pixbuf))
+                self.search_channels_box.append(FlowChannelWidget.new(ch))
                 yield self.search_running
             self.search_stack.set_visible_child_name(SearchPage.RESULT)
         else:

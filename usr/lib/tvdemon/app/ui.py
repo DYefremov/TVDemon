@@ -339,6 +339,14 @@ class FlowChannelWidget(Gtk.FlowBoxChild):
     def on_playback(self, button):
         pass
 
+    @staticmethod
+    def new(channel, tooltip=None, show_buttons=False):
+        path = channel.logo_path
+        pixbuf = get_pixbuf_from_file(path) if path else None
+        widget = FlowChannelWidget(channel, pixbuf, show_buttons)
+        widget.set_tooltip_text(translate(tooltip)) if tooltip else None
+        return widget
+
 
 @Gtk.Template(filename=f"{UI_PATH}favorites.ui")
 class FavoritesPage(Adw.NavigationPage):
@@ -442,10 +450,8 @@ class FavoritesPage(Adw.NavigationPage):
         self.edit_group = group_widget
         group = group_widget.group
         self.group_name_row.set_text(group.name)
-        for ch in group.channels:
-            path = ch.logo_path
-            pixbuf = get_pixbuf_from_file(path) if path else None
-            self.group_channels_box.append(FlowChannelWidget(ch, pixbuf, True))
+        tooltip = translate("Drag to desired position.")
+        [self.group_channels_box.append(FlowChannelWidget.new(ch, tooltip, True)) for ch in group.channels]
         self.navigation_view.push_by_tag(self.FavoritePage.PROPERTIES)
 
     def on_group_remove(self, page, group_widget):
