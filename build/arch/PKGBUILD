@@ -22,6 +22,7 @@ depends=(
     'gst-plugins-good'
     'gst-plugins-bad'
     'gst-plugin-gtk4'
+    'gst-libav'
 )
 
 package() {
