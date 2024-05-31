@@ -540,23 +540,13 @@ class AppWindow(Adw.ApplicationWindow):
 
         logos_to_refresh = []
         for index, ch in enumerate(channels):
-            ch_box.append(self.get_ch_widget(ch, logos_to_refresh))
+            ch_box.append(ChannelWidget.new(ch, logos_to_refresh, self.favorites.is_favorite(ch)))
             if index % 50 == 0:
                 yield True
 
         if len(logos_to_refresh) > 0:
             self.download_channel_logos(logos_to_refresh)
         yield True
-
-    def get_ch_widget(self, channel: Channel, logos_to_refresh: list):
-        path = channel.logo_path
-        pixbuf = get_pixbuf_from_file(path) if path else None
-        widget = ChannelWidget(channel, pixbuf)
-        widget.fav_logo.set_visible(self.favorites.is_favorite(channel))
-        if not pixbuf:
-            logos_to_refresh.append((channel, widget.logo))
-
-        return widget
 
     def on_previous_channel(self, button=None):
         if self.current_page is Page.CHANNELS and self.is_tv_mode:
@@ -666,7 +656,7 @@ class AppWindow(Adw.ApplicationWindow):
 
         logos_to_refresh = []
         for index, ch in enumerate(channels):
-            ch_box.append(self.get_ch_widget(ch, logos_to_refresh))
+            ch_box.append(ChannelWidget.new(ch, logos_to_refresh))
             yield True
 
         if len(logos_to_refresh) > 0:

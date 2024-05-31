@@ -154,6 +154,21 @@ class ChannelWidget(Gtk.ListBoxRow):
             self.epg_label.set_markup((f'<span weight="bold">{escape(event.title)}</span>\n'
                                        f'<span style="italic">{start} {sep} {end}</span>'))
 
+    @staticmethod
+    def new(channel, refresh_logo_list, is_favorite=False):
+        path = channel.logo_path
+        pixbuf = get_pixbuf_from_file(path) if path else None
+        widget = ChannelWidget(channel, pixbuf)
+        widget.fav_logo.set_visible(is_favorite)
+
+        if pixbuf:
+            return widget
+
+        if refresh_logo_list is not None:
+            refresh_logo_list.append((channel, widget.logo))
+
+        return widget
+
 
 @Gtk.Template(filename=f"{UI_PATH}group_widget.ui")
 class GroupWidget(Gtk.FlowBoxChild):
