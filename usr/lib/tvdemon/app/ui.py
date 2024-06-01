@@ -155,7 +155,7 @@ class ChannelWidget(Gtk.ListBoxRow):
                                        f'<span style="italic">{start} {sep} {end}</span>'))
 
     @staticmethod
-    def new(channel, refresh_logo_list, is_favorite=False):
+    def get_widget(channel, refresh_logo_list=None, is_favorite=False) -> Gtk.ListBoxRow:
         path = channel.logo_path
         pixbuf = get_pixbuf_from_file(path) if path else None
         widget = ChannelWidget(channel, pixbuf)
@@ -355,7 +355,7 @@ class FlowChannelWidget(Gtk.FlowBoxChild):
         pass
 
     @staticmethod
-    def new(channel, tooltip=None, show_buttons=False):
+    def get_widget(channel, tooltip=None, show_buttons=False) -> Gtk.FlowBoxChild:
         path = channel.logo_path
         pixbuf = get_pixbuf_from_file(path) if path else None
         widget = FlowChannelWidget(channel, pixbuf, show_buttons)
@@ -466,7 +466,7 @@ class FavoritesPage(Adw.NavigationPage):
         group = group_widget.group
         self.group_name_row.set_text(group.name)
         tooltip = translate("Drag to desired position.")
-        [self.group_channels_box.append(FlowChannelWidget.new(ch, tooltip, True)) for ch in group.channels]
+        [self.group_channels_box.append(FlowChannelWidget.get_widget(ch, tooltip, True)) for ch in group.channels]
         self.navigation_view.push_by_tag(self.FavoritePage.PROPERTIES)
 
     def on_group_remove(self, page, group_widget):
@@ -559,6 +559,7 @@ class EpgPage(Adw.NavigationPage):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.event_list.set_filter_func(self.filter_func)
+        self.current_channel = None
 
     @Gtk.Template.Callback()
     def on_showing(self, page: Adw.NavigationPage):
@@ -585,7 +586,8 @@ class EpgPage(Adw.NavigationPage):
         txt = self.search_entry.get_text().upper()
         return any((not txt, txt in row.get_title().upper(), txt in row.get_subtitle().upper()))
 
-    def show_channel_epg(self, events: list | None):
+    def show_channel_epg(self, channel: Channel | None, events: list | None):
+        self.current_channel = channel or self.current_channel
         if events:
             gen = self.update_epg(events)
             GLib.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_LOW)

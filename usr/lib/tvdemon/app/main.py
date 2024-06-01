@@ -308,7 +308,7 @@ class AppWindow(Adw.ApplicationWindow):
             GLib.source_remove(self._epg_timer_id)
 
         if self.active_provider.epg:
-            self.init_epg()
+            GLib.timeout_add_seconds(2, self.init_epg)
 
         if page:
             self.navigate_to(page)
@@ -540,7 +540,7 @@ class AppWindow(Adw.ApplicationWindow):
 
         logos_to_refresh = []
         for index, ch in enumerate(channels):
-            ch_box.append(ChannelWidget.new(ch, logos_to_refresh, self.favorites.is_favorite(ch)))
+            ch_box.append(ChannelWidget.get_widget(ch, logos_to_refresh, self.favorites.is_favorite(ch)))
             if index % 50 == 0:
                 yield True
 
@@ -656,7 +656,7 @@ class AppWindow(Adw.ApplicationWindow):
 
         logos_to_refresh = []
         for index, ch in enumerate(channels):
-            ch_box.append(ChannelWidget.new(ch, logos_to_refresh))
+            ch_box.append(ChannelWidget.get_widget(ch, logos_to_refresh))
             yield True
 
         if len(logos_to_refresh) > 0:
@@ -833,7 +833,7 @@ class AppWindow(Adw.ApplicationWindow):
 
         if found:
             for ch in found:
-                self.search_channels_box.append(FlowChannelWidget.new(ch))
+                self.search_channels_box.append(FlowChannelWidget.get_widget(ch))
                 yield self.search_running
             self.search_stack.set_visible_child_name(SearchPage.RESULT)
         else:
@@ -880,6 +880,8 @@ class AppWindow(Adw.ApplicationWindow):
             self._epg_cache.reset()
         else:
             self._epg_cache = EpgCache(self.active_provider)
+            self._epg_cache.connect("epg-data-update", self.on_epg_data_update)
+            self._epg_cache.connect("epg-data-updated", self.on_epg_data_updated)
 
         self._epg_timer_id = GLib.timeout_add_seconds(5, self.refresh_epg)
 
@@ -896,11 +898,20 @@ class AppWindow(Adw.ApplicationWindow):
 
     def on_show_channel_epg(self, win: Adw.ApplicationWindow, channel: Channel):
         if self._epg_cache:
-            self.epg_page.show_channel_epg(self._epg_cache.get_current_events(channel))
+            self.epg_page.show_channel_epg(channel, self._epg_cache.get_current_events(channel))
         else:
             self.show_message("No EPG source initialized!")
 
         self.navigate_to(Page.EPG)
+
+    def on_epg_data_update(self, cache: EpgCache, msg: str):
+        self.status(msg)
+
+    def on_epg_data_updated(self, cache: EpgCache, msg: str):
+        self.status(msg)
+        GLib.timeout_add_seconds(2, self.status, None)
+        if self.current_page is Page.EPG:
+            self.epg_page.show_channel_epg(None, self._epg_cache.get_current_events(self.epg_page.current_channel))
 
     # ******************** Additional ******************** #
 

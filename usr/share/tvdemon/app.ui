@@ -600,6 +600,7 @@ Author: Dmitriy Yefremov 2024
             </property>
             <child type="bottom">
               <object class="GtkBox" id="status_bar">
+                <property name="margin-start">6</property>
                 <child>
                   <object class="GtkLabel" id="status_label">
                     <property name="can-focus">False</property>

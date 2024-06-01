@@ -36,7 +36,7 @@ from urllib.parse import urlparse
 
 import requests
 
-from .common import log, IS_WIN, async_function, EPG_PATH, Provider, Channel
+from .common import log, IS_WIN, async_function, EPG_PATH, Provider, Channel, GObject, GLib
 
 EPG_START_FMT = "%a, %H:%M"
 EPG_END_FMT = "%H:%M"
@@ -52,9 +52,15 @@ class EpgEvent:
     length: int = 0
 
 
-class AbstractEpgCache(abc.ABC):
+class AbstractEpgCache(GObject.GObject):
     def __init__(self, provider: Provider):
         super().__init__()
+        # Signals.
+        GObject.signal_new("epg-data-update", self, GObject.SignalFlags.RUN_FIRST, GObject.TYPE_PYOBJECT,
+                           (GObject.TYPE_PYOBJECT,))
+        GObject.signal_new("epg-data-updated", self, GObject.SignalFlags.RUN_FIRST, GObject.TYPE_PYOBJECT,
+                           (GObject.TYPE_PYOBJECT,))
+
         self.provider = provider
         self.events = {}
 
@@ -93,6 +99,8 @@ class EpgCache(AbstractEpgCache):
 
     @async_function
     def load_data(self):
+        log("Loading EPG data...")
+        GLib.idle_add(self.emit, "epg-data-update", "Loading EPG data...")
         if os.path.isfile(self.path):
             # Difference calculation between the current time and file modification.
             dif = datetime.now() - datetime.fromtimestamp(os.path.getmtime(self.path))
@@ -113,6 +121,8 @@ class EpgCache(AbstractEpgCache):
         ids = {c.id or c.name for c in self.provider.channels}
         for name, events in self._reader.get_current_events(ids).items():
             self.events[name] = events
+
+        GLib.idle_add(self.emit, "epg-data-updated", "EPG data update completed!")
 
     def get_current_event(self, channel: Channel) -> EpgEvent:
         events = self.get_current_events(channel)
