@@ -656,7 +656,9 @@ class AppWindow(Adw.ApplicationWindow):
 
         logos_to_refresh = []
         for index, ch in enumerate(channels):
-            ch_box.append(ChannelWidget.get_widget(ch, logos_to_refresh))
+            w = ChannelWidget.get_widget(ch, logos_to_refresh)
+            w.epg_label.set_max_width_chars(30)
+            ch_box.append(w)
             yield True
 
         if len(logos_to_refresh) > 0:
@@ -892,9 +894,15 @@ class AppWindow(Adw.ApplicationWindow):
         return True
 
     def refresh_epg_data(self):
-        for w in self.channels_list_box:
-            w.set_epg(self._epg_cache.get_current_event(w.channel))
-            yield w
+        if self.current_page is Page.CHANNELS:
+            for w in self.channels_list_box:
+                w.set_epg(self._epg_cache.get_current_event(w.channel))
+                yield w
+        elif self.current_page is Page.OVERVIEW:
+            for w in self.overview_flowbox:
+                ch_w = w.get_child()
+                ch_w.set_epg(self._epg_cache.get_current_event(ch_w.channel))
+                yield w
 
     def on_show_channel_epg(self, win: Adw.ApplicationWindow, channel: Channel):
         if self._epg_cache:
