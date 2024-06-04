@@ -884,6 +884,7 @@ class AppWindow(Adw.ApplicationWindow):
             self._epg_cache = EpgCache(self.active_provider)
             self._epg_cache.connect("epg-data-update", self.on_epg_data_update)
             self._epg_cache.connect("epg-data-updated", self.on_epg_data_updated)
+            self._epg_cache.connect("epg-error", self.on_epg_error)
 
         self._epg_timer_id = GLib.timeout_add_seconds(5, self.refresh_epg)
 
@@ -920,6 +921,10 @@ class AppWindow(Adw.ApplicationWindow):
         GLib.timeout_add_seconds(2, self.status, None)
         if self.current_page is Page.EPG:
             self.epg_page.show_channel_epg(None, self._epg_cache.get_current_events(self.epg_page.current_channel))
+
+    def on_epg_error(self, cache: EpgCache, msg: str):
+        GLib.timeout_add_seconds(2, self.status, None)
+        self.show_message(msg)
 
     # ******************** Additional ******************** #
 

@@ -35,6 +35,7 @@ from tempfile import NamedTemporaryFile
 from urllib.parse import urlparse
 
 import requests
+from requests import HTTPError
 
 from .common import log, IS_WIN, async_function, EPG_PATH, Provider, Channel, GObject, GLib
 
@@ -52,6 +53,10 @@ class EpgEvent:
     length: int = 0
 
 
+class EpgError(Exception):
+    pass
+
+
 class AbstractEpgCache(GObject.GObject):
     def __init__(self, provider: Provider):
         super().__init__()
@@ -59,6 +64,8 @@ class AbstractEpgCache(GObject.GObject):
         GObject.signal_new("epg-data-update", self, GObject.SignalFlags.RUN_FIRST, GObject.TYPE_PYOBJECT,
                            (GObject.TYPE_PYOBJECT,))
         GObject.signal_new("epg-data-updated", self, GObject.SignalFlags.RUN_FIRST, GObject.TYPE_PYOBJECT,
+                           (GObject.TYPE_PYOBJECT,))
+        GObject.signal_new("epg-error", self, GObject.SignalFlags.RUN_FIRST, GObject.TYPE_PYOBJECT,
                            (GObject.TYPE_PYOBJECT,))
 
         self.provider = provider
@@ -101,15 +108,19 @@ class EpgCache(AbstractEpgCache):
     def load_data(self):
         log("Loading EPG data...")
         GLib.idle_add(self.emit, "epg-data-update", "Loading EPG data...")
-        if os.path.isfile(self.path):
-            # Difference calculation between the current time and file modification.
-            dif = datetime.now() - datetime.fromtimestamp(os.path.getmtime(self.path))
-            # We will update daily.
-            self._reader.download(self._reader.parse) if dif.days > 0 else self._reader.parse()
+        try:
+            if os.path.isfile(self.path):
+                # Difference calculation between the current time and file modification.
+                dif = datetime.now() - datetime.fromtimestamp(os.path.getmtime(self.path))
+                # We will update daily.
+                self._reader.download(self._reader.parse) if dif.days > 0 else self._reader.parse()
+            else:
+                self._reader.download(self._reader.parse)
+        except EpgError as e:
+            log(e)
+            self.emit("epg-error", "EPG data loading error! See logs for details...")
         else:
-            self._reader.download(self._reader.parse)
-
-        self.update_epg_data()
+            self.update_epg_data()
 
     def reset(self) -> None:
         log("Reset EPG cache...")
@@ -174,64 +185,62 @@ class XmlTvReader(Reader):
         """ Downloads an XMLTV file. """
         res = urlparse(self._url)
         if not all((res.scheme, res.netloc)):
-            log(f"{self.__class__.__name__} [download] error: Invalid URL {self._url}")
-            return
+            raise EpgError(f"{self.__class__.__name__} [download] error: Invalid URL {self._url}")
 
-        with requests.get(url=self._url, stream=True) as resp:
-            if resp.reason == "OK":
-                suf = self._url[self._url.rfind("."):]
-                if suf not in self.SUFFIXES:
-                    log(f"{self.__class__.__name__} [download] error: Unsupported file extension.")
-                    return
+        try:
+            with requests.get(url=self._url, stream=True) as resp:
+                if resp.reason == "OK":
+                    suf = self._url[self._url.rfind("."):]
+                    if suf not in self.SUFFIXES:
+                        raise EpgError(f"{self.__class__.__name__} [download] error: Unsupported file extension.")
 
-                data_size = resp.headers.get("content-length")
-                if not data_size:
-                    log(f"{self.__class__.__name__} [download *.{suf}] error: Error getting data size.")
-                    if clb:
-                        clb()
-                    return
+                    data_size = resp.headers.get("content-length")
+                    if not data_size:
+                        raise EpgError(f"{self.__class__.__name__} [download *.{suf}] error: Error getting data size.")
 
-                with NamedTemporaryFile(suffix=suf, delete=not IS_WIN) as tf:
-                    downloaded = 0
-                    data_size = int(data_size)
-                    log("Downloading XMLTV file...")
-                    for data in resp.iter_content(chunk_size=1024):
-                        downloaded += len(data)
-                        tf.write(data)
-                        done = int(50 * downloaded / data_size)
-                        sys.stdout.write(f"\rDownloading XMLTV file [{'=' * done}{' ' * (50 - done)}]")
-                        sys.stdout.flush()
-                    tf.seek(0)
-                    sys.stdout.write("\n")
+                    with NamedTemporaryFile(suffix=suf, delete=not IS_WIN) as tf:
+                        downloaded = 0
+                        data_size = int(data_size)
+                        log("Downloading XMLTV file...")
+                        for data in resp.iter_content(chunk_size=1024):
+                            downloaded += len(data)
+                            tf.write(data)
+                            done = int(50 * downloaded / data_size)
+                            sys.stdout.write(f"\rDownloading XMLTV file [{'=' * done}{' ' * (50 - done)}]")
+                            sys.stdout.flush()
+                        tf.seek(0)
+                        sys.stdout.write("\n")
 
-                    os.makedirs(os.path.dirname(self._path), exist_ok=True)
+                        os.makedirs(os.path.dirname(self._path), exist_ok=True)
 
-                    if suf.endswith(".gz"):
-                        try:
-                            shutil.copyfile(tf.name, self._path)
-                        except OSError as e:
-                            log(f"{self.__class__.__name__} [download *.gz] error: {e}")
-                    elif self._url.endswith((".xz", ".lzma")):
-                        import lzma
+                        if suf.endswith(".gz"):
+                            try:
+                                shutil.copyfile(tf.name, self._path)
+                            except OSError as e:
+                                raise EpgError(f"{self.__class__.__name__} [download *.gz] error: {e}")
+                        elif self._url.endswith((".xz", ".lzma")):
+                            import lzma
 
-                        try:
-                            with lzma.open(tf, "rb") as lzf:
-                                shutil.copyfileobj(lzf, self._path)
-                        except (lzma.LZMAError, OSError) as e:
-                            log(f"{self.__class__.__name__} [download *.xz] error: {e}")
-                    else:
-                        try:
-                            import gzip
-                            with gzip.open(self._path, "wb") as f_out:
-                                shutil.copyfileobj(tf, f_out)
-                        except OSError as e:
-                            log(f"{self.__class__.__name__} [download *.xml] error: {e}")
+                            try:
+                                with lzma.open(tf, "rb") as lzf:
+                                    shutil.copyfileobj(lzf, self._path)
+                            except (lzma.LZMAError, OSError) as e:
+                                raise EpgError(f"{self.__class__.__name__} [download *.xz] error: {e}")
+                        else:
+                            try:
+                                import gzip
+                                with gzip.open(self._path, "wb") as f_out:
+                                    shutil.copyfileobj(tf, f_out)
+                            except OSError as e:
+                                raise EpgError(f"{self.__class__.__name__} [download *.xml] error: {e}")
 
-                    if IS_WIN and os.path.isfile(tf.name):
-                        tf.close()
-                        os.remove(tf.name)
-            else:
-                log(f"{self.__class__.__name__} [download] error: {resp.reason}")
+                        if IS_WIN and os.path.isfile(tf.name):
+                            tf.close()
+                            os.remove(tf.name)
+                else:
+                    raise EpgError(f"{self.__class__.__name__} [download] error: {resp.reason}")
+        except (HTTPError, OSError) as e:
+            raise EpgError(f"{self.__class__.__name__} [download] error: {e}")
 
         if clb:
             clb()
