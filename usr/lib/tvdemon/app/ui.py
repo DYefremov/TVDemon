@@ -352,7 +352,7 @@ class FlowChannelWidget(Gtk.FlowBoxChild):
 
     @Gtk.Template.Callback()
     def on_playback(self, button):
-        pass
+        self.get_root().on_flow_channel_activated(self)
 
     @staticmethod
     def get_widget(channel, tooltip=None, show_buttons=False) -> Gtk.FlowBoxChild:

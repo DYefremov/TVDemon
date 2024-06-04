@@ -55,7 +55,6 @@ Author: Dmitriy Yefremov 2024
                 </child>
                 <child>
                   <object class="GtkButton" id="show_button">
-                    <property name="sensitive">False</property>
                     <property name="icon-name">media-playback-start-symbolic</property>
                     <property name="has-frame">False</property>
                     <property name="tooltip-text" translatable="yes">Playback</property>

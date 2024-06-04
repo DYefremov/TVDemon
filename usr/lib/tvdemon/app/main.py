@@ -123,7 +123,7 @@ class AppWindow(Adw.ApplicationWindow):
         self.current_page = Page.START
 
         self._is_tv_mode = True
-        self.TV_PAGES = {Page.MOVIES, Page.SERIES, Page.SEARCH, Page.OVERVIEW}
+        self.TV_PAGES = {Page.MOVIES, Page.SERIES, Page.SEARCH, Page.OVERVIEW, Page.FAVORITES}
         # Delay before hiding the mouse cursor.
         self._mouse_hide_interval = 5
         self._is_mouse_cursor_hidden = True
@@ -645,9 +645,7 @@ class AppWindow(Adw.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_channel_activated(self, box: Gtk.FlowBox, widget: Gtk.FlowBoxChild):
-        self.active_channel = widget.get_child().channel
-        self.navigate_to(Page.CHANNELS)
-        self.play(self.active_channel)
+        self.on_flow_channel_activated(widget.get_child())
 
     def update_overview_page(self, channels: list, ch_box: Gtk.FlowBox, clear: bool = True):
         if clear:
@@ -808,6 +806,11 @@ class AppWindow(Adw.ApplicationWindow):
                 self.channels_box.show()
             self.unfullscreen()
 
+    def on_flow_channel_activated(self, widget):
+        self.active_channel = widget.channel
+        self.navigate_to(Page.CHANNELS)
+        self.play(self.active_channel)
+
     # ******************** Search ************************ #
 
     @Gtk.Template.Callback()
@@ -845,9 +848,7 @@ class AppWindow(Adw.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_searched_channel_activated(self, box: Gtk.FlowBox, widget: FlowChannelWidget):
-        self.active_channel = widget.channel
-        self.navigate_to(Page.CHANNELS)
-        self.play(self.active_channel)
+        self.on_flow_channel_activated(widget)
 
     # ******************** Preferences ******************* #
 
