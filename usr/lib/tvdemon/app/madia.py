@@ -147,8 +147,6 @@ class GstPlayer(Player):
             msg = f"ERROR: Unable to set the 'PLAYING' state for '{mrl}'."
             log(msg)
             self.emit("error", msg)
-        else:
-            self.emit("played", 0)
 
     def stop(self):
         log("Stop playback...")
