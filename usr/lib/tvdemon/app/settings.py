@@ -35,7 +35,7 @@ class Defaults(dict):
         self["http-referer"] = ""
         self["active-provider"] = "Free-TV"
         self["providers"] = [
-            "Free-TV:::url:::https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8:::::::::'"]
+            "Free-TV:::url:::https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8:::::::::"]
         self["main-window-size"] = (700, 500)
         self["reload-interval"] = 3600  # 1 Hour
         self["dark-mode"] = False  # 1 Hour
