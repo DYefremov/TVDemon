@@ -121,9 +121,10 @@ class AppWindow(Adw.ApplicationWindow):
         self.xtream = None
         self.search_running = False
         self.current_page = Page.START
+        self.ia = None  # IMDb
 
         self._is_tv_mode = True
-        self.TV_PAGES = {Page.MOVIES, Page.SERIES, Page.SEARCH, Page.OVERVIEW, Page.FAVORITES}
+        self.TV_PAGES = {Page.MOVIES, Page.SERIES, Page.SEARCH, Page.OVERVIEW}
         # Delay before hiding the mouse cursor.
         self._mouse_hide_interval = 5
         self._is_mouse_cursor_hidden = True
@@ -218,6 +219,7 @@ class AppWindow(Adw.ApplicationWindow):
 
         self.reload(Page.START)
         self.init_playback()
+        self.init_imdb()
         # Redownload playlists by default
         GLib.timeout_add_seconds(self.reload_timeout_sec, self.force_reload)
 
@@ -230,6 +232,14 @@ class AppWindow(Adw.ApplicationWindow):
         else:
             self.player.connect("played", self.on_played)
             self.player.connect("error", self.on_playback_error)
+
+    def init_imdb(self):
+        try:
+            from imdb import Cinemagoer
+        except ImportError as e:
+            log(f"IMDb init error: {e}")
+        else:
+            self.ia = Cinemagoer()
 
     @async_function
     def reload(self, page=None, refresh=False):
@@ -757,6 +767,11 @@ class AppWindow(Adw.ApplicationWindow):
 
     def on_played(self, player: Player, status: int):
         self.playback_stack.set_visible_child_name(PLaybackPage.PLAYBACK)
+        if self.ia:
+            if self.content_type == MOVIES_GROUP:
+                self.get_imdb_details(self.active_channel)
+            elif self.content_type == SERIES_GROUP:
+                self.get_imdb_details(self.active_serie)
 
     def on_playback_error(self, player: Player, status: int):
         self.playback_status_page.set_title(translate("Can't Playback!"))
@@ -810,6 +825,23 @@ class AppWindow(Adw.ApplicationWindow):
         self.active_channel = widget.channel
         self.navigate_to(Page.CHANNELS)
         self.play(self.active_channel)
+
+    # ********************** IMDb ********************** #
+
+    @async_function
+    def get_imdb_details(self, channel: Channel):
+        """ Getting IMDb info for movies and series. """
+        if not channel:
+            return
+
+        movies = self.ia.search_movie(channel.name)
+        for movie in movies:
+            self.ia.update(movie)
+            if movie.get("plot") is not None:
+                title = movie.get("long imdb title", None)
+                if title:
+                    self.show_message(f"IMDb: {title}")
+                break
 
     # ******************** Search ************************ #
 
