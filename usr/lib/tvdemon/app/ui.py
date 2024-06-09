@@ -432,6 +432,10 @@ class FavoritesPage(Adw.NavigationPage):
     def on_group_save(self, button):
         QuestionDialog(self.get_root(), self.save_group).present()
 
+    @Gtk.Template.Callback()
+    def on_channel_save(self, button):
+        QuestionDialog(self.get_root(), self.save_channel).present()
+
     def save_group(self, confirm):
         if confirm and self.edit_group:
             group = self.edit_group.group
@@ -459,6 +463,10 @@ class FavoritesPage(Adw.NavigationPage):
             self.edit_group.update_channels_count()
             self.edit_group.set_title(name)
             self.navigation_view.pop()
+
+    def save_channel(self, confirm):
+        self.get_root().show_message("Not implemented yet!")
+        self.navigation_view.pop()
 
     def on_group_edit(self, page, group_widget):
         self.group_channels_box.remove_all()
