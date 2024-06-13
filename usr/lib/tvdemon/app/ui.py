@@ -376,9 +376,14 @@ class FavoritesPage(Adw.NavigationPage):
         PROPERTIES = "properties-page"
 
     navigation_view = Gtk.Template.Child()
+    # Group.
     group_list = Gtk.Template.Child()
     group_channels_box = Gtk.Template.Child()
     group_name_row = Gtk.Template.Child()
+    # Custom channel.
+    channel_name_entry_row = Gtk.Template.Child()
+    channel_url_entry_row = Gtk.Template.Child()
+    channel_logo_url_entry_row = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -436,6 +441,12 @@ class FavoritesPage(Adw.NavigationPage):
     def on_channel_save(self, button):
         QuestionDialog(self.get_root(), self.save_channel).present()
 
+    @Gtk.Template.Callback()
+    def on_channel_page_showing(self, page: Adw.NavigationPage):
+        self.channel_name_entry_row.set_text("")
+        self.channel_url_entry_row.set_text("")
+        self.channel_logo_url_entry_row.set_text("")
+
     def save_group(self, confirm):
         if confirm and self.edit_group:
             group = self.edit_group.group
@@ -465,7 +476,12 @@ class FavoritesPage(Adw.NavigationPage):
             self.navigation_view.pop()
 
     def save_channel(self, confirm):
-        self.get_root().show_message("Not implemented yet!")
+        ch = Channel.from_dict({"name": self.channel_name_entry_row.get_text(),
+                                "url": self.channel_url_entry_row.get_text(),
+                                "logo": self.channel_logo_url_entry_row.get_text()})
+        tooltip = translate("Drag to desired position.")
+        self.group_channels_box.append(FlowChannelWidget.get_widget(ch, tooltip, True))
+        self.add_favorite_channel(self.edit_group, ch)
         self.navigation_view.pop()
 
     def on_group_edit(self, page, group_widget):
@@ -528,7 +544,10 @@ class FavoritesPage(Adw.NavigationPage):
         return name
 
     def on_favorite_add(self, page, channel):
-        self.current_group.append_channel(channel)
+        self.add_favorite_channel(self.current_group, channel)
+
+    def add_favorite_channel(self, group_widget: FavoritesGroupWidget, channel: Channel):
+        group_widget.append_channel(channel)
         self.channels_count += 1
         self.urls.add(channel.url)
         self.emit("favorite-list-updated", self.channels_count)

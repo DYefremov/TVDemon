@@ -148,6 +148,7 @@ Author: Dmitriy Yefremov 2024
           <object class="AdwNavigationPage">
             <property name="title" translatable="yes">New Channel</property>
             <property name="tag">channel-properties-page</property>
+            <signal name="showing" handler="on_channel_page_showing"/>
             <property name="child">
               <object class="AdwToolbarView">
                 <child type="top">
@@ -167,17 +168,17 @@ Author: Dmitriy Yefremov 2024
                       <object class="AdwPreferencesGroup">
                         <property name="title" translatable="yes">Channel</property>
                         <child>
-                          <object class="AdwEntryRow" id="name_entry_row">
+                          <object class="AdwEntryRow" id="channel_name_entry_row">
                             <property name="title" translatable="yes">Name</property>
                           </object>
                         </child>
                         <child>
-                          <object class="AdwEntryRow" id="url_entry_row">
+                          <object class="AdwEntryRow" id="channel_url_entry_row">
                             <property name="title" translatable="yes">URL</property>
                           </object>
                         </child>
                         <child>
-                          <object class="AdwEntryRow" id="logo_url_entry_row">
+                          <object class="AdwEntryRow" id="channel_logo_url_entry_row">
                             <property name="title" translatable="yes">Logo URL</property>
                           </object>
                         </child>
