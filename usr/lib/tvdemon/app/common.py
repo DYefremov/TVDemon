@@ -283,13 +283,18 @@ class Channel:
                         break
                 if ext == ".jpeg":
                     ext = ".jpg"
-                self.logo_path = os.path.join(PROVIDERS_PATH, f"{slugify(provider.name)}-{slugify(self.name)}{ext}")
+
+                self.logo_path = self.get_logo_path(provider.name, self.name, ext)
 
     @staticmethod
     def from_dict(data: dict):
         ch = Channel()
         [setattr(ch, k, v) for k, v in data.items()]
         return ch
+
+    @staticmethod
+    def get_logo_path(provider_name, channel_name, ext):
+        return os.path.join(PROVIDERS_PATH, f"{slugify(provider_name)}-{slugify(channel_name)}{ext}")
 
 
 class Manager:

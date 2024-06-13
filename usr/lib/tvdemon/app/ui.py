@@ -25,6 +25,7 @@ __all__ = ("Page", "PLaybackPage", "SearchPage", "ProviderType", "ProviderWidget
            "ChannelWidget", "GroupWidget", "FlowChannelWidget", "FavoritesGroupWidget", "PreferencesPage",
            "FavoritesPage", "QuestionDialog", "ShortcutsWindow")
 
+import re
 from datetime import datetime
 from enum import StrEnum, IntEnum
 from html import escape
@@ -384,6 +385,7 @@ class FavoritesPage(Adw.NavigationPage):
     channel_name_entry_row = Gtk.Template.Child()
     channel_url_entry_row = Gtk.Template.Child()
     channel_logo_url_entry_row = Gtk.Template.Child()
+    channel_logo = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -447,6 +449,12 @@ class FavoritesPage(Adw.NavigationPage):
         self.channel_url_entry_row.set_text("")
         self.channel_logo_url_entry_row.set_text("")
 
+    @Gtk.Template.Callback()
+    def on_logo_url_changed(self, entry_row: Adw.EntryRow):
+        url = entry_row.get_text()
+        if url:
+            self.get_root().download_channel_logos([(self.get_new_channel(), self.channel_logo)])
+
     def save_group(self, confirm):
         if confirm and self.edit_group:
             group = self.edit_group.group
@@ -476,13 +484,20 @@ class FavoritesPage(Adw.NavigationPage):
             self.navigation_view.pop()
 
     def save_channel(self, confirm):
-        ch = Channel.from_dict({"name": self.channel_name_entry_row.get_text(),
-                                "url": self.channel_url_entry_row.get_text(),
-                                "logo": self.channel_logo_url_entry_row.get_text()})
+        ch = self.get_new_channel()
         tooltip = translate("Drag to desired position.")
         self.group_channels_box.append(FlowChannelWidget.get_widget(ch, tooltip, True))
         self.add_favorite_channel(self.edit_group, ch)
         self.navigation_view.pop()
+
+    def get_new_channel(self):
+        name, url = self.channel_name_entry_row.get_text(), self.channel_url_entry_row.get_text()
+        logo_url, logo_path = self.channel_logo_url_entry_row.get_text(), None
+        match = re.search(r"\.([a-zA-Z0-9]+)$", logo_url)
+        if match:
+            logo_path = Channel.get_logo_path(self.edit_group.group.name, name, match.group(1))
+
+        return Channel.from_dict({"name": name, "url": url, "logo": logo_url, "logo_path": logo_path})
 
     def on_group_edit(self, page, group_widget):
         self.group_channels_box.remove_all()

@@ -163,25 +163,39 @@ Author: Dmitriy Yefremov 2024
                   </object>
                 </child>
                 <property name="content">
-                  <object class="AdwPreferencesPage">
+                  <object class="GtkBox">
+                    <property name="spacing">6</property>
+                    <property name="orientation">vertical</property>
                     <child>
-                      <object class="AdwPreferencesGroup">
-                        <property name="title" translatable="yes">Channel</property>
+                      <object class="AdwPreferencesPage">
                         <child>
-                          <object class="AdwEntryRow" id="channel_name_entry_row">
-                            <property name="title" translatable="yes">Name</property>
+                          <object class="AdwPreferencesGroup">
+                            <property name="title" translatable="yes">Channel</property>
+                            <child>
+                              <object class="AdwEntryRow" id="channel_name_entry_row">
+                                <property name="title" translatable="yes">Name</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="AdwEntryRow" id="channel_url_entry_row">
+                                <property name="title" translatable="yes">URL</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="AdwEntryRow" id="channel_logo_url_entry_row">
+                                <property name="title" translatable="yes">Logo URL</property>
+                                <signal name="changed" handler="on_logo_url_changed"/>
+                              </object>
+                            </child>
                           </object>
                         </child>
-                        <child>
-                          <object class="AdwEntryRow" id="channel_url_entry_row">
-                            <property name="title" translatable="yes">URL</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="AdwEntryRow" id="channel_logo_url_entry_row">
-                            <property name="title" translatable="yes">Logo URL</property>
-                          </object>
-                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImage" id="channel_logo">
+                        <property name="can-focus">False</property>
+                        <property name="pixel-size">192</property>
+                        <property name="icon-name">tv-symbolic</property>
                       </object>
                     </child>
                   </object>
