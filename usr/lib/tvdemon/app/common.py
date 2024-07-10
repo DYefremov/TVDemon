@@ -345,8 +345,6 @@ class Manager:
                         # Set stream blocks
                         block_bytes = int(4 * 1024 * 1024)  # 4 MB
 
-                        response.encoding = response.apparent_encoding
-
                         with open(provider.path, "w", encoding="utf-8") as file:
                             # Grab data by block_bytes
                             for data in response.iter_content(block_bytes, decode_unicode=True):
