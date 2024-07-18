@@ -117,6 +117,7 @@ class AppWindow(Adw.ApplicationWindow):
         self.content_type = TV_GROUP  # content being browsed
         self.active_channel = None
         self.is_full_screen = False
+        self.is_fav_mode = False
         self.player = None
         self.xtream = None
         self.search_running = False
@@ -143,6 +144,14 @@ class AppWindow(Adw.ApplicationWindow):
         self.series_button.connect("clicked", self.show_groups, SERIES_GROUP)
         # Channels.
         self.bind_property("is_tv_mode", self.channels_box, "visible")
+        # Channels DnD.
+        dnd = Gtk.DropTarget.new(ChannelWidget, Gdk.DragAction.MOVE)
+        dnd.connect("drop", self.on_channel_dnd_drop)
+        self.channels_list_box.add_controller(dnd)
+        dnd = Gtk.DragSource.new()
+        dnd.set_actions(Gdk.DragAction.MOVE)
+        dnd.connect("prepare", self.on_channel_dnd_prepare)
+        self.channels_list_box.add_controller(dnd)
         # Providers.
         self.connect("provider-edit", self.on_provider_edit)
         self.connect("provider-remove", self.on_provider_remove)
@@ -571,6 +580,28 @@ class AppWindow(Adw.ApplicationWindow):
         self.active_channel = row.channel
         self.play(row.channel)
 
+    def on_channel_dnd_drop(self, drop: Gtk.DropTarget, user_data: ChannelWidget, x: float, y: float):
+        dest_child = self.channels_list_box.get_row_at_y(y)
+        if not self.is_fav_mode:
+            self.show_message("Not allowed in this context!")
+            return True
+
+        if dest_child:
+            index = dest_child.get_index()
+            self.channels_list_box.remove(user_data)
+            self.channels_list_box.insert(user_data, index)
+
+    def on_channel_dnd_prepare(self, drag_source: Gtk.DragSource, x: float, y: float):
+        child = self.channels_list_box.get_row_at_y(y)
+        if not child:
+            return
+
+        if child.logo:
+            drag_source.set_icon(child.logo.get_paintable(), 0, 0)
+
+        content = Gdk.ContentProvider.new_for_value(GObject.Value(ChannelWidget, child))
+        return content
+
     # ******************** Movies ******************** #
 
     def show_movies(self, items):
@@ -984,7 +1015,9 @@ class AppWindow(Adw.ApplicationWindow):
     def on_navigation_view_pushed(self, view: Adw.NavigationView):
         page = Page(view.get_visible_page().get_tag())
         self.is_tv_mode = self.current_page not in self.TV_PAGES
+        self.is_fav_mode = self.current_page is Page.FAVORITES
         self.current_page = page
+
         if self.player:
             self.playback_bar.set_visible(self.current_page is not Page.CHANNELS and self.player.is_playing())
 
