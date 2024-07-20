@@ -586,10 +586,13 @@ class AppWindow(Adw.ApplicationWindow):
             self.show_message("Not allowed in this context!")
             return True
 
-        if dest_child:
+        if dest_child and self.favorites.current_group:
             index = dest_child.get_index()
             self.channels_list_box.remove(user_data)
             self.channels_list_box.insert(user_data, index)
+            # Moving in the fav group.
+            channels = self.favorites.current_group.group.channels
+            channels.insert(index, channels.pop(channels.index(user_data.channel)))
 
     def on_channel_dnd_prepare(self, drag_source: Gtk.DragSource, x: float, y: float):
         child = self.channels_list_box.get_row_at_y(y)
