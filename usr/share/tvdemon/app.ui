@@ -297,6 +297,12 @@ Author: Dmitriy Yefremov 2024
                                 <signal name="clicked" handler="on_favorite_add"/>
                               </object>
                             </child>
+                            <child type="start">
+                              <object class="GtkLabel">
+                                <property name="label" bind-source="fav_button_content" bind-property="label">0</property>
+                                <property name="tooltip-text">Favorites</property>
+                              </object>
+                            </child>
                           </object>
                         </child>
                         <property name="content">

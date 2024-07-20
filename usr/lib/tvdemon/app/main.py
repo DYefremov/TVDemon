@@ -252,7 +252,7 @@ class AppWindow(Adw.ApplicationWindow):
 
     @async_function
     def reload(self, page=None, refresh=False):
-        if not refresh:
+        if not refresh and page is Page.START:
             self.status(translate("Loading favorites..."))
             self.favorites.set_groups(self.manager.load_favorites())
 
