@@ -251,72 +251,26 @@ class AppWindow(Adw.ApplicationWindow):
             self.ia = Cinemagoer()
 
     @async_function
-    def reload(self, page=None, refresh=False):
+    def reload(self, page=None, refresh=False, provider=None):
         if not refresh and page is Page.START:
             self.status(translate("Loading favorites..."))
             self.favorites.set_groups(self.manager.load_favorites())
 
         self.status(translate("Loading providers..."))
-        self.providers = []
-        for provider_info in self.settings.get_strv("providers"):
-            try:
-                provider = Provider(name=None, provider_info=provider_info)
-                # Add provider to list. This must be done so that it shows up in the
-                # list of providers for editing.
-                self.providers.append(provider)
-
-                if provider.type_id != "xtream":
-                    # Download M3U
-                    if refresh:
-                        self.status(translate("Downloading playlist..."), provider)
-                    else:
-                        self.status(translate("Getting playlist..."), provider)
-                    ret = self.manager.get_playlist(provider, refresh=refresh)
-                    p_name = provider.name
-                    if ret:
-                        self.status(translate("Checking playlist..."), provider)
-                        if self.manager.check_playlist(provider):
-                            self.status(translate("Loading channels..."), provider)
-                            self.manager.load_channels(provider)
-                            if p_name == self.settings.get_string("active-provider"):
-                                self.active_provider = provider
-                            self.status(None)
-                            lc, lg, ls = len(provider.channels), len(provider.groups), len(provider.series)
-                            log(f"{p_name}: {lc} channels, {lg} groups, {ls} series, {len(provider.movies)} movies")
-                    else:
-                        self.status(translate(f"Failed to Download playlist from {p_name}"), provider)
-                else:
-                    # Load xtream class
-                    from .xtream import XTream
-                    # Download via Xtream
-                    self.xtream = XTream(provider.name, provider.username, provider.password, provider.url,
-                                         hide_adult_content=False, cache_path=PROVIDERS_PATH)
-                    if self.xtream.auth_data != {}:
-                        log(f"XTREAM `{provider.name}` Loading Channels")
-                        # Save default cursor
-                        current_cursor = self.window.get_window().get_cursor()
-                        # Set waiting cursor
-                        self.window.get_window().set_cursor(Gdk.Cursor.new_from_name(Gdk.Display.get_default(), 'wait'))
-                        # Load data
-                        self.xtream.load_iptv()
-                        # Restore default cursor
-                        self.window.get_window().set_cursor(current_cursor)
-                        # Inform Provider of data
-                        provider.channels = self.xtream.channels
-                        provider.movies = self.xtream.movies
-                        provider.series = self.xtream.series
-                        provider.groups = self.xtream.groups
-                        # If no errors, approve provider
-                        if provider.name == self.settings.get_string("active-provider"):
-                            self.active_provider = provider
-                        self.status(None)
-                    else:
-                        log("XTREAM Authentication Failed")
-
-            except Exception as e:
-                log(e)
-                log("Couldn't parse provider info: ", provider_info)
-
+        if provider:
+            self.load_provider(provider, refresh)
+        else:
+            self.providers = []
+            for provider_info in self.settings.get_strv("providers"):
+                try:
+                    provider = Provider(name=None, provider_info=provider_info)
+                    # Add provider to list. This must be done so that it shows up in the
+                    # list of providers for editing.
+                    self.providers.append(provider)
+                    self.load_provider(provider, refresh)
+                except Exception as e:
+                    log(e)
+                    log("Couldn't parse provider info: ", provider_info)
         # If there are more than 1 providers and no Active Provider, set to the first one
         if len(self.providers) > 0 and self.active_provider is None:
             self.active_provider = self.providers[0]
@@ -336,6 +290,55 @@ class AppWindow(Adw.ApplicationWindow):
     def force_reload(self):
         self.reload(page=None, refresh=True)
         return False
+
+    def load_provider(self, provider, refresh=False):
+        if provider.type_id != "xtream":
+            # Download M3U
+            if refresh:
+                self.status(translate("Downloading playlist..."), provider)
+            else:
+                self.status(translate("Getting playlist..."), provider)
+            ret = self.manager.get_playlist(provider, refresh=refresh)
+            p_name = provider.name
+            if ret:
+                self.status(translate("Checking playlist..."), provider)
+                if self.manager.check_playlist(provider):
+                    self.status(translate("Loading channels..."), provider)
+                    self.manager.load_channels(provider)
+                    if p_name == self.settings.get_string("active-provider"):
+                        self.active_provider = provider
+                    self.status(None)
+                    lc, lg, ls = len(provider.channels), len(provider.groups), len(provider.series)
+                    log(f"{p_name}: {lc} channels, {lg} groups, {ls} series, {len(provider.movies)} movies")
+            else:
+                self.status(translate(f"Failed to Download playlist from {p_name}"), provider)
+        else:
+            # Load xtream class
+            from .xtream import XTream
+            # Download via Xtream
+            self.xtream = XTream(provider.name, provider.username, provider.password, provider.url,
+                                 hide_adult_content=False, cache_path=PROVIDERS_PATH)
+            if self.xtream.auth_data != {}:
+                log(f"XTREAM `{provider.name}` Loading Channels")
+                # Save default cursor
+                current_cursor = self.window.get_window().get_cursor()
+                # Set waiting cursor
+                self.window.get_window().set_cursor(Gdk.Cursor.new_from_name(Gdk.Display.get_default(), 'wait'))
+                # Load data
+                self.xtream.load_iptv()
+                # Restore default cursor
+                self.window.get_window().set_cursor(current_cursor)
+                # Inform Provider of data
+                provider.channels = self.xtream.channels
+                provider.movies = self.xtream.movies
+                provider.series = self.xtream.series
+                provider.groups = self.xtream.groups
+                # If no errors, approve provider
+                if provider.name == self.settings.get_string("active-provider"):
+                    self.active_provider = provider
+                self.status(None)
+            else:
+                log("XTREAM Authentication Failed")
 
     @idle_function
     def status(self, msg, provider=None):
@@ -524,6 +527,7 @@ class AppWindow(Adw.ApplicationWindow):
             url = self.provider_properties.url_entry_row.get_text()
 
         info = Provider.SEP.join((name, type_id, url, user, password, epg))
+        provider = None
         if add_action:
             provider = Provider(name, info)
             self.providers.append(provider)
@@ -531,7 +535,7 @@ class AppWindow(Adw.ApplicationWindow):
             self.marked_provider.set_info(info)
 
         self.settings.set_strv("providers", [provider.get_info() for provider in self.providers])
-        self.reload(refresh=provider_type is not ProviderType.LOCAL)
+        self.reload(refresh=provider_type is not ProviderType.LOCAL, provider=provider)
 
     def init_provider_properties(self, provider: Provider):
         self.provider_properties.name_entry_row.set_text(provider.name)
