@@ -471,7 +471,7 @@ Author: Dmitriy Yefremov 2024
                 </child>
                 <!-- Movies page -->
                 <child>
-                  <object class="AdwNavigationPage">
+                  <object class="AdwNavigationPage" id="movies_page">
                     <property name="title" translatable="yes">Movies</property>
                     <property name="tag">movies-page</property>
                     <property name="child">
@@ -499,7 +499,7 @@ Author: Dmitriy Yefremov 2024
                 </child>
                 <!-- Series page -->
                 <child>
-                  <object class="AdwNavigationPage">
+                  <object class="AdwNavigationPage" id="series_page">
                     <property name="title" translatable="yes">Series</property>
                     <property name="tag">series-page</property>
                     <property name="child">

@@ -70,8 +70,10 @@ class AppWindow(Adw.ApplicationWindow):
     overview_flowbox = Gtk.Template.Child()
     overview_button = Gtk.Template.Child()
     # Movies page.
+    movies_page = Gtk.Template.Child()
     movies_flowbox = Gtk.Template.Child()
     # Series page.
+    series_page = Gtk.Template.Child()
     series_list = Gtk.Template.Child()
     # Providers page.
     providers_list = Gtk.Template.Child()
@@ -426,11 +428,18 @@ class AppWindow(Adw.ApplicationWindow):
     def on_group_activated(self, box=None, group_widget=None):
         group = group_widget.data if group_widget else None
         self.active_group = group
+
         if self.content_type == TV_GROUP:
+            title = translate("Channels")
+            self.channels_page.set_title(f"{title} [{group.name}]" if group else title)
             self.show_channels(group.channels) if group else self.show_channels(self.active_provider.channels)
         elif self.content_type == MOVIES_GROUP:
+            title = translate("Movies")
+            self.movies_page.set_title(f"{title} [{group.name}]" if group else title)
             self.show_movies(group.channels) if group else self.show_movies(self.active_provider.movies)
         elif self.content_type == SERIES_GROUP:
+            title = translate("Series")
+            self.series_page.set_title(f"{title} [{group.name}]" if group else title)
             self.show_movies(group.series) if group else self.show_movies(self.active_provider.series)
 
     # ******************** Providers ******************** #
@@ -556,6 +565,8 @@ class AppWindow(Adw.ApplicationWindow):
             gen = self.update_channels_data(channels, self.channels_list_box)
             GLib.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_LOW)
         else:
+            if self.active_channel:
+                self.channels_page.set_title(self.active_channel.name or "")
             self.navigate_to(Page.CHANNELS)
 
     def update_channels_data(self, channels: list, ch_box: Gtk.ListBox, clear: bool = True):
@@ -639,7 +650,7 @@ class AppWindow(Adw.ApplicationWindow):
             self.show_channels(None)
             self.play(widget.data)
         else:
-            self.show_episodes(widget.data)
+            self.show_series(widget.data)
 
     # ******************** Series ******************** #
 
