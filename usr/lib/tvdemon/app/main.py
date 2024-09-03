@@ -527,11 +527,14 @@ class AppWindow(Adw.ApplicationWindow):
             url = self.provider_properties.url_entry_row.get_text()
 
         info = Provider.SEP.join((name, type_id, url, user, password, epg))
-        provider = None
+        provider = Provider(name, info)
         if add_action:
-            provider = Provider(name, info)
+            log("Adding provider...")
             self.providers.append(provider)
         else:
+            log(f"Updating provider settings...")
+            if self.marked_provider in self.providers:
+                self.providers[self.providers.index(self.marked_provider)] = provider
             self.marked_provider.set_info(info)
 
         self.settings.set_strv("providers", [provider.get_info() for provider in self.providers])
