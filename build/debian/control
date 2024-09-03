@@ -1,5 +1,5 @@
 Package: tvdemon
-Version: 2.0.0-Pre-Alpha
+Version: 2.0.0-Alpha
 Section: video
 Priority: optional
 Maintainer: Dmitriy Yefremov <https://github.com/DYefremov>

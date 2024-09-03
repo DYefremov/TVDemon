@@ -19,7 +19,7 @@
 # along with TVDemon  If not, see <http://www.gnu.org/licenses/>.
 #
 
-__version__ = "2.0.0 Pre-Alpha"
+__version__ = "2.0.0 Alpha"
 __author__ = "Dmitriy Yefremov"
 
 import gettext
