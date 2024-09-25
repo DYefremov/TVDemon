@@ -30,11 +30,11 @@ from itertools import chain
 
 import requests
 
+from .common import *
 from .epg import EpgCache
 from .madia import Player
-from .common import *
-from .ui import *
 from .settings import Settings
+from .ui import *
 
 
 @Gtk.Template(filename=f"{UI_PATH}app.ui")
@@ -200,11 +200,6 @@ class AppWindow(Adw.ApplicationWindow):
         self._epg_timer_id = -1
         self._epg_cache = None
         self.connect("show-channel-epg", self.on_show_channel_epg)
-        # Style.
-        provider = Gtk.CssProvider()
-        provider.load_from_path(f"{UI_PATH}style.css")
-        display = Gdk.Display.get_default()
-        Gtk.StyleContext.add_provider_for_display(display, provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
     @GObject.Property(type=bool, default=True)
     def is_tv_mode(self):
@@ -1103,6 +1098,21 @@ class Application(Adw.Application):
         # App style.
         if self.window.settings.get_value("dark-mode"):
             self.style_manager.set_color_scheme(Adw.ColorScheme.PREFER_DARK)
+
+        display = Gdk.Display.get_default()
+        provider = Gtk.CssProvider()
+        provider.load_from_path(f"{UI_PATH}style.css")
+        Gtk.StyleContext.add_provider_for_display(display, provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+
+        if not IS_LINUX:
+            prefix = "win" if IS_WIN else "mac"
+            is_dark = self.style_manager.get_color_scheme() is Adw.ColorScheme.PREFER_DARK
+            css_path = f"{UI_PATH}{prefix}{'-dark' if is_dark else ''}-style.css"
+
+            if os.path.isfile(css_path):
+                provider = Gtk.CssProvider()
+                provider.load_from_path(css_path)
+                Gtk.StyleContext.add_provider_for_display(display, provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
         self.window.present()
 
