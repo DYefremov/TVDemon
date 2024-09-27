@@ -1107,6 +1107,14 @@ class Application(Adw.Application):
         if not IS_LINUX:
             prefix = "win" if IS_WIN else "mac"
             is_dark = self.style_manager.get_color_scheme() is Adw.ColorScheme.PREFER_DARK
+
+            if IS_DARWIN and not is_dark:
+                import subprocess
+
+                cmd = ["defaults", "read", "-g", "AppleInterfaceStyle"]
+                p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+                is_dark = "Dark" in str(p[0])
+
             css_path = f"{UI_PATH}{prefix}{'-dark' if is_dark else ''}-style.css"
 
             if os.path.isfile(css_path):
