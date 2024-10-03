@@ -249,10 +249,6 @@ class AppWindow(Adw.ApplicationWindow):
 
     @async_function
     def reload(self, page=None, refresh=False, provider=None):
-        if not refresh and page is Page.START:
-            self.status(translate("Loading favorites..."))
-            self.favorites.set_groups(self.manager.load_favorites())
-
         self.status(translate("Loading providers..."))
         if provider:
             self.load_provider(provider, refresh)
@@ -271,6 +267,12 @@ class AppWindow(Adw.ApplicationWindow):
         # If there are more than 1 providers and no Active Provider, set to the first one
         if len(self.providers) > 0 and self.active_provider is None:
             self.active_provider = self.providers[0]
+
+        if not refresh and page is Page.START:
+            self.status(translate("Loading favorites..."))
+            self.favorites.set_groups(self.manager.load_favorites())
+            # Preload channel logos for providers.
+            [self.update_provider_logo_cache(p) for p in self.providers]
 
         self.refresh_providers_page()
 
@@ -336,6 +338,10 @@ class AppWindow(Adw.ApplicationWindow):
                 self.status(None)
             else:
                 log("XTREAM Authentication Failed")
+
+    @async_function
+    def update_provider_logo_cache(self, p: Provider):
+        list(map(lambda c: get_pixbuf_from_file(c.logo_path), filter(lambda ch: ch.logo_path, p.channels)))
 
     @idle_function
     def status(self, msg, provider=None):

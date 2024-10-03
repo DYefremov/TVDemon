@@ -150,10 +150,15 @@ def slugify(string):
     return "".join(x.lower() for x in string if x.isalnum())
 
 
-def get_pixbuf_from_file(path, size=32) -> GdkPixbuf.Pixbuf:
+def get_pixbuf_from_file(path, size=32, _cache={}) -> GdkPixbuf.Pixbuf:
     """ Returns a Pixbuf object from a file at a given size. """
+    if path in _cache:
+        return _cache[path]
     try:
-        return GdkPixbuf.Pixbuf.new_from_file_at_scale(path, -1, size, 1)
+        pix = GdkPixbuf.Pixbuf.new_from_file_at_scale(path, -1, size, 1)
+        if pix:
+            _cache[path] = pix
+        return pix
     except GLib.Error:
         pass  # NOP
 
