@@ -12,6 +12,8 @@ Depends: python3 (>= 3.11),
          python3-chardet,
          libgtk-4-1 (>= 4.12),
          libadwaita-1-0 (>= 1.4),
+         gir1.2-gtk-4.0,
+         gir1.2-adw-1,
          gir1.2-gst-plugins-bad-1.0,
          gstreamer1.0-plugins-bad
 Recommends: rust-gst-plugin-gtk4
