@@ -30,9 +30,9 @@ from datetime import datetime
 from enum import StrEnum, IntEnum
 from html import escape
 
-from .epg import EpgEvent, EPG_START_FMT, EPG_END_FMT
 from .common import (UI_PATH, Adw, Gtk, Gdk, GObject, GLib, idle_function, translate, select_path, Group,
                      get_pixbuf_from_file, Channel)
+from .epg import EpgEvent, EPG_START_FMT, EPG_END_FMT
 
 
 class Page(StrEnum):
@@ -122,7 +122,21 @@ class ProviderProperties(Adw.NavigationPage):
 
     @Gtk.Template.Callback()
     def on_provider_path_activated(self, row: Adw.ActionRow):
-        select_path(self.get_root(), callback=row.set_subtitle, select_file=True)
+        def clb(path):
+            row.set_subtitle(path)
+            self.update_epg_source(path)
+
+        select_path(self.get_root(), callback=clb, select_file=True)
+
+    def update_epg_source(self, path):
+        self.epg_source_entry.set_text("")
+        urls = list(filter(None, self.get_root().manager.get_m3u_tvg_info(path).split(",")))
+        urls_size = len(urls)
+        if urls_size == 1:
+            self.epg_source_entry.set_text(urls[0])
+        else:
+            [self.epg_sources_list.append(u) for u in urls]
+            self.epg_sources_drop_down.set_sensitive(urls_size)
 
 
 @Gtk.Template(filename=f"{UI_PATH}channel_widget.ui")
