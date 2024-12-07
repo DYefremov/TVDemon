@@ -481,8 +481,8 @@ class XTream:
 
         """
         # If pyxtream has already authenticated the connection and not loaded the data, start loading
-        if self.state['authenticated']:
-            if not self.state['loaded']:
+        if self.state["authenticated"]:
+            if not self.state["loaded"]:
                 for loading_stream_type in (self.live_type, self.vod_type, self.series_type):
                     # Get GROUPS
                     # Try loading local file
@@ -541,7 +541,7 @@ class XTream:
                         for stream_channel in all_streams:
                             skip_stream = False
                             # Skip if the name of the stream is empty
-                            if stream_channel["name"] == "":
+                            if not stream_channel["name"]:
                                 skip_stream = True
                                 skipped_no_name_content = skipped_no_name_content + 1
                                 self._save_to_file_skipped_streams(stream_channel)
@@ -560,17 +560,12 @@ class XTream:
                             if not skip_stream:
                                 # Some channels have no group,
                                 # so let's add them to the catch all group
-                                if stream_channel['category_id'] is None:
-                                    stream_channel['category_id'] = '9999'
-                                elif stream_channel['category_id'] != '1':
-                                    pass
-
+                                if not stream_channel["category_id"]:
+                                    stream_channel["category_id"] = "9999"
                                 # Find the first occurence of the group that the
                                 # Channel or Stream is pointing to
                                 the_group = next(
-                                    (x for x in self.groups if x.group_id == int(stream_channel['category_id'])),
-                                    None
-                                )
+                                    (x for x in self.groups if x.group_id == int(stream_channel['category_id'])), None)
                                 # Set group title
                                 if the_group:
                                     group_title = the_group.name
@@ -591,7 +586,7 @@ class XTream:
 
                                 if new_channel.group_id == '9999':
                                     log(" - xEverythingElse Channel -> {} - {}".format(new_channel.name,
-                                                                                         new_channel.stream_type))
+                                                                                       new_channel.stream_type))
                                 # Save the new channel to the local list of channels
                                 if loading_stream_type == self.live_type:
                                     self.channels.append(new_channel)
