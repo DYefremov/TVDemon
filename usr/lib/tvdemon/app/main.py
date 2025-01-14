@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright © 2022-2024 Dmitriy Yefremov <https://github.com/DYefremov>
+# Copyright © 2022-2025 Dmitriy Yefremov <https://github.com/DYefremov>
 #             2020-2022 Linux Mint <root@linuxmint.com>
 #
 # This file is part of TVDemon.
@@ -190,6 +190,7 @@ class AppWindow(Adw.ApplicationWindow):
         self.media_bar.forward_button.connect("clicked", self.on_playback_forward)
         self.media_bar.volume_button.connect("value-changed", self.on_volume_changed)
         self.media_bar.fullscreen_button.connect("clicked", self.toggle_fullscreen)
+        self.media_bar.record_button.connect("clicked", self.on_record)
         self.media_bar.epg_button.connect("clicked", lambda b: self.on_show_channel_epg(self, self.active_channel))
         self.bind_property("is_tv_mode", self.media_bar.epg_button, "visible")
         # Shortcuts.
@@ -878,6 +879,11 @@ class AppWindow(Adw.ApplicationWindow):
         self.active_channel = widget.channel
         self.navigate_to(Page.CHANNELS)
         self.play(self.active_channel)
+
+    # ********************* Record ********************* #
+
+    def on_record(self, button=None):
+        self.show_message("Not implemented yet!")
 
     # ********************** IMDb ********************** #
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright (C) 2024 Dmitriy Yefremov <https://github.com/DYefremov>
+Copyright (C) 2024-2025 Dmitriy Yefremov <https://github.com/DYefremov>
 
 This file is part of TVDemon.
 
@@ -17,7 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with TVDemon.  If not, see <http://www.gnu.org/licenses/>.
 
-Author: Dmitriy Yefremov 2024
+Author: Dmitriy Yefremov 2024-2025
 
 -->
 <interface>
@@ -104,6 +104,18 @@ Author: Dmitriy Yefremov 2024
                 <property name="icon-name">view-fullscreen-symbolic</property>
                 <property name="valign">center</property>
                 <property name="tooltip-text" translatable="yes">Fullscreen</property>
+                <style>
+                  <class name="flat"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="record_button">
+                <property name="sensitive">False</property>
+                <property name="valign">center</property>
+                <property name="margin-start">12</property>
+                <property name="icon-name">media-record-symbolic</property>
+                <property name="tooltip-text" translatable="yes">Record</property>
                 <style>
                   <class name="flat"/>
                 </style>

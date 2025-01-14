@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright © 2022-2024 Dmitriy Yefremov <https://github.com/DYefremov>
+# Copyright © 2022-2025 Dmitriy Yefremov <https://github.com/DYefremov>
 #
 #
 # This file is part of TVDemon.
@@ -283,6 +283,7 @@ class MediaBar(Gtk.Frame):
     volume_button = Gtk.Template.Child()
     epg_button = Gtk.Template.Child()
     fullscreen_button = Gtk.Template.Child()
+    record_button = Gtk.Template.Child()
 
     def set_title(self, title: str):
         self.title_label.set_text(title)
