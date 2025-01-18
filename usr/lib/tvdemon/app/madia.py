@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright © 2023 Dmitriy Yefremov <https://github.com/DYefremov>
+# Copyright © 2023-2025 Dmitriy Yefremov <https://github.com/DYefremov>
 #
 #
 # This file is part of TVDemon.
@@ -22,7 +22,7 @@
 """ Basic playback module. """
 import sys
 
-from .common import GObject, Gtk, Gdk, log
+from .common import GObject, Gdk, log
 
 
 class Player(GObject.GObject):
@@ -36,6 +36,8 @@ class Player(GObject.GObject):
         GObject.signal_new("error", self, GObject.SignalFlags.RUN_FIRST, GObject.TYPE_PYOBJECT,
                            (GObject.TYPE_PYOBJECT,))
         GObject.signal_new("played", self, GObject.SignalFlags.RUN_FIRST, GObject.TYPE_PYOBJECT,
+                           (GObject.TYPE_PYOBJECT,))
+        GObject.signal_new("recorded", self, GObject.SignalFlags.RUN_FIRST, GObject.TYPE_PYOBJECT,
                            (GObject.TYPE_PYOBJECT,))
 
         self._video_properties = {}
@@ -75,6 +77,18 @@ class Player(GObject.GObject):
         pass
 
     def is_playing(self):
+        pass
+
+    def start_record(self, path):
+        pass
+
+    def record_stop(self):
+        pass
+
+    def is_record(self):
+        pass
+
+    def get_stream_info(self) -> dict:
         pass
 
     @staticmethod
@@ -176,6 +190,18 @@ class GstPlayer(Player):
     def is_playing(self):
         return self._player.get_state(self.STATE.NULL).state is self.STATE.PLAYING
 
+    def start_record(self, path):
+        if not self.is_playing():
+            self.emit("error", "Recording error. No stream available!")
+
+        self.emit("recorded", 0)
+
+    def record_stop(self):
+        pass
+
+    def is_record(self):
+        pass
+
     def release(self):
         if self._player:
             self._player.set_state(self.STATE.NULL)
@@ -201,15 +227,18 @@ class GstPlayer(Player):
         """ Called when an end-of-stream message appears. """
         self._player.set_state(self.STATE.READY)
 
-    def get_stream_info(self):
+    def get_stream_info(self) -> dict:
         log("Getting stream info...")
+        video_codec = "unknown"
+        audio_codec = "unknown"
         nr_video = self._player.get_property("n-video")
         for i in range(nr_video):
             # Retrieve the stream's video tags.
             tags = self._player.emit("get-video-tags", i)
             if tags:
                 _, cod = tags.get_string("video-codec")
-                log(f"Video codec: {cod or 'unknown'}")
+                video_codec = cod or video_codec
+                log(f"Video codec: {video_codec}")
 
         nr_audio = self._player.get_property("n-audio")
         for i in range(nr_audio):
@@ -217,7 +246,10 @@ class GstPlayer(Player):
             tags = self._player.emit("get-audio-tags", i)
             if tags:
                 _, cod = tags.get_string("audio-codec")
-                log(f"Audio codec: {cod or 'unknown'}")
+                audio_codec = cod or audio_codec
+                log(f"Audio codec: {audio_codec}")
+
+        return {"Codec": video_codec, "Audio": audio_codec}
 
 
 if __name__ == "__main__":

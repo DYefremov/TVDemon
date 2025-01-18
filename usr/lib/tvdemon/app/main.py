@@ -191,6 +191,7 @@ class AppWindow(Adw.ApplicationWindow):
         self.media_bar.volume_button.connect("value-changed", self.on_volume_changed)
         self.media_bar.fullscreen_button.connect("clicked", self.toggle_fullscreen)
         self.media_bar.record_button.connect("clicked", self.on_record)
+        self.media_bar.stream_info_button.connect("clicked", self.on_stream_info)
         self.media_bar.epg_button.connect("clicked", lambda b: self.on_show_channel_epg(self, self.active_channel))
         self.bind_property("is_tv_mode", self.media_bar.epg_button, "visible")
         # Shortcuts.
@@ -238,6 +239,7 @@ class AppWindow(Adw.ApplicationWindow):
             GLib.idle_add(self.on_playback_error, self.player, "Not initialized!")
         else:
             self.player.connect("played", self.on_played)
+            self.player.connect("recorded", self.on_recorded)
             self.player.connect("error", self.on_playback_error)
 
     def init_imdb(self):
@@ -780,6 +782,10 @@ class AppWindow(Adw.ApplicationWindow):
     @idle_function
     def play(self, channel: Channel):
         if self.player:
+            if self.player.is_record():
+                self.show_message(translate("Stream recording in progress!"))
+                return
+
             self.playback_stack.set_visible_child_name(PLaybackPage.LOAD)
             self.media_bar.set_title(channel.name)
             self.media_bar.set_subtitle(channel.url)
@@ -880,9 +886,21 @@ class AppWindow(Adw.ApplicationWindow):
         self.navigate_to(Page.CHANNELS)
         self.play(self.active_channel)
 
+    def on_stream_info(self, widget=None):
+        if self.player and self.player.is_playing():
+            info = " ".join(f"{translate(k)}: {v}" for k, v in self.player.get_stream_info().items())
+            self.show_message(info)
+
     # ********************* Record ********************* #
 
+    def on_recorded(self, player: Player, status: int):
+        pass
+
     def on_record(self, button=None):
+        if not self.player:
+            return
+
+        self.player.start_record(self.settings.get_string("recordings-path"))
         self.show_message("Not implemented yet!")
 
     # ********************** IMDb ********************** #
@@ -1034,6 +1052,8 @@ class AppWindow(Adw.ApplicationWindow):
         elif ctrl and keyval in (Gdk.KEY_f, Gdk.KEY_F):
             if self.current_page is not Page.SEARCH:
                 self.navigate_to(Page.SEARCH)
+        elif ctrl and keyval in (Gdk.KEY_i, Gdk.KEY_I):
+            self.on_stream_info()
         if all((not ctrl, self.current_page is Page.CHANNELS, keyval in (Gdk.KEY_f, Gdk.KEY_F, Gdk.KEY_F11))):
             self.toggle_fullscreen()
 

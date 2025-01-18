@@ -41,6 +41,7 @@ Author: Dmitriy Yefremov 2024-2025
         <child>
           <object class="GtkBox" id="controls_box">
             <property name="halign">center</property>
+            <property name="spacing">2</property>
             <child>
               <object class="GtkButton" id="backward_button">
                 <property name="icon-name">media-skip-backward-symbolic</property>
@@ -78,17 +79,6 @@ Author: Dmitriy Yefremov 2024-2025
               </object>
             </child>
             <child>
-              <object class="GtkVolumeButton" id="volume_button">
-                <property name="use-symbolic">True</property>
-                <property name="valign">center</property>
-                <property name="margin-start">12</property>
-                <property name="value">1.0</property>
-                <style>
-                  <class name="flat"/>
-                </style>
-              </object>
-            </child>
-            <child>
               <object class="GtkButton" id="epg_button">
                 <property name="valign">center</property>
                 <property name="margin-start">12</property>
@@ -111,11 +101,31 @@ Author: Dmitriy Yefremov 2024-2025
             </child>
             <child>
               <object class="GtkButton" id="record_button">
-                <property name="sensitive">False</property>
                 <property name="valign">center</property>
                 <property name="margin-start">12</property>
                 <property name="icon-name">media-record-symbolic</property>
                 <property name="tooltip-text" translatable="yes">Record</property>
+                <style>
+                  <class name="flat"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="stream_info_button">
+                <property name="valign">center</property>
+                <property name="icon-name">help-about-symbolic</property>
+                <property name="tooltip-text" translatable="yes">Stream Information</property>
+                <style>
+                  <class name="flat"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkVolumeButton" id="volume_button">
+                <property name="use-symbolic">True</property>
+                <property name="valign">center</property>
+                <property name="margin-start">12</property>
+                <property name="value">1.0</property>
                 <style>
                   <class name="flat"/>
                 </style>

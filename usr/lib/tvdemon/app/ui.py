@@ -284,6 +284,7 @@ class MediaBar(Gtk.Frame):
     epg_button = Gtk.Template.Child()
     fullscreen_button = Gtk.Template.Child()
     record_button = Gtk.Template.Child()
+    stream_info_button = Gtk.Template.Child()
 
     def set_title(self, title: str):
         self.title_label.set_text(title)
