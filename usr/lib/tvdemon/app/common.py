@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright © 2022-2024 Dmitriy Yefremov <https://github.com/DYefremov>
+# Copyright © 2022-2025 Dmitriy Yefremov <https://github.com/DYefremov>
 #             2020-2022 Linux Mint <root@linuxmint.com>
 #
 # This file is part of TVDemon.
@@ -350,8 +350,9 @@ class Manager:
                         total_content_size = int(response.headers.get('content-length', 15))
                         # Set stream blocks
                         block_bytes = int(4 * 1024 * 1024)  # 4 MB
+                        response.encoding = response.encoding or response.apparent_encoding
 
-                        with open(provider.path, "w", encoding="utf-8") as file:
+                        with open(provider.path, "w", encoding=response.encoding) as file:
                             # Grab data by block_bytes
                             for data in response.iter_content(block_bytes, decode_unicode=True):
                                 downloaded_bytes += block_bytes
@@ -361,8 +362,6 @@ class Manager:
                             log("The file size is incorrect, deleting")
                             os.remove(provider.path)
                         else:
-                            # Set the datatime when it was last retreived
-                            # self.settings.set_
                             ret_code = True
                     else:
                         log(f"HTTP error {response.status_code} while retrieving from {provider.url}!")
