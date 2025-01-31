@@ -121,12 +121,23 @@ class GstPlayer(Player):
         else:
             self.STATE = Gst.State
             self.STAT_RETURN = Gst.StateChangeReturn
+            self.EVENT = Gst.Event
+            self.P_TYPE = Gst.PadProbeType
             # -> gst-plugin-gtk4
-            gtk_sink = Gst.ElementFactory.make("gtk4paintablesink")
-            if gtk_sink:
+            if Gst.ElementFactory.make("gtk4paintablesink"):
                 self._player = Gst.ElementFactory.make("playbin", "player")
-                self._player.set_property("video-sink", gtk_sink)
-                self.widget.set_paintable(gtk_sink.props.paintable)
+                v_sink = Gst.parse_bin_from_description("tee name=v_tee ! queue ! gtk4paintablesink name=v_sink", True)
+                self._v_tee = v_sink.get_by_name("v_tee")
+                self._player.set_property("video-sink", v_sink)
+                self.widget.set_paintable(v_sink.get_by_name("v_sink").props.paintable)
+                # Record
+                self._is_record = False
+                rec_str = " ! ".join(("queue name=filequeue",
+                                      "jpegenc",
+                                      "avimux name=mux",
+                                      "filesink name=rec_sink"))
+                self._rec_pipe = Gst.parse_bin_from_description(rec_str, True)
+                self._rec_sink = self._rec_pipe.get_by_name("rec_sink")
             else:
                 msg = f"Error: The Gtk4 plugin for GStreamer is not initialized. Check that it is installed!"
                 log(msg)
@@ -192,15 +203,27 @@ class GstPlayer(Player):
 
     def start_record(self, path):
         if not self.is_playing():
-            self.emit("error", "Recording error. No stream available!")
+            self.emit("error", "Recording error. No active stream!")
 
+        self._player.add(self._rec_pipe)
+        self._v_tee.link(self._rec_pipe)
+        self._rec_sink.set_property("location", path)
+        self._rec_pipe.set_state(self.STATE.PLAYING)
+        self._is_record = True
         self.emit("recorded", 0)
 
     def record_stop(self):
-        pass
+        src = self._rec_sink.get_static_pad("src")
+        if src:
+            src.add_probe(self.P_TYPE.BLOCK_DOWNSTREAM, lambda pad, buf: True)
+        self._player.remove(self._rec_pipe)
+        self._v_tee.unlink(self._rec_pipe)
+        self._rec_sink.get_static_pad("sink").send_event(self.EVENT.new_eos())
+        log("Stopped recording")
+        self._is_record = False
 
     def is_record(self):
-        pass
+        return self._is_record
 
     def release(self):
         if self._player:
@@ -210,7 +233,10 @@ class GstPlayer(Player):
     def on_error(self, bus, msg):
         err, dbg = msg.parse_error()
         log(err)
-        self.emit("error", "Can't Playback!")
+        if msg.src == self._player:
+            self.emit("error", f"Can't Playback!")
+        elif msg.src == self._rec_sink:
+            self.record_stop()
 
     def on_state_changed(self, bus, msg):
         if not msg.src == self._player:

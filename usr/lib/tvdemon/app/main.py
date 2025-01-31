@@ -26,6 +26,7 @@ import gettext
 import os
 import shutil
 import sys
+from datetime import datetime
 from itertools import chain
 
 import requests
@@ -833,10 +834,10 @@ class AppWindow(Adw.ApplicationWindow):
             elif self.content_type == SERIES_GROUP:
                 self.get_imdb_details(self.active_serie)
 
-    def on_playback_error(self, player: Player, status: int):
+    def on_playback_error(self, player: Player, msg: str):
         self.playback_status_page.set_title(translate("Can't Playback!"))
         self.playback_stack.set_visible_child_name(PLaybackPage.STATUS)
-        log(f"Playback error: {status}")
+        log(f"Playback error: {msg}")
 
     def on_volume_changed(self, player: Player, volume: float):
         self.player.set_volume(volume)
@@ -894,14 +895,36 @@ class AppWindow(Adw.ApplicationWindow):
     # ********************* Record ********************* #
 
     def on_recorded(self, player: Player, status: int):
-        pass
+        img = self.media_bar.record_button.get_first_child()
+        if img and type(img) is Gtk.Image:
+            def update_rec_status():
+                is_rec = self.player.is_record()
+                if not is_rec:
+                    img.set_opacity(1.0)
+                else:
+                    img.set_opacity(0 if img.get_opacity() else 1.0)
+                return is_rec
+
+            GLib.timeout_add_seconds(1, update_rec_status, priority=GLib.PRIORITY_LOW)
 
     def on_record(self, button=None):
         if not self.player:
             return
 
-        self.player.start_record(self.settings.get_string("recordings-path"))
-        self.show_message("Not implemented yet!")
+        def cls(confirm=False):
+            if confirm:
+                if self.player.is_record():
+                    self.player.record_stop()
+                else:
+                    f_name = f"{self.active_channel.name}_{datetime.now().strftime("%Y-%m-%d_%H.%M.%S")}.avi"
+                    path = os.path.normpath(os.path.join(self.settings.get_string("recordings-path"), f_name))
+                    self.player.start_record(path)
+
+        dlg = QuestionDialog(self, cls)
+        dlg.set_response_label("save", translate("Yes"))
+        if not self.player.is_record():
+            dlg.set_body("EXPERIMENTAL!")
+        dlg.present()
 
     # ********************** IMDb ********************** #
 

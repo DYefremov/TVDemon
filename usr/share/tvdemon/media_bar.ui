@@ -101,6 +101,7 @@ Author: Dmitriy Yefremov 2024-2025
             </child>
             <child>
               <object class="GtkButton" id="record_button">
+                <property name="visible">False</property>
                 <property name="valign">center</property>
                 <property name="margin-start">12</property>
                 <property name="icon-name">media-record-symbolic</property>
