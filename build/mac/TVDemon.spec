@@ -72,7 +72,7 @@ app = BUNDLE(coll,
                  'CFBundleGetInfoString': "IPTV Player",
                  'LSApplicationCategoryType': 'public.app-category.video',
                  'LSMinimumSystemVersion': '14.3.1',
-                 'CFBundleShortVersionString': f"2.0.0.{BUILD_DATE} Alpha",
+                 'CFBundleShortVersionString': f"2.0.0.{BUILD_DATE} Alpha2",
                  'NSHumanReadableCopyright': u"Copyright © 2024, Dmitriy Yefremov",
                  'NSRequiresAquaSystemAppearance': 'False',
                  'NSHighResolutionCapable': 'True'
