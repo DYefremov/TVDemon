@@ -226,6 +226,11 @@ class AppWindow(Adw.ApplicationWindow):
         if size:
             self.set_default_size(*size)
 
+        self.init()
+
+    @idle_function
+    def init(self):
+        self.active_provider_info.set_title(translate("Loading..."))
         self.reload(Page.START)
         self.init_playback()
         self.init_imdb()
@@ -287,7 +292,7 @@ class AppWindow(Adw.ApplicationWindow):
             GLib.timeout_add_seconds(2, self.init_epg)
 
         if page:
-            self.navigate_to(page)
+            GLib.idle_add(self.navigate_to, page)
         self.status(None)
 
     def force_reload(self):
