@@ -921,12 +921,11 @@ class AppWindow(Adw.ApplicationWindow):
                 if self.player.is_record():
                     self.player.record_stop()
                 else:
-                    f_name = f"{self.active_channel.name}_{datetime.now().strftime("%Y-%m-%d_%H.%M.%S")}.avi"
+                    f_name = f"{self.active_channel.name}_{datetime.now().strftime('%Y-%m-%d_%H.%M.%S')}.avi"
                     path = os.path.normpath(os.path.join(self.settings.get_string("recordings-path"), f_name))
                     self.player.start_record(path)
 
         dlg = QuestionDialog(self, cls)
-        dlg.set_response_label("save", translate("Yes"))
         if not self.player.is_record():
             dlg.set_body("EXPERIMENTAL!")
         dlg.present()
