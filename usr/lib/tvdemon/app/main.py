@@ -226,15 +226,16 @@ class AppWindow(Adw.ApplicationWindow):
         if size:
             self.set_default_size(*size)
 
-        self.init()
-
-    @idle_function
-    def init(self):
         self.active_provider_info.set_title(translate("Loading..."))
+        GLib.idle_add(self.init, priority=GLib.PRIORITY_LOW)
+
+    def init(self):
+        # Set waiting cursor
+        self.set_cursor(Gdk.Cursor.new_from_name("wait"))
         self.reload(Page.START)
         self.init_playback()
         self.init_imdb()
-        # Redownload playlists by default
+        # Redownload playlists by default.
         GLib.timeout_add_seconds(self.reload_timeout_sec, self.force_reload)
 
     def init_playback(self):
@@ -282,6 +283,8 @@ class AppWindow(Adw.ApplicationWindow):
             self.favorites.set_groups(self.manager.load_favorites())
             # Preload channel logos for providers.
             [self.update_provider_logo_cache(p) for p in self.providers]
+            # Restore default cursor.
+            GLib.idle_add(self.set_cursor)
 
         self.refresh_providers_page()
 
@@ -328,14 +331,8 @@ class AppWindow(Adw.ApplicationWindow):
                                  hide_adult_content=False, cache_path=PROVIDERS_PATH)
             if self.xtream.auth_data != {}:
                 log(f"XTREAM `{provider.name}` Loading Channels")
-                # Save default cursor
-                current_cursor = self.window.get_window().get_cursor()
-                # Set waiting cursor
-                self.window.get_window().set_cursor(Gdk.Cursor.new_from_name(Gdk.Display.get_default(), 'wait'))
                 # Load data
                 self.xtream.load_iptv()
-                # Restore default cursor
-                self.window.get_window().set_cursor(current_cursor)
                 # Inform Provider of data
                 provider.channels = self.xtream.channels
                 provider.movies = self.xtream.movies
@@ -1227,7 +1224,7 @@ class Application(Adw.Application):
         about.set_application_name("TVDemon")
         about.set_application_icon("tvdemon")
         about.set_version(__version__)
-        about.set_copyright(f"Copyright © 2024 {__author__}")
+        about.set_copyright(f"Copyright © 2024-2025 {__author__}")
         about.set_developer_name(__author__)
         about.set_license_type(Gtk.License.GPL_3_0)
         about.set_translator_credits(translate("translator-credits"))
