@@ -744,6 +744,13 @@ class AppWindow(Adw.ApplicationWindow):
         else:
             self.show_message("No channel selected!")
 
+    @Gtk.Template.Callback()
+    def on_to_favorites(self, button):
+        prev_page = self.navigation_view.get_previous_page(self.navigation_view.get_visible_page())
+        self.navigation_view.pop()
+        if prev_page.props.tag != Page.FAVORITES:
+            self.navigation_view.push_by_tag(Page.FAVORITES)
+
     def on_favorite_list_updated(self, favorites: FavoritesPage, count: int):
         self.fav_button_content.set_label(str(count))
         gen = self.refresh_channel_info()
@@ -758,6 +765,7 @@ class AppWindow(Adw.ApplicationWindow):
     def on_favorite_group_activated(self, favorites: FavoritesPage, group: Group):
         self.content_type = TV_GROUP
         self.show_channels(group.channels)
+        self.channels_page.set_title(f"{translate('Favorites')} [{group.name}]")
 
     def on_favorites_error(self, favorites: FavoritesPage, message: str):
         self.show_message(message)

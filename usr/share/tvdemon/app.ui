@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright (C) 2024 Dmitriy Yefremov <https://github.com/DYefremov>
+Copyright (C) 2024-2025 Dmitriy Yefremov <https://github.com/DYefremov>
 
 This file is part of TVDemon.
 
@@ -17,7 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with TVDemon.  If not, see <http://www.gnu.org/licenses/>.
 
-Author: Dmitriy Yefremov 2024
+Author: Dmitriy Yefremov 2024-2025
 
 -->
 <interface>
@@ -291,16 +291,23 @@ Author: Dmitriy Yefremov 2024
                           <object class="AdwHeaderBar" id="channels_header">
                             <child type="start">
                               <object class="AdwSplitButton" id="add_fav_button">
-                                <property name="icon-name">bookmark-new-symbolic</property>
+                                <property name="icon-name">star-new-symbolic</property>
                                 <property name="tooltip-text" translatable="yes">Add to favorites</property>
                                 <property name="dropdown-tooltip" translatable="yes">Active group</property>
                                 <signal name="clicked" handler="on_favorite_add"/>
                               </object>
                             </child>
                             <child type="start">
-                              <object class="GtkLabel">
-                                <property name="label" bind-source="fav_button_content" bind-property="label">0</property>
-                                <property name="tooltip-text">Favorites</property>
+                              <object class="GtkButton">
+                                <property name="child">
+                                  <object class="AdwButtonContent">
+                                    <property name="icon-name">user-bookmarks-symbolic</property>
+                                    <property name="label" bind-source="fav_button_content" bind-property="label">0
+                                    </property>
+                                    <property name="tooltip-text">Go to Favorites</property>
+                                  </object>
+                                </property>
+                                <signal name="clicked" handler="on_to_favorites"/>
                               </object>
                             </child>
                           </object>
