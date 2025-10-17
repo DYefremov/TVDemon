@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright © 2024 Dmitriy Yefremov <https://github.com/DYefremov>
+# Copyright © 2024-2025 Dmitriy Yefremov <https://github.com/DYefremov>
 #
 # This file is part of TVDemon.
 #
@@ -201,16 +201,18 @@ class XmlTvReader(Reader):
                     with NamedTemporaryFile(suffix=suf, delete=not IS_WIN) as tf:
                         downloaded = 0
                         data_size = int(data_size)
-                        log("Downloading XMLTV file...")
+                        completed = set()
+
                         for data in resp.iter_content(chunk_size=1024):
                             downloaded += len(data)
                             tf.write(data)
-                            done = int(50 * downloaded / data_size)
-                            sys.stdout.write(f"\rDownloading XMLTV file [{'=' * done}{' ' * (50 - done)}]")
-                            sys.stdout.flush()
-                        tf.seek(0)
-                        sys.stdout.write("\n")
 
+                            done = int(100 * downloaded / data_size)
+                            if done % 25 == 0 and done not in completed:
+                                completed.add(done)
+                                log(f"Downloading XMLTV file...{done}%" if done < 100 else "XMLTV file download complete.")
+
+                        tf.seek(0)
                         os.makedirs(os.path.dirname(self._path), exist_ok=True)
 
                         if suf.endswith(".gz"):
