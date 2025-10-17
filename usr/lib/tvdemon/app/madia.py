@@ -123,9 +123,10 @@ class GstPlayer(Player):
             self.STAT_RETURN = Gst.StateChangeReturn
             self.EVENT = Gst.Event
             self.P_TYPE = Gst.PadProbeType
+            self.STREAM_TYPE = Gst.StreamType
             # -> gst-plugin-gtk4
             if Gst.ElementFactory.make("gtk4paintablesink"):
-                self._player = Gst.ElementFactory.make("playbin", "player")
+                self._player = Gst.ElementFactory.make("playbin3", "player")
                 v_sink = Gst.parse_bin_from_description("tee name=v_tee ! queue ! gtk4paintablesink name=v_sink", True)
                 self._v_tee = v_sink.get_by_name("v_tee")
                 self._player.set_property("video-sink", v_sink)
@@ -148,12 +149,32 @@ class GstPlayer(Player):
             bus.connect("message::error", self.on_error)
             bus.connect("message::state-changed", self.on_state_changed)
             bus.connect("message::eos", self.on_eos)
+            bus.connect("message::streams-selected", self.on_streams_selection)
+            bus.connect("message::tag", self.on_tag)
+
+            self._current_tags = None
 
     @classmethod
     def get_instance(cls, widget):
         if not cls.__INSTANCE:
             cls.__INSTANCE = GstPlayer(widget)
         return cls.__INSTANCE
+
+    def on_streams_selection(self, bus, msg):
+        self._video_properties.clear()
+        self._audio_properties.clear()
+
+    def on_tag(self, bus, msg):
+        if self._video_properties and self._audio_properties:
+            return
+
+        tags = msg.parse_tag()
+        v_tag = tags.get_string("video-codec")
+        if v_tag.value:
+            self._video_properties["codec"] = v_tag.value
+        a_tag = tags.get_string("audio-codec")
+        if a_tag.value:
+            self._audio_properties["codec"] = a_tag.value
 
     def get_play_mode(self):
         return self._mode
@@ -255,27 +276,11 @@ class GstPlayer(Player):
 
     def get_stream_info(self) -> dict:
         log("Getting stream info...")
-        video_codec = "unknown"
-        audio_codec = "unknown"
-        nr_video = self._player.get_property("n-video")
-        for i in range(nr_video):
-            # Retrieve the stream's video tags.
-            tags = self._player.emit("get-video-tags", i)
-            if tags:
-                _, cod = tags.get_string("video-codec")
-                video_codec = cod or video_codec
-                log(f"Video codec: {video_codec}")
+        video_codec = self._video_properties.get("codec", "unknown")
+        audio_codec = self._audio_properties.get("codec", "unknown")
+        log(f"Video codec: {video_codec}; Audio codec: {audio_codec}")
 
-        nr_audio = self._player.get_property("n-audio")
-        for i in range(nr_audio):
-            # Retrieve the stream's video tags.
-            tags = self._player.emit("get-audio-tags", i)
-            if tags:
-                _, cod = tags.get_string("audio-codec")
-                audio_codec = cod or audio_codec
-                log(f"Audio codec: {audio_codec}")
-
-        return {"Codec": video_codec, "Audio": audio_codec}
+        return {"Video": video_codec, "Audio": audio_codec}
 
 
 if __name__ == "__main__":
