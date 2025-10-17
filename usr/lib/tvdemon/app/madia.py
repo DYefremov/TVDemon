@@ -99,7 +99,7 @@ class Player(GObject.GObject):
 
 
 class GstPlayer(Player):
-    """ Simple wrapper for GStreamer playbin. """
+    """ Simple wrapper for GStreamer playbin3. """
 
     __INSTANCE = None
 
@@ -123,7 +123,6 @@ class GstPlayer(Player):
             self.STAT_RETURN = Gst.StateChangeReturn
             self.EVENT = Gst.Event
             self.P_TYPE = Gst.PadProbeType
-            self.STREAM_TYPE = Gst.StreamType
             # -> gst-plugin-gtk4
             if Gst.ElementFactory.make("gtk4paintablesink"):
                 self._player = Gst.ElementFactory.make("playbin3", "player")
@@ -151,8 +150,6 @@ class GstPlayer(Player):
             bus.connect("message::eos", self.on_eos)
             bus.connect("message::streams-selected", self.on_streams_selection)
             bus.connect("message::tag", self.on_tag)
-
-            self._current_tags = None
 
     @classmethod
     def get_instance(cls, widget):
