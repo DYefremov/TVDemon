@@ -26,6 +26,7 @@ import gettext
 import os
 import shutil
 import sys
+from collections import deque
 from datetime import datetime
 from itertools import chain
 
@@ -126,6 +127,7 @@ class AppWindow(Adw.ApplicationWindow):
         self.search_running = False
         self.current_page = Page.START
         self.ia = None  # IMDb
+        self._history = deque(maxlen=10)
 
         self._is_tv_mode = True
         self.TV_PAGES = {Page.MOVIES, Page.SERIES, Page.SEARCH, Page.OVERVIEW}
@@ -281,6 +283,8 @@ class AppWindow(Adw.ApplicationWindow):
         if not refresh and page is Page.START:
             self.status(translate("Loading favorites..."))
             self.favorites.set_groups(self.manager.load_favorites())
+            self.status(translate("Loading hystory..."))
+            self._history.extendleft(self.manager.load_history())
             # Preload channel logos for providers.
             [self.update_provider_logo_cache(p) for p in self.providers]
             # Restore default cursor.
@@ -801,6 +805,7 @@ class AppWindow(Adw.ApplicationWindow):
             self.media_bar.set_title(channel.name)
             self.media_bar.set_subtitle(channel.url)
             self.playback_label.set_text(channel.name)
+            self._history.appendleft(channel)
             GLib.timeout_add(200, self.player.play, channel.url)
 
     @Gtk.Template.Callback()
@@ -1140,6 +1145,7 @@ class AppWindow(Adw.ApplicationWindow):
     def on_close_window(self, window):
         self.settings.set_value("main-window-size", self.get_default_size())
         self.manager.save_favorites(self.favorites.get_groups())
+        self.manager.save_history([c for c in self._history])
         return False
 
 

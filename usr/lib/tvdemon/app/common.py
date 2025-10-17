@@ -88,6 +88,7 @@ LOCALE_DIR = f"{BASE_PATH}locale"
 CACHE_PATH = GLib.get_user_cache_dir()
 PROVIDERS_PATH = os.path.join(os.path.normpath(CACHE_PATH), APP, "providers")
 FAVORITES_PATH = os.path.join(CACHE_PATH, APP, "favorites")
+HISTORY_PATH = os.path.join(CACHE_PATH, APP, "history")
 EPG_PATH = os.path.join(CACHE_PATH, APP, "epg")
 
 if not os.path.exists(UI_PATH):
@@ -484,6 +485,23 @@ class Manager:
             Path(FAVORITES_PATH).write_text(json.dumps(groups, default=vars))
         except Exception as e:
             self.debug(f"Storing favorites error: {e}")
+
+
+    def load_history(self):
+        """ Loads channel viewing history. """
+        path = Path(HISTORY_PATH)
+        try:
+            history = json.loads(path.read_text()) if path.is_file() else []
+            return [Channel.from_dict(c) for c in history]
+        except Exception as e:
+            self.debug(f"Restoring history error: {e}")
+
+    def save_history(self, channels):
+        """ Saves channel viewing history. """
+        try:
+            Path(HISTORY_PATH).write_text(json.dumps(channels, default=vars))
+        except Exception as e:
+            self.debug(f"Storing history error: {e}")
 
 
 if __name__ == '__main__':
