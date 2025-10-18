@@ -26,7 +26,6 @@ import gettext
 import os
 import shutil
 import sys
-from collections import deque
 from datetime import datetime
 from itertools import chain
 
@@ -91,6 +90,8 @@ class AppWindow(Adw.ApplicationWindow):
     fav_button_content = Gtk.Template.Child()
     add_fav_button = Gtk.Template.Child()
     favorites = Gtk.Template.Child("favorites_page")
+    # History.
+    history = Gtk.Template.Child("history_widget")
     # Search.
     search_entry = Gtk.Template.Child()
     search_stack = Gtk.Template.Child()
@@ -127,7 +128,6 @@ class AppWindow(Adw.ApplicationWindow):
         self.search_running = False
         self.current_page = Page.START
         self.ia = None  # IMDb
-        self._history = deque(maxlen=10)
 
         self._is_tv_mode = True
         self.TV_PAGES = {Page.MOVIES, Page.SERIES, Page.SEARCH, Page.OVERVIEW}
@@ -147,6 +147,7 @@ class AppWindow(Adw.ApplicationWindow):
         self.tv_button.connect("clicked", self.show_groups, TV_GROUP)
         self.movies_button.connect("clicked", self.show_groups, MOVIES_GROUP)
         self.series_button.connect("clicked", self.show_groups, SERIES_GROUP)
+        self.start_page.connect("showing", self.on_start_page_showing)
         # Channels.
         self.bind_property("is_tv_mode", self.channels_box, "visible")
         # Channels DnD.
@@ -284,7 +285,8 @@ class AppWindow(Adw.ApplicationWindow):
             self.status(translate("Loading favorites..."))
             self.favorites.set_groups(self.manager.load_favorites())
             self.status(translate("Loading hystory..."))
-            self._history.extendleft(self.manager.load_history())
+            self.history.set_channels(self.manager.load_history())
+            self.history.update_channels()
             # Preload channel logos for providers.
             [self.update_provider_logo_cache(p) for p in self.providers]
             # Restore default cursor.
@@ -392,6 +394,9 @@ class AppWindow(Adw.ApplicationWindow):
                 self.movies_button.set_sensitive(len(provider.movies) > 0)
                 self.series_button.set_sensitive(len(provider.series) > 0)
                 self.active_provider_info.set_title(provider.name)
+
+    def on_start_page_showing(self, page: Adw.NavigationPage):
+        self.history.update_channels()
 
     def get_badge_pixbuf(self, name) -> GdkPixbuf.Pixbuf:
         """ Returns group badge. """
@@ -805,7 +810,6 @@ class AppWindow(Adw.ApplicationWindow):
             self.media_bar.set_title(channel.name)
             self.media_bar.set_subtitle(channel.url)
             self.playback_label.set_text(channel.name)
-            self._history.appendleft(channel)
             GLib.timeout_add(200, self.player.play, channel.url)
 
     @Gtk.Template.Callback()
@@ -843,6 +847,7 @@ class AppWindow(Adw.ApplicationWindow):
 
     def on_played(self, player: Player, status: int):
         self.playback_stack.set_visible_child_name(PLaybackPage.PLAYBACK)
+        self.history.append_channel(self.active_channel)
         if self.ia:
             if self.content_type == MOVIES_GROUP:
                 self.get_imdb_details(self.active_channel)
@@ -1145,7 +1150,7 @@ class AppWindow(Adw.ApplicationWindow):
     def on_close_window(self, window):
         self.settings.set_value("main-window-size", self.get_default_size())
         self.manager.save_favorites(self.favorites.get_groups())
-        self.manager.save_history([c for c in self._history])
+        self.manager.save_history(self.history.get_channels())
         return False
 
 

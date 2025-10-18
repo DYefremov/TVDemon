@@ -26,6 +26,7 @@ __all__ = ("Page", "PLaybackPage", "SearchPage", "ProviderType", "ProviderWidget
            "FavoritesPage", "QuestionDialog", "ShortcutsWindow")
 
 import re
+from collections import deque
 from datetime import datetime
 from enum import StrEnum, IntEnum
 from html import escape
@@ -364,11 +365,11 @@ class FlowChannelWidget(Gtk.FlowBoxChild):
         self.remove_button.set_visible(show_buttons)
 
     @Gtk.Template.Callback()
-    def on_remove(self, button):
+    def on_remove(self, button=None):
         self.get_parent().remove(self)
 
     @Gtk.Template.Callback()
-    def on_playback(self, button):
+    def on_playback(self, button=None):
         self.get_root().on_flow_channel_activated(self)
 
     @staticmethod
@@ -604,6 +605,50 @@ class FavoritesPage(Adw.NavigationPage):
     def is_favorite(self, channel: Channel):
         return channel.url in self.urls
 
+
+# ******************** History ******************** #
+
+@Gtk.Template(filename=f"{UI_PATH}history.ui")
+class HistoryWidget(Adw.PreferencesGroup):
+    """ History widget class.
+
+        Displays channel viewing history.
+    """
+    __gtype_name__ = "HistoryWidget"
+
+    channels_box = Gtk.Template.Child()
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        self._history = deque(maxlen=10)
+        self.channels_box.connect("child-activated", self.on_child_activated)
+
+    def on_child_activated(self, box: Gtk.FlowBox, child: FlowChannelWidget):
+        child.on_playback()
+
+    def append_channel(self, channel: Channel):
+        if channel not in self._history:
+            self._history.appendleft(channel)
+
+    def get_channels(self) -> list:
+        return [c for c in self._history]
+
+    def set_channels(self, channels: list):
+        self._history.extendleft(channels)
+
+    def update_channels(self):
+        self.set_visible(len(self._history))
+        self.refresh()
+
+    @idle_function
+    def refresh(self):
+        self.channels_box.remove_all()
+        for c in self._history:
+            self.channels_box.append(FlowChannelWidget(c))
+
+
+# ********************* EPG ******************** #
 
 @Gtk.Template(filename=f"{UI_PATH}epg.ui")
 class EpgPage(Adw.NavigationPage):

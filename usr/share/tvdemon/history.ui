@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2025 Dmitriy Yefremov <https://github.com/DYefremov>
+
+This file is part of TVDemon.
+
+TVDemon is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+TVDemon is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with TVDemon.  If not, see <http://www.gnu.org/licenses/>.
+
+Author: Dmitriy Yefremov 2025
+
+-->
+<interface>
+  <!-- interface-name history.ui -->
+  <requires lib="gtk" version="4.12"/>
+  <requires lib="libadwaita" version="1.5"/>
+  <template class="HistoryWidget" parent="AdwPreferencesGroup">
+    <property name="visible">False</property>
+    <property name="title" translatable="yes">History</property>
+    <property name="margin-start">24</property>
+    <property name="margin-end">24</property>
+    <property name="margin-top">6</property>
+    <child>
+      <object class="GtkScrolledWindow">
+        <property name="vexpand">True</property>
+        <child>
+          <object class="GtkFlowBox" id="channels_box">
+            <property name="min-children-per-line">5</property>
+            <property name="max-children-per-line">5</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="valign">start</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>
