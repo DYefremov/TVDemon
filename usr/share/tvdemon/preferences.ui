@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright (C) 2024 Dmitriy Yefremov <https://github.com/DYefremov>
+Copyright (C) 2024-2025 Dmitriy Yefremov <https://github.com/DYefremov>
 
 This file is part of TVDemon.
 
@@ -95,7 +95,9 @@ Author: Dmitriy Yefremov 2024
     <!--  Recordings -->
     <child>
       <object class="AdwPreferencesGroup">
+        <property name="sensitive">False</property>
         <property name="title">Recordings</property>
+        <property name="tooltip-text" translatable="yes">Not implemented yet!</property>
         <child>
           <object class="AdwActionRow" id="recordings_path_row">
             <property name="title" translatable="yes">Recordings path</property>
