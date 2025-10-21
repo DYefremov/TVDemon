@@ -622,8 +622,18 @@ class HistoryWidget(Adw.PreferencesGroup):
         super().__init__(**kwargs)
 
         self._history = deque(maxlen=10)
-        self.channels_box.connect("child-activated", self.on_child_activated)
 
+    @Gtk.Template.Callback()
+    def on_play_all(self, button):
+        pass
+
+    @Gtk.Template.Callback()
+    def on_clear(self, button):
+        self._history.clear()
+        self.channels_box.remove_all()
+        self.set_visible(False)
+
+    @Gtk.Template.Callback()
     def on_child_activated(self, box: Gtk.FlowBox, child: FlowChannelWidget):
         child.on_playback()
 
@@ -639,13 +649,15 @@ class HistoryWidget(Adw.PreferencesGroup):
 
     def update_channels(self):
         self.set_visible(len(self._history))
-        self.refresh()
+        gen = self.refresh()
+        GLib.idle_add(lambda: next(gen, False), priority=GLib.PRIORITY_LOW)
 
-    @idle_function
     def refresh(self):
         self.channels_box.remove_all()
+        yield True
         for c in self._history:
-            self.channels_box.append(FlowChannelWidget(c))
+            self.channels_box.append(FlowChannelWidget.get_widget(c))
+            yield True
 
 
 # ********************* EPG ******************** #

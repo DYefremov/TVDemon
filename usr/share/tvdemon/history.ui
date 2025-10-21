@@ -26,20 +26,50 @@ Author: Dmitriy Yefremov 2025
   <requires lib="libadwaita" version="1.5"/>
   <template class="HistoryWidget" parent="AdwPreferencesGroup">
     <property name="visible">False</property>
-    <property name="title" translatable="yes">History</property>
+    <property name="description">Viewing history</property>
     <property name="margin-start">24</property>
     <property name="margin-end">24</property>
-    <property name="margin-top">6</property>
+    <property name="margin-top">12</property>
     <child>
-      <object class="GtkScrolledWindow">
-        <property name="vexpand">True</property>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <property name="spacing">6</property>
         <child>
-          <object class="GtkFlowBox" id="channels_box">
-            <property name="min-children-per-line">5</property>
-            <property name="max-children-per-line">5</property>
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="valign">start</property>
+          <object class="GtkBox">
+            <property name="spacing">6</property>
+            <property name="margin-start">6</property>
+            <child>
+              <object class="GtkButton">
+                <property name="sensitive">False</property>
+                <property name="has-frame">False</property>
+                <property name="icon-name">edit-select-all-symbolic</property>
+                <property name="tooltip-text" translatable="yes">Play All</property>
+                <signal name="clicked" handler="on_play_all"/>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="has-frame">False</property>
+                <property name="icon-name">user-trash-symbolic</property>
+                <property name="tooltip-text" translatable="yes">Clear</property>
+                <signal name="clicked" handler="on_clear"/>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkScrolledWindow">
+            <property name="vexpand">True</property>
+            <child>
+              <object class="GtkFlowBox" id="channels_box">
+                <property name="min-children-per-line">5</property>
+                <property name="max-children-per-line">5</property>
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="valign">start</property>
+                <signal name="child-activated" handler="on_child_activated"/>
+              </object>
+            </child>
           </object>
         </child>
       </object>
