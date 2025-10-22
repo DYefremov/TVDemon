@@ -625,7 +625,10 @@ class HistoryWidget(Adw.PreferencesGroup):
 
     @Gtk.Template.Callback()
     def on_play_all(self, button):
-        pass
+        app = self.get_root()
+        app.show_channels(self._history)
+        list_box = app.channels_list_box
+        list_box.select_row(list_box.get_row_at_index(0))
 
     @Gtk.Template.Callback()
     def on_clear(self, button):
@@ -645,7 +648,8 @@ class HistoryWidget(Adw.PreferencesGroup):
         return [c for c in self._history]
 
     def set_channels(self, channels: list):
-        self._history.extendleft(channels)
+        if channels:
+            self._history.extendleft(channels)
 
     def update_channels(self):
         self.set_visible(len(self._history))
