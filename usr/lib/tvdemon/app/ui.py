@@ -210,6 +210,7 @@ class PreferencesPage(Adw.PreferencesPage):
 
     reload_interval_spin = Gtk.Template.Child()
     dark_mode_switch = Gtk.Template.Child()
+    enable_history_switch = Gtk.Template.Child()
     media_lib_row = Gtk.Template.Child()
     recordings_path_row = Gtk.Template.Child()
     useragent_entry = Gtk.Template.Child()
@@ -236,7 +237,15 @@ class PreferencesPage(Adw.PreferencesPage):
 
     @dark_mode.setter
     def dark_mode(self, value: bool):
-        return self.dark_mode_switch.set_active(value)
+        self.dark_mode_switch.set_active(value)
+
+    @property
+    def enable_history(self) -> bool:
+        return self.enable_history_switch.get_active()
+
+    @enable_history.setter
+    def enable_history(self, value: bool):
+        self.enable_history_switch.set_active(value)
 
     @property
     def useragent(self):

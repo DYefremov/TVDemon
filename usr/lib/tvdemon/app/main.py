@@ -1007,6 +1007,7 @@ class AppWindow(Adw.ApplicationWindow):
     def on_preferences_showing(self, page: Adw.NavigationPage):
         self.preferences_page.reload_interval = self.settings.get_value("reload-interval")
         self.preferences_page.dark_mode = self.settings.get_value("dark-mode")
+        self.preferences_page.enable_history = self.settings.get_value("enable-history")
         self.preferences_page.useragent = self.settings.get_string("user-agent")
         self.preferences_page.referer = self.settings.get_string("http-referer")
         self.preferences_page.recordings_path = self.settings.get_string("recordings-path")
@@ -1018,6 +1019,7 @@ class AppWindow(Adw.ApplicationWindow):
             if resp:
                 self.settings.set_value("reload-interval", self.preferences_page.reload_interval)
                 self.settings.set_value("dark-mode", self.preferences_page.dark_mode)
+                self.settings.set_value("enable-history", self.preferences_page.enable_history)
                 self.settings.set_string("user-agent", self.preferences_page.useragent)
                 self.settings.set_string("http-referer", self.preferences_page.referer)
                 self.settings.set_string("recordings-path", self.preferences_page.recordings_path)

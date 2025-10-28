@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 
-# Copyright (C) 2022-2024 Dmitriy Yefremov <https://github.com/DYefremov>
+# Copyright (C) 2022-2025 Dmitriy Yefremov <https://github.com/DYefremov>
 #
 #
 # This file is part of TVDemon.
@@ -39,6 +39,7 @@ class Defaults(dict):
         self["main-window-size"] = (700, 500)
         self["reload-interval"] = 3600  # 1 Hour
         self["dark-mode"] = False  # 1 Hour
+        self["enable-history"] = True
 
 
 class Settings(dict):

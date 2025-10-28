@@ -44,15 +44,18 @@ Author: Dmitriy Yefremov 2024
                 <property name="step-increment">1</property>
               </object>
             </property>
-
           </object>
         </child>
         <child>
           <object class="AdwSwitchRow" id="dark_mode_switch">
             <property name="title" translatable="yes">Prefer dark mode</property>
-            <property name="tooltip-text" translatable="yes">This option only works when used with light desktop themes
-              which support dark mode.
-            </property>
+            <property name="subtitle" translatable="yes">Works when used with light desktop themes that support dark mode.</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwSwitchRow" id="enable_history_switch">
+            <property name="title" translatable="yes">Channel viewing history</property>
+            <property name="subtitle">Display channel viewing history on the start page.</property>
           </object>
         </child>
       </object>
@@ -95,7 +98,7 @@ Author: Dmitriy Yefremov 2024
     <!--  Recordings -->
     <child>
       <object class="AdwPreferencesGroup">
-        <property name="sensitive">False</property>
+        <property name="visible">False</property>
         <property name="title">Recordings</property>
         <property name="tooltip-text" translatable="yes">Not implemented yet!</property>
         <child>
