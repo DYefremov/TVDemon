@@ -140,6 +140,8 @@ class AppWindow(Adw.ApplicationWindow):
         self._mouse_pos = (0, 0)
         # Used for redownloading timer
         self.reload_timeout_sec = self.settings.get_value("reload-interval")
+        # History.
+        self.history.is_active = self.settings.get_value("enable-history")
         # Start page.
         self.tv_logo.set_from_file(f"{UI_PATH}pictures/tv.svg")
         self.movies_logo.set_from_file(f"{UI_PATH}pictures/movies.svg")
@@ -285,8 +287,9 @@ class AppWindow(Adw.ApplicationWindow):
             self.status(translate("Loading favorites..."))
             self.favorites.set_groups(self.manager.load_favorites())
             self.status(translate("Loading hystory..."))
-            self.history.set_channels(self.manager.load_history())
-            self.history.update_channels()
+            if self.history.is_active:
+                self.history.set_channels(self.manager.load_history())
+                self.history.update_channels()
             # Preload channel logos for providers.
             [self.update_provider_logo_cache(p) for p in self.providers]
             # Restore default cursor.
@@ -847,7 +850,8 @@ class AppWindow(Adw.ApplicationWindow):
 
     def on_played(self, player: Player, status: int):
         self.playback_stack.set_visible_child_name(PLaybackPage.PLAYBACK)
-        self.history.append_channel(self.active_channel)
+        if self.history.is_active:
+            self.history.append_channel(self.active_channel)
         if self.ia:
             if self.content_type == MOVIES_GROUP:
                 self.get_imdb_details(self.active_channel)
@@ -1017,9 +1021,10 @@ class AppWindow(Adw.ApplicationWindow):
     def on_preferences_save(self, button):
         def clb(resp):
             if resp:
+                self.history.is_active = self.preferences_page.enable_history
+                self.settings.set_value("enable-history", self.preferences_page.enable_history)
                 self.settings.set_value("reload-interval", self.preferences_page.reload_interval)
                 self.settings.set_value("dark-mode", self.preferences_page.dark_mode)
-                self.settings.set_value("enable-history", self.preferences_page.enable_history)
                 self.settings.set_string("user-agent", self.preferences_page.useragent)
                 self.settings.set_string("http-referer", self.preferences_page.referer)
                 self.settings.set_string("recordings-path", self.preferences_page.recordings_path)
@@ -1152,7 +1157,8 @@ class AppWindow(Adw.ApplicationWindow):
     def on_close_window(self, window):
         self.settings.set_value("main-window-size", self.get_default_size())
         self.manager.save_favorites(self.favorites.get_groups())
-        self.manager.save_history(self.history.get_channels())
+        if self.history.is_active:
+            self.manager.save_history(self.history.get_channels())
         return False
 
 

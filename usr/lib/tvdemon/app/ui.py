@@ -631,16 +631,28 @@ class HistoryWidget(Adw.PreferencesGroup):
         super().__init__(**kwargs)
 
         self._history = deque(maxlen=10)
+        self._active = True
+
+        self.bind_property("is_active", self, "visible")
+
+    @GObject.Property(type=bool, default=True)
+    def is_active(self) -> bool:
+        return self._active
+
+    @is_active.setter
+    def is_active(self, value: bool):
+        self._active = value
+        self.on_clear()
 
     @Gtk.Template.Callback()
-    def on_play_all(self, button):
+    def on_play_all(self, button=None):
         app = self.get_root()
         app.show_channels(self._history)
         list_box = app.channels_list_box
         list_box.select_row(list_box.get_row_at_index(0))
 
     @Gtk.Template.Callback()
-    def on_clear(self, button):
+    def on_clear(self, button=None):
         self._history.clear()
         self.channels_box.remove_all()
         self.set_visible(False)
