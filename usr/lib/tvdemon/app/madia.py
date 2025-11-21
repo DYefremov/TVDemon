@@ -251,10 +251,10 @@ class GstPlayer(Player):
     def on_error(self, bus, msg):
         err, dbg = msg.parse_error()
         log(err)
-        if msg.src == self._player:
-            self.emit("error", f"Can't Playback!")
-        elif msg.src == self._rec_sink:
+        if msg.src == self._rec_sink:
             self.record_stop()
+        else:
+            self.emit("error", f"Can't Playback!")
 
     def on_state_changed(self, bus, msg):
         if not msg.src == self._player:
