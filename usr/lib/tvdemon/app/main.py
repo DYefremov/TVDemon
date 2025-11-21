@@ -1234,8 +1234,9 @@ class Application(Adw.Application):
         Gtk.Application.do_shutdown(self)
 
     def init_actions(self):
-        self.set_action("preferences", self.on_preferences)
         self.set_action("about", self.on_about_app)
+        self.set_action("logs", self.on_logs)
+        self.set_action("preferences", self.on_preferences)
         self.set_action("quit", self.on_close_app)
 
     def set_action(self, name, fun, enabled=True):
@@ -1245,6 +1246,9 @@ class Application(Adw.Application):
         self.add_action(ac)
 
         return ac
+
+    def on_logs(self, action, value):
+        self.window.navigate_to(Page.LOGS)
 
     def on_preferences(self, action, value):
         self.window.navigate_to(Page.PREFERENCES)

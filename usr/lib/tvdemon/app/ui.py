@@ -25,6 +25,7 @@ __all__ = ("Page", "PLaybackPage", "SearchPage", "ProviderType", "ProviderWidget
            "ChannelWidget", "GroupWidget", "FlowChannelWidget", "FavoritesGroupWidget", "PreferencesPage",
            "FavoritesPage", "QuestionDialog", "ShortcutsWindow")
 
+import logging
 import re
 from collections import deque
 from datetime import datetime
@@ -32,7 +33,7 @@ from enum import StrEnum, IntEnum
 from html import escape
 
 from .common import (UI_PATH, Adw, Gtk, Gdk, GObject, GLib, idle_function, translate, select_path, Group,
-                     get_pixbuf_from_file, Channel)
+                     get_pixbuf_from_file, Channel, LOG_DATE_FORMAT, LOG_FORMAT, LOGGER_NAME)
 from .epg import EpgEvent, EPG_START_FMT, EPG_END_FMT
 
 
@@ -46,6 +47,7 @@ class Page(StrEnum):
     TV = "tv-page"
     OVERVIEW = "overview-page"
     EPG = "epg-page"
+    LOGS = "logs-page"
     MOVIES = "movies-page"
     SERIES = "series-page"
     PROVIDERS = "providers-page"
@@ -748,6 +750,41 @@ class EpgPage(Adw.NavigationPage):
         row.set_subtitle_lines(1)
         row.set_tooltip_text(desc)
         return row
+
+
+# ********************* Logs ******************** #
+
+@Gtk.Template(filename=f"{UI_PATH}logs.ui")
+class LogsPage(Adw.NavigationPage):
+    """ Logs page class. """
+    __gtype_name__ = "LogsPage"
+
+    logs_view = Gtk.Template.Child()
+
+    class LogHandler(logging.Handler):
+        def __init__(self, view):
+            logging.Handler.__init__(self)
+            self._view = view
+            self.setFormatter(logging.Formatter(fmt=LOG_FORMAT, datefmt=LOG_DATE_FORMAT))
+
+        def handle(self, rec: logging.LogRecord):
+            self.append(f"{self.format(rec)}\n")
+
+        @idle_function
+        def append(self, msg):
+            buf = self._view.get_buffer()
+            buf.insert_at_cursor(msg)
+            insert = buf.get_insert()
+            self._view.scroll_to_mark(insert, 0.0, True, 0.0, 1.0)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        logger = logging.getLogger(LOGGER_NAME)
+        logger.addHandler(self.LogHandler(self.logs_view))
+
+    @Gtk.Template.Callback()
+    def on_clear(self, button):
+        GLib.idle_add(self.logs_view.get_buffer().set_text, "")
 
 
 if __name__ == "__main__":

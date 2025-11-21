@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2025 Dmitriy Yefremov <https://github.com/DYefremov>
+
+This file is part of TVDemon.
+
+TVDemon is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+TVDemon is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with TVDemon.  If not, see <http://www.gnu.org/licenses/>.
+
+Author: Dmitriy Yefremov 2025
+
+-->
+<interface>
+  <!-- interface-name logs.ui -->
+  <requires lib="gtk" version="4.12"/>
+  <requires lib="libadwaita" version="1.5"/>
+  <template class="LogsPage" parent="AdwNavigationPage">
+    <property name="tag">logs-page</property>
+    <property name="title" translatable="yes">Logs</property>
+    <property name="child">
+      <object class="AdwToolbarView">
+        <child type="top">
+          <object class="AdwHeaderBar">
+            <child type="start">
+              <object class="GtkButton" id="clear_button">
+                <property name="icon-name">user-trash-symbolic</property>
+                <property name="tooltip-text" translatable="yes">Clear</property>
+                <signal name="clicked" handler="on_clear"/>
+              </object>
+            </child>
+          </object>
+        </child>
+        <property name="content">
+          <object class="GtkScrolledWindow">
+            <property name="margin-start">50</property>
+            <property name="margin-end">50</property>
+            <property name="margin-top">50</property>
+            <property name="margin-bottom">50</property>
+            <child>
+              <object class="GtkTextView" id="logs_view">
+                <property name="editable">False</property>
+              </object>
+            </child>
+          </object>
+        </property>
+      </object>
+    </property>
+  </template>
+</interface>

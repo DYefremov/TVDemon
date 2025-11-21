@@ -637,6 +637,10 @@ Author: Dmitriy Yefremov 2024-2025
                     <signal name="showing" handler="on_preferences_showing"/>
                   </object>
                 </child>
+                <!-- Logs page -->
+                <child>
+                  <object class="LogsPage" id="logs_page"/>
+                </child>
               </object>
             </property>
             <child type="bottom">
@@ -736,6 +740,11 @@ Author: Dmitriy Yefremov 2024-2025
       <item>
         <attribute name="label" translatable="yes">_Preferences</attribute>
         <attribute name="action">app.preferences</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Logs</attribute>
+        <attribute name="action">app.logs</attribute>
+        <attribute name="accel">&lt;Primary&gt;L</attribute>
       </item>
       <item>
         <attribute name="label" translatable="yes">_Quit</attribute>
