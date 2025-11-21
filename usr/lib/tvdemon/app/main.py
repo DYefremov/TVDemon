@@ -494,7 +494,6 @@ class AppWindow(Adw.ApplicationWindow):
                 labels.append(provider.name)
 
             p_row.set_subtitle(f"<i>{' '.join(labels)}</i>")
-
             self.providers_list.append(p_row)
 
         self.providers_button.set_sensitive(True)
@@ -867,7 +866,6 @@ class AppWindow(Adw.ApplicationWindow):
     def on_playback_error(self, player: Player, msg: str):
         self.playback_status_page.set_title(translate("Can't Playback!"))
         self.playback_stack.set_visible_child_name(PLaybackPage.STATUS)
-        log(f"Playback error: {msg}")
 
     def on_volume_changed(self, player: Player, volume: float):
         self.player.set_volume(volume)
