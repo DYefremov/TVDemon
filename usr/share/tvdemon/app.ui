@@ -332,8 +332,7 @@ Author: Dmitriy Yefremov 2024-2025
                                 <property name="child">
                                   <object class="AdwButtonContent">
                                     <property name="icon-name">user-bookmarks-symbolic</property>
-                                    <property name="label" bind-source="fav_button_content" bind-property="label">0
-                                    </property>
+                                    <property name="label" bind-source="fav_button_content" bind-property="label">0</property>
                                     <property name="tooltip-text">Go to Favorites</property>
                                   </object>
                                 </property>
