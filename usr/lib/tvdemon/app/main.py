@@ -48,6 +48,7 @@ class AppWindow(Adw.ApplicationWindow):
     tv_logo = Gtk.Template.Child()
     tv_label = Gtk.Template.Child()
     tv_button = Gtk.Template.Child()
+    providers_button = Gtk.Template.Child()
     movies_logo = Gtk.Template.Child()
     movies_label = Gtk.Template.Child()
     movies_button = Gtk.Template.Child()
@@ -264,7 +265,7 @@ class AppWindow(Adw.ApplicationWindow):
 
     @async_function
     def reload(self, page=None, refresh=False, provider=None):
-        self.status(translate("Loading providers..."))
+        self.providers_button.set_sensitive(refresh)
         if provider:
             self.load_provider(provider, refresh)
         else:
@@ -272,10 +273,9 @@ class AppWindow(Adw.ApplicationWindow):
             for provider_info in self.settings.get_strv("providers"):
                 try:
                     provider = Provider(name=None, provider_info=provider_info)
-                    # Add provider to list. This must be done so that it shows up in the
-                    # list of providers for editing.
+                    # Add provider to list.
+                    # This must be done so that it shows up in the list of providers for editing.
                     self.providers.append(provider)
-                    self.load_provider(provider, refresh)
                 except Exception as e:
                     log(e)
                     log("Couldn't parse provider info: ", provider_info)
@@ -286,7 +286,7 @@ class AppWindow(Adw.ApplicationWindow):
         if not refresh and page is Page.START:
             self.status(translate("Loading favorites..."))
             self.favorites.set_groups(self.manager.load_favorites())
-            self.status(translate("Loading hystory..."))
+            self.status(translate("Loading history..."))
             if self.history.is_active:
                 self.history.set_channels(self.manager.load_history())
                 self.history.update_channels()
@@ -295,7 +295,7 @@ class AppWindow(Adw.ApplicationWindow):
             # Restore default cursor.
             GLib.idle_add(self.set_cursor)
 
-        self.refresh_providers_page()
+        self.load_providers(refresh)
 
         if self._epg_timer_id >= 0:
             GLib.source_remove(self._epg_timer_id)
@@ -311,22 +311,26 @@ class AppWindow(Adw.ApplicationWindow):
         self.reload(page=None, refresh=True)
         return False
 
+    @async_function
+    def load_providers(self, refresh=False):
+        self.status(translate("Loading providers..."))
+        [self.load_provider(p, refresh) for p in self.providers]
+        self.refresh_providers_page()
+
     def load_provider(self, provider, refresh=False):
         if provider.type_id != "xtream":
             # Download M3U
-            if refresh:
-                self.status(translate("Downloading playlist..."), provider)
-            else:
-                self.status(translate("Getting playlist..."), provider)
-            ret = self.manager.get_playlist(provider, refresh=refresh)
+            self.status(translate("Downloading playlist..." if refresh else "Getting playlist..."), provider)
             p_name = provider.name
+            if p_name == self.settings.get_string("active-provider"):
+                self.active_provider = provider
+            ret = self.manager.get_playlist(provider, refresh=refresh)
+
             if ret:
                 self.status(translate("Checking playlist..."), provider)
                 if self.manager.check_playlist(provider):
                     self.status(translate("Loading channels..."), provider)
                     self.manager.load_channels(provider)
-                    if p_name == self.settings.get_string("active-provider"):
-                        self.active_provider = provider
                     self.status(None)
                     lc, lg, ls = len(provider.channels), len(provider.groups), len(provider.series)
                     log(f"{p_name}: {lc} channels, {lg} groups, {ls} series, {len(provider.movies)} movies")
@@ -492,6 +496,8 @@ class AppWindow(Adw.ApplicationWindow):
             p_row.set_subtitle(f"<i>{' '.join(labels)}</i>")
 
             self.providers_list.append(p_row)
+
+        self.providers_button.set_sensitive(True)
 
     @Gtk.Template.Callback()
     def on_provider_activated(self, list_box: Gtk.ListBox, widget: ProviderWidget):

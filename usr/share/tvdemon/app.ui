@@ -82,7 +82,7 @@ Author: Dmitriy Yefremov 2024-2025
                                   <object class="GtkBox">
                                     <property name="spacing">6</property>
                                     <child>
-                                      <object class="GtkButton">
+                                      <object class="GtkButton" id="fav_button">
                                         <property name="child">
                                           <object class="AdwButtonContent" id="fav_button_content">
                                             <property name="icon-name">user-bookmarks-symbolic</property>
@@ -95,7 +95,7 @@ Author: Dmitriy Yefremov 2024-2025
                                       </object>
                                     </child>
                                     <child>
-                                      <object class="GtkButton" id="start_menu_button">
+                                      <object class="GtkButton" id="providers_button">
                                         <property name="tooltip-text" translatable="yes">Providers</property>
                                         <property name="action-name">navigation.push</property>
                                         <property name="action-target">'providers-page'</property>
