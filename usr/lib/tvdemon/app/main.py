@@ -26,6 +26,7 @@ import gettext
 import os
 import shutil
 import sys
+import time
 from datetime import datetime
 from itertools import chain
 
@@ -265,23 +266,22 @@ class AppWindow(Adw.ApplicationWindow):
 
     @async_function
     def reload(self, page=None, refresh=False, provider=None):
+        start = time.process_time()
         self.providers_button.set_sensitive(refresh)
-        if provider:
-            self.load_provider(provider, refresh)
-        else:
-            self.providers = []
-            for provider_info in self.settings.get_strv("providers"):
-                try:
-                    provider = Provider(name=None, provider_info=provider_info)
-                    # Add provider to list.
-                    # This must be done so that it shows up in the list of providers for editing.
-                    self.providers.append(provider)
-                except Exception as e:
-                    log(e)
-                    log("Couldn't parse provider info: ", provider_info)
-        # If there are more than 1 providers and no Active Provider, set to the first one
-        if len(self.providers) > 0 and self.active_provider is None:
-            self.active_provider = self.providers[0]
+
+        if self._epg_timer_id >= 0:
+            GLib.source_remove(self._epg_timer_id)
+
+        self.providers = []
+        for provider_info in self.settings.get_strv("providers"):
+            try:
+                provider = Provider(name=None, provider_info=provider_info)
+                # Add provider to list.
+                # This must be done so that it shows up in the list of providers for editing.
+                self.providers.append(provider)
+            except Exception as e:
+                log(e)
+                log("Couldn't parse provider info: ", provider_info)
 
         if not refresh and page is Page.START:
             self.status(translate("Loading favorites..."))
@@ -296,16 +296,8 @@ class AppWindow(Adw.ApplicationWindow):
             GLib.idle_add(self.set_cursor)
 
         self.load_providers(refresh)
-
-        if self._epg_timer_id >= 0:
-            GLib.source_remove(self._epg_timer_id)
-
-        if self.active_provider.epg:
-            GLib.timeout_add_seconds(2, self.init_epg)
-
         if page:
             GLib.idle_add(self.navigate_to, page)
-        self.status(None)
 
     def force_reload(self):
         self.reload(page=None, refresh=True)
@@ -315,6 +307,14 @@ class AppWindow(Adw.ApplicationWindow):
     def load_providers(self, refresh=False):
         self.status(translate("Loading providers..."))
         [self.load_provider(p, refresh) for p in self.providers]
+
+        # If there are more than 1 providers and no Active Provider, set to the first one
+        if len(self.providers) > 0 and self.active_provider is None:
+            self.active_provider = self.providers[0]
+
+        if self.active_provider.epg:
+            GLib.timeout_add_seconds(2, self.init_epg)
+
         self.refresh_providers_page()
 
     def load_provider(self, provider, refresh=False):
@@ -357,6 +357,11 @@ class AppWindow(Adw.ApplicationWindow):
                 self.status(None)
             else:
                 log("XTREAM Authentication Failed")
+
+    @async_function
+    def reload_provider(self, provider, provider_type):
+        self.load_provider(provider, refresh=provider_type is not ProviderType.LOCAL)
+        self.refresh_providers_page()
 
     @async_function
     def update_provider_logo_cache(self, p: Provider):
@@ -504,7 +509,6 @@ class AppWindow(Adw.ApplicationWindow):
         self.active_provider_info.set_title(provider.name)
         self.active_provider = provider
         self.settings.set_string("active-provider", provider.name)
-        self.reload()
         self.navigate_to(Page.START)
 
     @Gtk.Template.Callback()
@@ -564,6 +568,12 @@ class AppWindow(Adw.ApplicationWindow):
         if add_action:
             log("Adding provider...")
             self.providers.append(provider)
+            p_row = ProviderWidget(self, provider)
+            p_row.set_sensitive(False)
+            p_row.set_title(f"<b>{provider.name}</b>")
+            p_row.set_icon_name("tv-symbolic")
+            p_row.set_subtitle(f"<i>{translate('Loading playlist...')}</i>")
+            self.providers_list.append(p_row)
         else:
             log(f"Updating provider settings...")
             if self.marked_provider in self.providers:
@@ -571,7 +581,7 @@ class AppWindow(Adw.ApplicationWindow):
             self.marked_provider.set_info(info)
 
         self.settings.set_strv("providers", [provider.get_info() for provider in self.providers])
-        self.reload(refresh=provider_type is not ProviderType.LOCAL, provider=provider)
+        self.reload_provider(provider, provider_type)
 
     def init_provider_properties(self, provider: Provider):
         self.provider_properties.name_entry_row.set_text(provider.name)
