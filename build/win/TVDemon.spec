@@ -24,6 +24,7 @@ a = Analysis([EXE_NAME],
              runtime_hooks=[],
              hooksconfig={
                 "gi": {
+                    "languages": ["en", "be", "de", "ru"],
                     "module-versions": {
                         "Gtk": "4.0"
                     },
