@@ -1254,8 +1254,8 @@ class Application(Adw.Application):
         self.window.navigate_to(Page.PREFERENCES)
 
     def on_about_app(self, action, value):
-        about = Adw.AboutWindow()
-        about.set_transient_for(self.window)
+        about = Adw.AboutDialog()
+        about.set_presentation_mode(Adw.DialogPresentationMode.FLOATING)
         about.set_application_name("TVDemon")
         about.set_application_icon("tvdemon")
         about.set_version(__version__)
@@ -1267,7 +1267,7 @@ class Application(Adw.Application):
         about.set_support_url("https://github.com/DYefremov/TVDemon")
         about.set_comments(('<b>TVDemon</b> based on <a href="https://github.com/linuxmint/hypnotix">Hypnotix</a>\n\n'
                             'This is an IPTV streaming application with support for live TV, movies and series.'))
-        about.present()
+        about.present(self.window)
 
     def on_close_app(self, action, value):
         self.window.emit("close-request")
