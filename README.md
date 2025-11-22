@@ -1,5 +1,4 @@
-## Project switched to **Gtk4** and [Libadwaita](https://gnome.pages.gitlab.gnome.org/libadwaita/doc/main/index.html).  
-### *Under development...*
+#### Project switched to **Gtk4** and [Libadwaita](https://gnome.pages.gitlab.gnome.org/libadwaita/doc/main/index.html).
 
 # TVDemon
 ### TVDemon based on [Hypnotix](https://github.com/linuxmint/hypnotix).  
@@ -19,11 +18,11 @@ It can support multiple IPTV providers of the following types:
 
 ## Requirements
 - Gtk4 >= 4.12
-- [Libadwaita](https://gnome.pages.gitlab.gnome.org/libadwaita/) >= 1.4
-- Python >= 3.11
-- PyGObject (pygobject3)
-- Requests (python3-request)
-- [GStreamer](https://gstreamer.freedesktop.org/) with Gtk4 plugin (gst-plugin-gtk4).
+- [Libadwaita](https://gnome.pages.gitlab.gnome.org/libadwaita/) >= 1.5
+- Python >= 3.12
+- PyGObject (*pygobject3*)
+- Requests (*python3-request*)
+- [GStreamer](https://gstreamer.freedesktop.org/) with Gtk4 plugin (*gstreamer1.0-gtk4, gst-plugin-gtk4*).
 
 ## Installation and Launch
 * ### Linux
