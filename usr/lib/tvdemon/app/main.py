@@ -1100,6 +1100,8 @@ class AppWindow(Adw.ApplicationWindow):
             self.on_next_channel()
         elif ctrl and keyval in (Gdk.KEY_k, Gdk.KEY_K):
             self.activate_action("win.show-help-overlay")
+        elif ctrl and keyval in (Gdk.KEY_l, Gdk.KEY_L):
+            self.navigate_to(Page.LOGS)
         elif ctrl and keyval in (Gdk.KEY_r, Gdk.KEY_R):
             self.force_reload()
         elif ctrl and keyval in (Gdk.KEY_f, Gdk.KEY_F):
