@@ -26,7 +26,6 @@ import gettext
 import os
 import shutil
 import sys
-import time
 from datetime import datetime
 from itertools import chain
 
@@ -266,7 +265,6 @@ class AppWindow(Adw.ApplicationWindow):
 
     @async_function
     def reload(self, page=None, refresh=False, provider=None):
-        start = time.process_time()
         self.providers_button.set_sensitive(refresh)
 
         if self._epg_timer_id >= 0:
