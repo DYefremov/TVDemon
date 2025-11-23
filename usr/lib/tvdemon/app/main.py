@@ -113,7 +113,7 @@ class AppWindow(Adw.ApplicationWindow):
         GObject.signal_new("show-channel-epg", self, GObject.SignalFlags.RUN_FIRST, GObject.TYPE_PYOBJECT,
                            (GObject.TYPE_PYOBJECT,))
 
-        self.settings = Settings()
+        self.settings = Settings.get_instance()
         self.manager = Manager(self.settings)
         self.providers = []
         self.active_provider = None
@@ -1021,6 +1021,7 @@ class AppWindow(Adw.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_preferences_showing(self, page: Adw.NavigationPage):
+        self.preferences_page.language = self.settings.get_string("language")
         self.preferences_page.reload_interval = self.settings.get_value("reload-interval")
         self.preferences_page.dark_mode = self.settings.get_value("dark-mode")
         self.preferences_page.enable_history = self.settings.get_value("enable-history")
@@ -1035,6 +1036,7 @@ class AppWindow(Adw.ApplicationWindow):
             if resp:
                 self.history.is_active = self.preferences_page.enable_history
                 self.settings.set_value("enable-history", self.preferences_page.enable_history)
+                self.settings.set_string("language", self.preferences_page.language)
                 self.settings.set_value("reload-interval", self.preferences_page.reload_interval)
                 self.settings.set_value("dark-mode", self.preferences_page.dark_mode)
                 self.settings.set_string("user-agent", self.preferences_page.useragent)

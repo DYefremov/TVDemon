@@ -20,7 +20,7 @@ along with TVDemon.  If not, see <http://www.gnu.org/licenses/>.
 Author: Dmitriy Yefremov 2024
 
 -->
-<interface>
+<interface domain="tvdemon">
   <!-- interface-name favorites_group_widget.ui -->
   <requires lib="gtk" version="4.12"/>
   <requires lib="libadwaita" version="1.5"/>

@@ -17,20 +17,29 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with TVDemon.  If not, see <http://www.gnu.org/licenses/>.
 
-Author: Dmitriy Yefremov 2024
+Author: Dmitriy Yefremov 2024-2025
 
 -->
-<interface>
+<interface domain="tvdemon">
   <!-- interface-name preferences.ui -->
   <requires lib="gtk" version="4.12"/>
   <requires lib="libadwaita" version="1.5"/>
   <template class="PreferencesPage" parent="AdwPreferencesPage">
     <property name="width-request">560</property>
     <property name="height-request">420</property>
+    <signal name="realize" handler="on_realize"/>
     <!--  Application -->
     <child>
       <object class="AdwPreferencesGroup">
         <property name="title">Application</property>
+        <child>
+          <object class="AdwComboRow" id="language_row">
+            <property name="title">Language</property>
+            <property name="model">
+              <object class="GtkStringList" id="lang_list"/>
+            </property>
+          </object>
+        </child>
         <child>
           <object class="AdwSpinRow" id="reload_interval_spin">
             <property name="title" translatable="yes">Providers reload interval</property>

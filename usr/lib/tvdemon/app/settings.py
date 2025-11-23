@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import json
 import os
+from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
@@ -42,7 +43,22 @@ class Defaults(dict):
         self["enable-history"] = True
 
 
+class Language(StrEnum):
+    en_US = "English"
+    de_DE = "Deutsch"
+    be_BY = "Беларуская"
+    ru_RU = "Русский"
+
+    @classmethod
+    def _missing_(cls, value):
+        return cls.en_US
+
+    def get_index(self) -> int:
+        return list(Language).index(self)
+
+
 class Settings(dict):
+    __INSTANCE = None
     CONFIG_PATH = f"{Path.home()}{os.sep}.config{os.sep}tvdemon{os.sep}"
     CONFIG_FILE = f"{CONFIG_PATH}config"
 
@@ -57,9 +73,15 @@ class Settings(dict):
             with open(self.CONFIG_FILE, "r") as config_file:
                 self.update(json.load(config_file))
 
+    @classmethod
+    def get_instance(cls):
+        if not cls.__INSTANCE:
+            cls.__INSTANCE = Settings()
+        return cls.__INSTANCE
+
     def save(self):
         with open(self.CONFIG_FILE, "w") as config_file:
-            json.dump(self, config_file)
+            json.dump(self, config_file, indent="    ")
 
     def reset(self, key):
         if key in self._defaults:

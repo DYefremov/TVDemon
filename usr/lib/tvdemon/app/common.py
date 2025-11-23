@@ -38,6 +38,8 @@ from pathlib import Path
 import gi
 import requests
 
+from .settings import Settings, Language
+
 gi.require_version("Gtk", "4.0")
 gi.require_version('Adw', '1')
 from gi.repository import Gtk, Gdk, Adw, GdkPixbuf, Gio, GLib, GObject, Pango
@@ -91,6 +93,9 @@ FAVORITES_PATH = os.path.join(CACHE_PATH, APP, "favorites")
 HISTORY_PATH = os.path.join(CACHE_PATH, APP, "history")
 EPG_PATH = os.path.join(CACHE_PATH, APP, "epg")
 
+lang = Language(Settings.get_instance().get_string("language"))
+os.environ["LANGUAGE"] = lang.name
+
 if not os.path.exists(UI_PATH):
     UI_PATH = f".{UI_PATH}"
     LOCALE_DIR = f".{LOCALE_DIR}"
@@ -120,7 +125,6 @@ SERIES = re.compile(r"(?P<series>.*?) S(?P<season>.\d{1,2}).*E(?P<episode>.\d{1,
 TV_GROUP, MOVIES_GROUP, SERIES_GROUP = range(3)
 
 BADGES = {'musik': "music", 'zeland': "newzealand"}
-
 
 def async_function(func):
     """  Used as a decorator to run things in the background.  """
@@ -485,7 +489,6 @@ class Manager:
             Path(FAVORITES_PATH).write_text(json.dumps(groups, default=vars))
         except Exception as e:
             self.debug(f"Storing favorites error: {e}")
-
 
     def load_history(self):
         """ Loads channel viewing history. """

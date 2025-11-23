@@ -32,6 +32,7 @@ from datetime import datetime
 from enum import StrEnum, IntEnum
 from html import escape
 
+from .settings import Language
 from .common import (UI_PATH, Adw, Gtk, Gdk, GObject, GLib, idle_function, translate, select_path, Group,
                      get_pixbuf_from_file, Channel, LOG_DATE_FORMAT, LOG_FORMAT, LOGGER_NAME)
 from .epg import EpgEvent, EPG_START_FMT, EPG_END_FMT
@@ -210,6 +211,7 @@ class GroupWidget(Gtk.FlowBoxChild):
 class PreferencesPage(Adw.PreferencesPage):
     __gtype_name__ = "PreferencesPage"
 
+    language_row = Gtk.Template.Child()
     reload_interval_spin = Gtk.Template.Child()
     dark_mode_switch = Gtk.Template.Child()
     enable_history_switch = Gtk.Template.Child()
@@ -221,9 +223,22 @@ class PreferencesPage(Adw.PreferencesPage):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+    @Gtk.Template.Callback()
+    def on_realize(self, widget: Adw.PreferencesPage):
+        model = self.language_row.get_model()
+        [model.append(lang) for lang in Language]
+
     @Gtk.Template.Callback("on_recordings_path_activated")
     def on_recordings_path_select(self, row: Adw.ActionRow):
         select_path(self.get_root(), callback=row.set_subtitle)
+
+    @property
+    def language(self) -> str:
+        return self.language_row.get_selected_item().get_string()
+
+    @language.setter
+    def language(self, value: str):
+        self.language_row.set_selected(Language(value).get_index())
 
     @property
     def reload_interval(self) -> int:
