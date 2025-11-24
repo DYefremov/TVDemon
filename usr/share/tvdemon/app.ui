@@ -635,6 +635,7 @@ Author: Dmitriy Yefremov 2024-2025
                       </object>
                     </property>
                     <signal name="showing" handler="on_preferences_showing"/>
+                    <signal name="hiding" handler="on_preferences_hiding"/>
                   </object>
                 </child>
                 <!-- Logs page -->

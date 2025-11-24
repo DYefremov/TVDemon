@@ -34,7 +34,7 @@ import requests
 from .common import *
 from .epg import EpgCache
 from .madia import Player
-from .settings import Settings
+from .settings import Settings, Language
 from .ui import *
 
 
@@ -106,6 +106,8 @@ class AppWindow(Adw.ApplicationWindow):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         # Signals.
+        GObject.signal_new("language-changed", self, GObject.SignalFlags.RUN_FIRST, GObject.TYPE_PYOBJECT,
+                           (GObject.TYPE_PYOBJECT,))
         GObject.signal_new("provider-edit", self, GObject.SignalFlags.RUN_FIRST, GObject.TYPE_PYOBJECT,
                            (GObject.TYPE_PYOBJECT,))
         GObject.signal_new("provider-remove", self, GObject.SignalFlags.RUN_FIRST, GObject.TYPE_PYOBJECT,
@@ -1021,28 +1023,22 @@ class AppWindow(Adw.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_preferences_showing(self, page: Adw.NavigationPage):
-        self.preferences_page.language = self.settings.get_string("language")
-        self.preferences_page.reload_interval = self.settings.get_value("reload-interval")
-        self.preferences_page.dark_mode = self.settings.get_value("dark-mode")
-        self.preferences_page.enable_history = self.settings.get_value("enable-history")
-        self.preferences_page.useragent = self.settings.get_string("user-agent")
-        self.preferences_page.referer = self.settings.get_string("http-referer")
-        self.preferences_page.recordings_path = self.settings.get_string("recordings-path")
-        self.preferences_page.playback_library = self.settings.get_value("playback-library")
+        self.preferences_page.set_settings(self.settings)
+
+    @Gtk.Template.Callback()
+    def on_preferences_hiding(self, page: Adw.NavigationPage):
+        os.environ["LANGUAGE"] = Language(self.settings.get_string("language")).name
 
     @Gtk.Template.Callback()
     def on_preferences_save(self, button):
         def clb(resp):
             if resp:
+                lang = Language(self.settings.get_string("language"))
+                current_lang = Language(self.preferences_page.language)
+                if lang is not current_lang:
+                    self.emit("language-changed", current_lang)
                 self.history.is_active = self.preferences_page.enable_history
-                self.settings.set_value("enable-history", self.preferences_page.enable_history)
-                self.settings.set_string("language", self.preferences_page.language)
-                self.settings.set_value("reload-interval", self.preferences_page.reload_interval)
-                self.settings.set_value("dark-mode", self.preferences_page.dark_mode)
-                self.settings.set_string("user-agent", self.preferences_page.useragent)
-                self.settings.set_string("http-referer", self.preferences_page.referer)
-                self.settings.set_string("recordings-path", self.preferences_page.recordings_path)
-                self.settings.set_value("playback-library", self.preferences_page.playback_library)
+                self.preferences_page.update_settings(self.settings)
                 self.navigation_view.pop()
 
         QuestionDialog(self, clb).present()

@@ -30,7 +30,7 @@ Author: Dmitriy Yefremov 2024-2025
     <signal name="realize" handler="on_realize"/>
     <!--  Application -->
     <child>
-      <object class="AdwPreferencesGroup">
+      <object class="AdwPreferencesGroup" id="application_group">
         <property name="title">Application</property>
         <child>
           <object class="AdwComboRow" id="language_row">
@@ -42,7 +42,7 @@ Author: Dmitriy Yefremov 2024-2025
         </child>
         <child>
           <object class="AdwSpinRow" id="reload_interval_spin">
-            <property name="title" translatable="yes">Providers reload interval</property>
+            <property name="title">Providers reload interval</property>
             <property name="subtitle" translatable="yes">Hours</property>
             <property name="adjustment">
               <object class="GtkAdjustment">
@@ -57,13 +57,13 @@ Author: Dmitriy Yefremov 2024-2025
         </child>
         <child>
           <object class="AdwSwitchRow" id="dark_mode_switch">
-            <property name="title" translatable="yes">Prefer dark mode</property>
-            <property name="subtitle" translatable="yes">Works when used with light desktop themes that support dark mode.</property>
+            <property name="title">Prefer dark mode</property>
+            <property name="subtitle">Works when used with light desktop themes that support dark mode.</property>
           </object>
         </child>
         <child>
           <object class="AdwSwitchRow" id="enable_history_switch">
-            <property name="title" translatable="yes">Channel viewing history</property>
+            <property name="title">Channel viewing history</property>
             <property name="subtitle">Display channel viewing history on the start page.</property>
           </object>
         </child>
@@ -71,7 +71,7 @@ Author: Dmitriy Yefremov 2024-2025
     </child>
     <!--  Network -->
     <child>
-      <object class="AdwPreferencesGroup">
+      <object class="AdwPreferencesGroup" id="network_group">
         <property name="title">Network</property>
         <child>
           <object class="AdwEntryRow" id="useragent_entry">
@@ -87,7 +87,7 @@ Author: Dmitriy Yefremov 2024-2025
     </child>
     <!--  Playback -->
     <child>
-      <object class="AdwPreferencesGroup">
+      <object class="AdwPreferencesGroup" id="playback_group">
         <property name="title">Playback</property>
         <child>
           <object class="AdwComboRow" id="media_lib_row">
@@ -109,14 +109,14 @@ Author: Dmitriy Yefremov 2024-2025
       <object class="AdwPreferencesGroup">
         <property name="visible">False</property>
         <property name="title">Recordings</property>
-        <property name="tooltip-text" translatable="yes">Not implemented yet!</property>
+        <property name="tooltip-text">Not implemented yet!</property>
         <child>
           <object class="AdwActionRow" id="recordings_path_row">
-            <property name="title" translatable="yes">Recordings path</property>
-            <property name="subtitle" translatable="yes">Not specified</property>
+            <property name="title">Recordings path</property>
+            <property name="subtitle">Not specified</property>
             <property name="subtitle_selectable">True</property>
             <property name="activatable">True</property>
-            <property name="tooltip-text" translatable="yes">Browse...</property>
+            <property name="tooltip-text">Browse...</property>
             <signal name="activated" handler="on_recordings_path_activated"/>
             <child>
               <object class="GtkImage">

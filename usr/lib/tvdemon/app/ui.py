@@ -26,13 +26,14 @@ __all__ = ("Page", "PLaybackPage", "SearchPage", "ProviderType", "ProviderWidget
            "FavoritesPage", "QuestionDialog", "ShortcutsWindow")
 
 import logging
+import os
 import re
 from collections import deque
 from datetime import datetime
 from enum import StrEnum, IntEnum
 from html import escape
 
-from .settings import Language
+from .settings import Language, Settings
 from .common import (UI_PATH, Adw, Gtk, Gdk, GObject, GLib, idle_function, translate, select_path, Group,
                      get_pixbuf_from_file, Channel, LOG_DATE_FORMAT, LOG_FORMAT, LOGGER_NAME)
 from .epg import EpgEvent, EPG_START_FMT, EPG_END_FMT
@@ -211,6 +212,9 @@ class GroupWidget(Gtk.FlowBoxChild):
 class PreferencesPage(Adw.PreferencesPage):
     __gtype_name__ = "PreferencesPage"
 
+    application_group = Gtk.Template.Child()
+    network_group = Gtk.Template.Child()
+    playback_group = Gtk.Template.Child()
     language_row = Gtk.Template.Child()
     reload_interval_spin = Gtk.Template.Child()
     dark_mode_switch = Gtk.Template.Child()
@@ -225,8 +229,10 @@ class PreferencesPage(Adw.PreferencesPage):
 
     @Gtk.Template.Callback()
     def on_realize(self, widget: Adw.PreferencesPage):
+        self.retranslate()
         model = self.language_row.get_model()
         [model.append(lang) for lang in Language]
+        self.language_row.connect("notify::selected", self.on_lang_selected)
 
     @Gtk.Template.Callback("on_recordings_path_activated")
     def on_recordings_path_select(self, row: Adw.ActionRow):
@@ -295,6 +301,36 @@ class PreferencesPage(Adw.PreferencesPage):
     @playback_library.setter
     def playback_library(self, value: int):
         self.media_lib_row.set_selected(value)
+
+    def set_settings(self, settings: Settings):
+        self.language = settings.get_string("language")
+        self.reload_interval = settings.get_value("reload-interval")
+        self.dark_mode = settings.get_value("dark-mode")
+        self.enable_history = settings.get_value("enable-history")
+        self.useragent = settings.get_string("user-agent")
+        self.referer = settings.get_string("http-referer")
+        self.recordings_path = settings.get_string("recordings-path")
+        self.playback_library = settings.get_value("playback-library")
+
+    def update_settings(self, settings: Settings):
+        settings.set_string("language", self.language)
+        settings.set_value("enable-history", self.enable_history)
+        settings.set_value("reload-interval", self.reload_interval)
+        settings.set_value("dark-mode", self.dark_mode)
+        settings.set_string("user-agent", self.useragent)
+        settings.set_string("http-referer", self.referer)
+        settings.set_string("recordings-path", self.recordings_path)
+        settings.set_value("playback-library", self.playback_library)
+
+    def on_lang_selected(self, widget: Adw.ComboRow, param: GObject):
+        os.environ["LANGUAGE"] = Language(self.language).name
+        self.retranslate()
+
+    @idle_function
+    def retranslate(self):
+        self.application_group.set_title(translate("Application"))
+        self.network_group.set_title(translate("Network"))
+        self.playback_group.set_title(translate("Playback"))
 
 
 @Gtk.Template(filename=f"{UI_PATH}media_bar.ui")
@@ -648,18 +684,17 @@ class HistoryWidget(Adw.PreferencesGroup):
         super().__init__(**kwargs)
 
         self._history = deque(maxlen=10)
-        self._active = True
+        self._active = False
 
-        self.bind_property("is_active", self, "visible")
-
-    @GObject.Property(type=bool, default=True)
+    @GObject.Property(type=bool, default=False)
     def is_active(self) -> bool:
         return self._active
 
     @is_active.setter
     def is_active(self, value: bool):
         self._active = value
-        self.on_clear()
+        if not value:
+            self.on_clear()
 
     @Gtk.Template.Callback()
     def on_play_all(self, button=None):
@@ -670,9 +705,9 @@ class HistoryWidget(Adw.PreferencesGroup):
 
     @Gtk.Template.Callback()
     def on_clear(self, button=None):
+        self.set_visible(False)
         self._history.clear()
         self.channels_box.remove_all()
-        self.set_visible(False)
 
     @Gtk.Template.Callback()
     def on_child_activated(self, box: Gtk.FlowBox, child: FlowChannelWidget):
