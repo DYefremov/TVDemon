@@ -1,203 +1,115 @@
-# Russian translation for linuxmint
-# Copyright (c) 2020 Rosetta Contributors and Canonical Ltd 2020
-# This file is distributed under the same license as the linuxmint package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+# Russian translation for TVDemon
+# Copyright (C) 2025 Dmitriy Yefremov <https://github.com/DYefremov>
+#
+#
+# This file is part of TVDemon.
+#
+# TVDemon is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# TVDemon is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with TVDemon  If not, see <http://www.gnu.org/licenses/>.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: linuxmint\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2021-11-23 12:21+0000\n"
-"PO-Revision-Date: 2022-01-08 08:49+0000\n"
-"Last-Translator: Dmitriy Kulikov <Unknown>\n"
-"Language-Team: Russian <ru@li.org>\n"
+"Last-Translator: Dmitriy Yefremov <https://github.com/DYefremov>\n"
 "MIME-Version: 1.0\n"
+"Language: ru\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2022-07-24 09:43+0000\n"
-"X-Generator: Launchpad (build 025a39fd866a641b6ae33074cda0d02a2c712d38)\n"
 
-#: usr/lib/tvdemon/app.py:119 usr/lib/tvdemon/app.py:696
-#: usr/lib/tvdemon/app.py:1214 generate_desktop_files:25
-#: usr/share/tvdemon/app.ui.h:1
-msgid "TVDemon"
-msgstr "TVDemon"
-
-#: usr/lib/tvdemon/app.py:238 usr/share/tvdemon/shortcuts.ui.h:6
 msgid "Keyboard Shortcuts"
 msgstr "Сочетания клавиш"
 
-#: usr/lib/tvdemon/app.py:245 usr/share/tvdemon/app.ui.h:35
-#: usr/share/tvdemon/shortcuts.ui.h:3
 msgid "Stream Information"
 msgstr "Информация о потоке"
 
-#: usr/lib/tvdemon/app.py:253 usr/lib/tvdemon/app.py:1213
-#: usr/share/tvdemon/shortcuts.ui.h:2
 msgid "About"
 msgstr "О программе"
 
-#: usr/lib/tvdemon/app.py:258 usr/share/tvdemon/shortcuts.ui.h:8
 msgid "Quit"
 msgstr "Выйти"
 
-#: usr/lib/tvdemon/app.py:271
 msgid "M3U URL"
 msgstr "M3U-ссылка"
 
-#: usr/lib/tvdemon/app.py:272
 msgid "Local M3U File"
 msgstr "Локальный файл M3U"
 
-#: usr/lib/tvdemon/app.py:273
-msgid "Xtream API"
-msgstr "Xtream API"
-
-#: usr/lib/tvdemon/app.py:451
 #, python-format
 msgid "Season %s"
 msgstr "Сезон %s"
 
-#: usr/lib/tvdemon/app.py:461
 #, python-format
 msgid "Episode %s"
 msgstr "Эпизод %s"
 
-#: usr/lib/tvdemon/app.py:601
 msgid "No provider selected"
 msgstr "Поставщик не выбран"
 
-#: usr/lib/tvdemon/app.py:623 usr/lib/tvdemon/app.py:636
 msgid "TV Channels"
 msgstr "ТВ-каналы"
 
-#: usr/lib/tvdemon/app.py:626 usr/lib/tvdemon/app.py:651
 msgid "Movies"
 msgstr "Фильмы"
 
-#: usr/lib/tvdemon/app.py:628 usr/lib/tvdemon/app.py:658
 msgid "Series"
 msgstr "Сериалы"
 
-#: usr/lib/tvdemon/app.py:639
 #, python-format
 msgid "TV Channels > %s"
 msgstr "ТВ-каналы > %s"
 
-#: usr/lib/tvdemon/app.py:654
 #, python-format
 msgid "Movies > %s"
 msgstr "Фильмы > %s"
 
-#: usr/lib/tvdemon/app.py:661
 #, python-format
 msgid "Series > %s"
 msgstr "Сериалы > %s"
 
-#: usr/lib/tvdemon/app.py:669 usr/share/tvdemon/app.ui.h:6
 msgid "Preferences"
 msgstr "Настройки"
 
-#: usr/lib/tvdemon/app.py:673 usr/share/tvdemon/app.ui.h:5
 msgid "Providers"
 msgstr "Поставщики"
 
-#: usr/lib/tvdemon/app.py:678
 #, python-format
 msgid "Edit %s"
 msgstr "Изменить %s"
 
-#: usr/lib/tvdemon/app.py:680
 msgid "Add a new provider"
 msgstr "Добавить поставщика"
 
-#: usr/lib/tvdemon/app.py:684
 #, python-format
 msgid "Delete %s"
 msgstr "Удалить %s"
 
-#: usr/lib/tvdemon/app.py:688
 msgid "Reset providers"
 msgstr "Сбросить поставщиков"
 
-#: usr/lib/tvdemon/app.py:726 usr/lib/tvdemon/app.py:730
-#: usr/lib/tvdemon/app.py:782 usr/lib/tvdemon/app.py:784
-#: usr/lib/tvdemon/app.py:791 usr/lib/tvdemon/app.py:794
-#: usr/lib/tvdemon/app.py:806 usr/lib/tvdemon/app.py:819
-#: usr/lib/tvdemon/app.py:824 usr/lib/tvdemon/app.py:832
-#: usr/lib/tvdemon/app.py:1166 usr/lib/tvdemon/app.py:1168
-#: usr/lib/tvdemon/app.py:1193 usr/lib/tvdemon/app.py:1197
-#: usr/share/tvdemon/app.ui.h:36
 msgid "General"
 msgstr "Общие"
 
-#: usr/lib/tvdemon/app.py:727 usr/lib/tvdemon/app.py:796
-#: usr/lib/tvdemon/app.py:798 usr/lib/tvdemon/app.py:800
-#: usr/lib/tvdemon/app.py:1167 usr/share/tvdemon/app.ui.h:38
-msgid "Color"
-msgstr "Цвет"
-
-#: usr/lib/tvdemon/app.py:731 usr/lib/tvdemon/app.py:816
-#: usr/lib/tvdemon/app.py:826 usr/lib/tvdemon/app.py:1169
-#: usr/share/tvdemon/app.ui.h:40
-msgid "Layout"
-msgstr "Компоновка"
-
-#: usr/lib/tvdemon/app.py:767 usr/lib/tvdemon/app.py:768
-#: usr/lib/tvdemon/app.py:782 usr/lib/tvdemon/app.py:784
-#: usr/lib/tvdemon/app.py:1189 usr/lib/tvdemon/app.py:1190
-#: usr/lib/tvdemon/app.py:1193 usr/lib/tvdemon/app.py:1197
-#: usr/share/tvdemon/app.ui.h:37
-msgid "Average Bitrate"
-msgstr "Средний битрейт"
-
-#: usr/lib/tvdemon/app.py:791
-msgid "Dimensions"
-msgstr "Размеры"
-
-#: usr/lib/tvdemon/app.py:794
-msgid "Aspect"
-msgstr "Соотношение сторон кадра"
-
-#: usr/lib/tvdemon/app.py:796
-msgid "Pixel Format"
-msgstr "Пиксельный формат"
-
-#: usr/lib/tvdemon/app.py:798
-msgid "Gamma"
-msgstr "Гамма"
-
-#: usr/lib/tvdemon/app.py:800
-msgid "Bits Per Pixel"
-msgstr "Бит на пиксель"
-
-#: usr/lib/tvdemon/app.py:806 usr/lib/tvdemon/app.py:832
 msgid "Codec"
 msgstr "Кодек"
-
-#: usr/lib/tvdemon/app.py:815
-msgid "surround sound"
-msgstr "объёмный звук"
 
 #: usr/lib/tvdemon/app.py:816
 msgid "Channels"
 msgstr "Каналы"
 
-#: usr/lib/tvdemon/app.py:819
-msgid "Sample Rate"
-msgstr "Частота дискретизации"
-
-#: usr/lib/tvdemon/app.py:824
-msgid "Format"
-msgstr "Формат"
-
-#: usr/lib/tvdemon/app.py:826
 msgid "Channel Count"
 msgstr "Количество каналов"
 
-#: usr/lib/tvdemon/app.py:920
 #, python-format
 msgid "%d TV channel"
 msgid_plural "%d TV channels"
@@ -205,7 +117,6 @@ msgstr[0] "%d ТВ-канал"
 msgstr[1] "%d ТВ-канала"
 msgstr[2] "%d ТВ-каналов"
 
-#: usr/lib/tvdemon/app.py:925
 #, python-format
 msgid "%d movie"
 msgid_plural "%d movies"
@@ -213,7 +124,6 @@ msgstr[0] "%d фильм"
 msgstr[1] "%d фильма"
 msgstr[2] "%d фильмов"
 
-#: usr/lib/tvdemon/app.py:930
 #, python-format
 msgid "%d series"
 msgid_plural "%d series"
@@ -221,163 +131,126 @@ msgstr[0] "%d сериал"
 msgstr[1] "%d сериала"
 msgstr[2] "%d сериалов"
 
-#: usr/lib/tvdemon/app.py:950
 msgid "Edit"
 msgstr "Изменить"
 
-#: usr/lib/tvdemon/app.py:960
 msgid "Remove"
 msgstr "Удалить"
 
-#: usr/lib/tvdemon/app.py:1053
 msgid "M3U Playlists"
 msgstr "Плейлисты M3U"
 
-#: usr/lib/tvdemon/app.py:1215 generate_desktop_files:25
-#: usr/share/tvdemon/app.ui.h:2
 msgid "Watch TV"
 msgstr "Смотреть ТВ"
 
-#: usr/share/tvdemon/app.ui.h:3 usr/share/tvdemon/shortcuts.ui.h:5
 msgid "Search"
 msgstr "Поиск"
 
-#: usr/share/tvdemon/app.ui.h:4
+msgid "Search..."
+msgstr "Поиск..."
+
 msgid "Fullscreen"
 msgstr "На весь экран"
 
-#: usr/share/tvdemon/app.ui.h:7
-msgid "MPV Options"
-msgstr "Аргументы MPV"
-
-#: usr/share/tvdemon/app.ui.h:8
-msgid "List of MPV options"
-msgstr "Список аргументов MPV"
-
-#: usr/share/tvdemon/app.ui.h:9
 msgid "Playback"
 msgstr "Воспроизведение"
 
-#: usr/share/tvdemon/app.ui.h:10
-msgid "User Agent"
-msgstr "User Agent"
-
-#: usr/share/tvdemon/app.ui.h:11
-msgid "Referrer"
-msgstr "Referrer"
-
-#: usr/share/tvdemon/app.ui.h:12
 msgid "Network"
 msgstr "Сеть"
 
-#: usr/share/tvdemon/app.ui.h:13
-msgid ""
-"This option only works when used with light desktop themes which support "
-"dark mode."
-msgstr ""
-"Эта опция работает только при использовании с легкими темами настольных "
-"компьютеров, которые поддерживают темный режим."
-
-#: usr/share/tvdemon/app.ui.h:14
-msgid "Prefer dark mode"
-msgstr "Предпочитать темный режим"
-
-#: usr/share/tvdemon/app.ui.h:15
 msgid "Add a new provider..."
 msgstr "Добавить поставщика..."
 
-#: usr/share/tvdemon/app.ui.h:16
-msgid "Reset to defaults..."
-msgstr "Сбросить к настройкам по умолчанию..."
+msgid "Reset providers..."
+msgstr "Сброс провайдеров..."
 
-#: usr/share/tvdemon/app.ui.h:17
 msgid "Name:"
 msgstr "Название:"
 
-#: usr/share/tvdemon/app.ui.h:18
 msgid "URL:"
 msgstr "URL адрес:"
 
-#: usr/share/tvdemon/app.ui.h:19
 msgid "Path:"
 msgstr "Расположение:"
 
-#: usr/share/tvdemon/app.ui.h:20
 msgid "Cancel"
 msgstr "Отмена"
 
-#: usr/share/tvdemon/app.ui.h:21
 msgid "OK"
 msgstr "OK"
 
-#: usr/share/tvdemon/app.ui.h:22
 msgid "Username:"
 msgstr "Логин:"
 
-#: usr/share/tvdemon/app.ui.h:23
 msgid "Password:"
 msgstr "Пароль:"
 
-#: usr/share/tvdemon/app.ui.h:24
 msgid "Browse..."
 msgstr "Обзор..."
-
-#: usr/share/tvdemon/app.ui.h:25
-msgid "EPG:"
-msgstr "EPG:"
 
 #: usr/share/tvdemon/app.ui.h:26
 msgid "Type:"
 msgstr "Тип:"
 
-#: usr/share/tvdemon/app.ui.h:27
-msgid "Are you sure you want to delete this provider?"
-msgstr "Вы уверены, что хотите удалить поставщика?"
-
-#: usr/share/tvdemon/app.ui.h:28
 msgid "No"
 msgstr "Нет"
 
-#: usr/share/tvdemon/app.ui.h:29
 msgid "Yes"
 msgstr "Да"
 
-#: usr/share/tvdemon/app.ui.h:30
-msgid "Are you sure you want to reset to the default providers?"
-msgstr "Вы уверены, что хотите сбросить на поставщиков по умолчанию?"
+msgid "Are you sure?"
+msgstr "Вы уверены?"
 
-#: usr/share/tvdemon/app.ui.h:31
 msgid "Currently playing:"
 msgstr "Сейчас играет:"
 
-#: usr/share/tvdemon/app.ui.h:32
 msgid "Show"
 msgstr "Показать"
 
-#: usr/share/tvdemon/app.ui.h:33
 msgid "Pause"
 msgstr "Пауза"
 
-#: usr/share/tvdemon/app.ui.h:34
 msgid "Stop"
 msgstr "Остановить"
 
-#: usr/share/tvdemon/app.ui.h:39
 msgid "Video"
 msgstr "Видео"
 
-#: usr/share/tvdemon/app.ui.h:41
 msgid "Audio"
 msgstr "Звук"
 
-#: usr/share/tvdemon/shortcuts.ui.h:1
 msgid "Main shortcuts"
 msgstr "Основные комбинации"
 
-#: usr/share/tvdemon/shortcuts.ui.h:4
 msgid "Toggle Fullscreen"
 msgstr "Переключить полноэкранный режим"
 
-#: usr/share/tvdemon/shortcuts.ui.h:7
 msgid "Reload all providers"
 msgstr "Перезагрузить всех поставщиков"
+
+msgid "Application"
+msgstr "Приложение"
+
+msgid "Language"
+msgstr "Язык"
+
+msgid "Providers reload interval"
+msgstr "Интервал перезагрузки провайдеров"
+
+msgid "Hours"
+msgstr "Часы"
+
+msgid "Works when used with light desktop themes that support dark mode."
+msgstr "Работает при использовании со светлыми темами рабочего стола, поддерживающими темный режим."
+
+msgid "Prefer dark mode"
+msgstr "Предпочитать темный режим"
+
+msgid "Channel viewing history"
+msgstr "История просмотра каналов"
+
+msgid "Display channel viewing history on the start page."
+msgstr "Отображать историю просмотра каналов на стартовой странице."
+
+msgid "Media library"
+msgstr "Медиа-библиотека"
