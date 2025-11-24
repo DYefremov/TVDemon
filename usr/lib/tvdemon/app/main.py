@@ -48,6 +48,7 @@ class AppWindow(Adw.ApplicationWindow):
     tv_logo = Gtk.Template.Child()
     tv_label = Gtk.Template.Child()
     tv_button = Gtk.Template.Child()
+    search_button = Gtk.Template.Child()
     providers_button = Gtk.Template.Child()
     movies_logo = Gtk.Template.Child()
     movies_label = Gtk.Template.Child()
@@ -78,6 +79,9 @@ class AppWindow(Adw.ApplicationWindow):
     series_page = Gtk.Template.Child()
     series_list = Gtk.Template.Child()
     # Providers page.
+    providers_page = Gtk.Template.Child()
+    add_provider_button = Gtk.Template.Child()
+    reset_providers_button = Gtk.Template.Child()
     providers_list = Gtk.Template.Child()
     provider_properties = Gtk.Template.Child()
     # Status bar.
@@ -99,6 +103,7 @@ class AppWindow(Adw.ApplicationWindow):
     search_status = Gtk.Template.Child()
     search_channels_box = Gtk.Template.Child()
     # Preferences.
+    preferences_button = Gtk.Template.Child()
     preferences_page = Gtk.Template.Child()
     # EPG
     epg_page = Gtk.Template.Child()
@@ -211,6 +216,8 @@ class AppWindow(Adw.ApplicationWindow):
         self._epg_timer_id = -1
         self._epg_cache = None
         self.connect("show-channel-epg", self.on_show_channel_epg)
+        # Translation.
+        self.connect("language-changed", self.on_language_changed)
 
     @GObject.Property(type=bool, default=True)
     def is_tv_mode(self):
@@ -243,6 +250,8 @@ class AppWindow(Adw.ApplicationWindow):
         self.reload(Page.START)
         self.init_playback()
         self.init_imdb()
+        if not IS_LINUX:
+            self.retranslate()
         # Redownload playlists by default.
         GLib.timeout_add_seconds(self.reload_timeout_sec, self.force_reload)
 
@@ -1094,6 +1103,23 @@ class AppWindow(Adw.ApplicationWindow):
     def on_epg_error(self, cache: EpgCache, msg: str):
         GLib.timeout_add_seconds(2, self.status, None)
         self.show_message(msg)
+
+    # ******************* Translation ******************** #
+
+    def on_language_changed(self, window: Adw.ApplicationWindow, lang: Language):
+        self.retranslate()
+
+    @idle_function
+    def retranslate(self):
+        # Search.
+        self.search_button.set_tooltip_text(tr("Search"))
+        self.search_entry.set_placeholder_text(tr("Search..."))
+        self.search_status.set_title(tr("Search in TV, Movies and Series"))
+        # Providers.
+        self.providers_page.set_title(tr("Providers"))
+        self.providers_button.set_tooltip_text(tr("Providers"))
+        self.add_provider_button.set_tooltip_text(tr("Add a new provider..."))
+        self.reset_providers_button.set_tooltip_text(tr("Reset providers"))
 
     # ******************** Additional ******************** #
 
