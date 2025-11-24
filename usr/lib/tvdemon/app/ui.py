@@ -34,7 +34,7 @@ from enum import StrEnum, IntEnum
 from html import escape
 
 from .settings import Language, Settings
-from .common import (UI_PATH, Adw, Gtk, Gdk, GObject, GLib, idle_function, translate, select_path, Group,
+from .common import (UI_PATH, Adw, Gtk, Gdk, GObject, GLib, idle_function, tr, select_path, Group,
                      get_pixbuf_from_file, Channel, LOG_DATE_FORMAT, LOG_FORMAT, LOGGER_NAME)
 from .epg import EpgEvent, EPG_START_FMT, EPG_END_FMT
 
@@ -328,9 +328,17 @@ class PreferencesPage(Adw.PreferencesPage):
 
     @idle_function
     def retranslate(self):
-        self.application_group.set_title(translate("Application"))
-        self.network_group.set_title(translate("Network"))
-        self.playback_group.set_title(translate("Playback"))
+        self.application_group.set_title(tr("Application"))
+        self.language_row.set_title(tr("Language"))
+        self.reload_interval_spin.set_title(tr("Providers reload interval"))
+        self.reload_interval_spin.set_subtitle(tr("Hours"))
+        self.dark_mode_switch.set_title(tr("Prefer dark mode"))
+        self.dark_mode_switch.set_subtitle(tr("Works when used with light desktop themes that support dark mode."))
+        self.enable_history_switch.set_title(tr("Channel viewing history"))
+        self.enable_history_switch.set_subtitle(tr("Display channel viewing history on the start page."))
+        self.network_group.set_title(tr("Network"))
+        self.playback_group.set_title(tr("Playback"))
+        self.media_lib_row.set_title(tr("Media library"))
 
 
 @Gtk.Template(filename=f"{UI_PATH}media_bar.ui")
@@ -405,7 +413,7 @@ class FavoritesGroupWidget(Adw.ActionRow):
         self.update_channels_count()
 
     def update_channels_count(self):
-        self.set_subtitle(f"{translate('Channels')}: {len(self.group.channels)}")
+        self.set_subtitle(f"{tr('Channels')}: {len(self.group.channels)}")
 
 
 @Gtk.Template(filename=f"{UI_PATH}flow_channel_widget.ui")
@@ -439,7 +447,7 @@ class FlowChannelWidget(Gtk.FlowBoxChild):
         path = channel.logo_path
         pixbuf = get_pixbuf_from_file(path) if path else None
         widget = FlowChannelWidget(channel, pixbuf, show_buttons)
-        widget.set_tooltip_text(translate(tooltip)) if tooltip else None
+        widget.set_tooltip_text(tr(tooltip)) if tooltip else None
         return widget
 
 
@@ -564,7 +572,7 @@ class FavoritesPage(Adw.NavigationPage):
 
     def save_channel(self, confirm):
         ch = self.get_new_channel()
-        tooltip = translate("Drag to desired position.")
+        tooltip = tr("Drag to desired position.")
         self.group_channels_box.append(FlowChannelWidget.get_widget(ch, tooltip, True))
         self.add_favorite_channel(self.edit_group, ch)
         self.navigation_view.pop()
@@ -583,7 +591,7 @@ class FavoritesPage(Adw.NavigationPage):
         self.edit_group = group_widget
         group = group_widget.group
         self.group_name_row.set_text(group.name)
-        tooltip = translate("Drag to desired position.")
+        tooltip = tr("Drag to desired position.")
         [self.group_channels_box.append(FlowChannelWidget.get_widget(ch, tooltip, True)) for ch in group.channels]
         self.navigation_view.push_by_tag(self.FavoritePage.PROPERTIES)
 

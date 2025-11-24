@@ -234,7 +234,7 @@ class AppWindow(Adw.ApplicationWindow):
         if size:
             self.set_default_size(*size)
 
-        self.active_provider_info.set_title(translate("Loading..."))
+        self.active_provider_info.set_title(tr("Loading..."))
         GLib.idle_add(self.init, priority=GLib.PRIORITY_LOW)
 
     def init(self):
@@ -284,9 +284,9 @@ class AppWindow(Adw.ApplicationWindow):
                 log("Couldn't parse provider info: ", provider_info)
 
         if not refresh and page is Page.START:
-            self.status(translate("Loading favorites..."))
+            self.status(tr("Loading favorites..."))
             self.favorites.set_groups(self.manager.load_favorites())
-            self.status(translate("Loading history..."))
+            self.status(tr("Loading history..."))
             if self.history.is_active:
                 self.history.set_channels(self.manager.load_history())
                 self.history.update_channels()
@@ -305,7 +305,7 @@ class AppWindow(Adw.ApplicationWindow):
 
     @async_function
     def load_providers(self, refresh=False):
-        self.status(translate("Loading providers..."))
+        self.status(tr("Loading providers..."))
         [self.load_provider(p, refresh) for p in self.providers]
 
         # If there are more than 1 providers and no Active Provider, set to the first one
@@ -320,22 +320,22 @@ class AppWindow(Adw.ApplicationWindow):
     def load_provider(self, provider, refresh=False):
         if provider.type_id != "xtream":
             # Download M3U
-            self.status(translate("Downloading playlist..." if refresh else "Getting playlist..."), provider)
+            self.status(tr("Downloading playlist..." if refresh else "Getting playlist..."), provider)
             p_name = provider.name
             if p_name == self.settings.get_string("active-provider"):
                 self.active_provider = provider
             ret = self.manager.get_playlist(provider, refresh=refresh)
 
             if ret:
-                self.status(translate("Checking playlist..."), provider)
+                self.status(tr("Checking playlist..."), provider)
                 if self.manager.check_playlist(provider):
-                    self.status(translate("Loading channels..."), provider)
+                    self.status(tr("Loading channels..."), provider)
                     self.manager.load_channels(provider)
                     self.status(None)
                     lc, lg, ls = len(provider.channels), len(provider.groups), len(provider.series)
                     log(f"{p_name}: {lc} channels, {lg} groups, {ls} series, {len(provider.movies)} movies")
             else:
-                self.status(translate(f"Failed to Download playlist from {p_name}"), provider)
+                self.status(tr(f"Failed to Download playlist from {p_name}"), provider)
         else:
             # Load xtream class
             from .xtream import XTream
@@ -391,17 +391,17 @@ class AppWindow(Adw.ApplicationWindow):
         if page is Page.START:
             provider = self.active_provider
             if provider is None:
-                self.tv_label.set_text(translate("TV Channels (0)"))
-                self.movies_label.set_text(translate("Movies (0)"))
-                self.series_label.set_text(translate("Series (0)"))
+                self.tv_label.set_text(tr("TV Channels (0)"))
+                self.movies_label.set_text(tr("Movies (0)"))
+                self.series_label.set_text(tr("Series (0)"))
                 self.tv_button.set_sensitive(False)
                 self.movies_button.set_sensitive(False)
                 self.series_button.set_sensitive(False)
-                self.active_provider_info.set_title(translate("No provider selected"))
+                self.active_provider_info.set_title(tr("No provider selected"))
             else:
-                self.tv_label.set_text(translate(f"TV Channels ({len(provider.channels)})"))
-                self.movies_label.set_text(translate(f"Movies ({len(provider.movies)})"))
-                self.series_label.set_text(translate(f"Series ({len(provider.series)})"))
+                self.tv_label.set_text(tr(f"TV Channels ({len(provider.channels)})"))
+                self.movies_label.set_text(tr(f"Movies ({len(provider.movies)})"))
+                self.series_label.set_text(tr(f"Series ({len(provider.series)})"))
                 self.tv_button.set_sensitive(len(provider.channels) > 0)
                 self.movies_button.set_sensitive(len(provider.movies) > 0)
                 self.series_button.set_sensitive(len(provider.series) > 0)
@@ -458,15 +458,15 @@ class AppWindow(Adw.ApplicationWindow):
         self.active_group = group
 
         if self.content_type == TV_GROUP:
-            title = translate("Channels")
+            title = tr("Channels")
             self.channels_page.set_title(f"{title} [{group.name}]" if group else title)
             self.show_channels(group.channels) if group else self.show_channels(self.active_provider.channels)
         elif self.content_type == MOVIES_GROUP:
-            title = translate("Movies")
+            title = tr("Movies")
             self.movies_page.set_title(f"{title} [{group.name}]" if group else title)
             self.show_movies(group.channels) if group else self.show_movies(self.active_provider.movies)
         elif self.content_type == SERIES_GROUP:
-            title = translate("Series")
+            title = tr("Series")
             self.series_page.set_title(f"{title} [{group.name}]" if group else title)
             self.show_movies(group.series) if group else self.show_movies(self.active_provider.series)
 
@@ -572,7 +572,7 @@ class AppWindow(Adw.ApplicationWindow):
             p_row.set_sensitive(False)
             p_row.set_title(f"<b>{provider.name}</b>")
             p_row.set_icon_name("tv-symbolic")
-            p_row.set_subtitle(f"<i>{translate('Loading playlist...')}</i>")
+            p_row.set_subtitle(f"<i>{tr('Loading playlist...')}</i>")
             self.providers_list.append(p_row)
         else:
             log(f"Updating provider settings...")
@@ -706,7 +706,7 @@ class AppWindow(Adw.ApplicationWindow):
             serie_box.set_spacing(6)
             label = Gtk.Label()
             label.set_use_markup(True)
-            label.set_markup(translate(f"<b>Season {season_name}</b>"))
+            label.set_markup(tr(f"<b>Season {season_name}</b>"))
             serie_box.append(label)
             flow_box = Gtk.FlowBox()
             serie_box.append(flow_box)
@@ -717,7 +717,7 @@ class AppWindow(Adw.ApplicationWindow):
                 episode = season.episodes[episode_name]
                 logo_path = episode.logo_path
                 pixbuf = get_pixbuf_from_file(logo_path) if logo_path else None
-                widget = GroupWidget(episode, translate(f"Episode {episode_name}"), pixbuf,
+                widget = GroupWidget(episode, tr(f"Episode {episode_name}"), pixbuf,
                                      orientation=Gtk.Orientation.VERTICAL)
                 if logo_path and not pixbuf:
                     logos_to_refresh.append((episode, widget.logo))
@@ -792,7 +792,7 @@ class AppWindow(Adw.ApplicationWindow):
     def on_favorite_group_activated(self, favorites: FavoritesPage, group: Group):
         self.content_type = TV_GROUP
         self.show_channels(group.channels)
-        self.channels_page.set_title(f"{translate('Favorites')} [{group.name}]")
+        self.channels_page.set_title(f"{tr('Favorites')} [{group.name}]")
 
     def on_favorites_error(self, favorites: FavoritesPage, message: str):
         self.show_message(message)
@@ -821,7 +821,7 @@ class AppWindow(Adw.ApplicationWindow):
     def play(self, channel: Channel):
         if self.player:
             if self.player.is_record():
-                self.show_message(translate("Stream recording in progress!"))
+                self.show_message(tr("Stream recording in progress!"))
                 return
 
             self.playback_stack.set_visible_child_name(PLaybackPage.LOAD)
@@ -874,7 +874,7 @@ class AppWindow(Adw.ApplicationWindow):
                 self.get_imdb_details(self.active_serie)
 
     def on_playback_error(self, player: Player, msg: str):
-        self.playback_status_page.set_title(translate("Can't Playback!"))
+        self.playback_status_page.set_title(tr("Can't Playback!"))
         self.playback_stack.set_visible_child_name(PLaybackPage.STATUS)
 
     def on_volume_changed(self, player: Player, volume: float):
@@ -927,7 +927,7 @@ class AppWindow(Adw.ApplicationWindow):
 
     def on_stream_info(self, widget=None):
         if self.player and self.player.is_playing():
-            info = " ".join(f"{translate(k)}: {v}" for k, v in self.player.get_stream_info().items())
+            info = " ".join(f"{tr(k)}: {v}" for k, v in self.player.get_stream_info().items())
             self.show_message(info)
 
     # ********************* Record ********************* #
@@ -1011,8 +1011,8 @@ class AppWindow(Adw.ApplicationWindow):
                 yield self.search_running
             self.search_stack.set_visible_child_name(SearchPage.RESULT)
         else:
-            self.search_status.set_title(translate("No Results found"))
-            self.search_status.set_description(translate("Try a different search..."))
+            self.search_status.set_title(tr("No Results found"))
+            self.search_status.set_description(tr("Try a different search..."))
             self.search_stack.set_visible_child_name(SearchPage.STATUS)
 
     @Gtk.Template.Callback()
@@ -1119,7 +1119,7 @@ class AppWindow(Adw.ApplicationWindow):
             self.toggle_fullscreen()
 
     def show_message(self, message: str):
-        self.messages_overlay.add_toast(Adw.Toast(title=translate(message)))
+        self.messages_overlay.add_toast(Adw.Toast(title=tr(message)))
 
     def on_navigation_view_pushed(self, view: Adw.NavigationView):
         page = Page(view.get_visible_page().get_tag())
@@ -1270,7 +1270,7 @@ class Application(Adw.Application):
         about.set_copyright(f"Copyright © 2024-2025 {__author__}")
         about.set_developer_name(__author__)
         about.set_license_type(Gtk.License.GPL_3_0)
-        about.set_translator_credits(translate("translator-credits"))
+        about.set_translator_credits(tr("translator-credits"))
         about.set_website("https://dyefremov.github.io/TVDemon/")
         about.set_support_url("https://github.com/DYefremov/TVDemon")
         about.set_comments(('<b>TVDemon</b> based on <a href="https://github.com/linuxmint/hypnotix">Hypnotix</a>\n\n'

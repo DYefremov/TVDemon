@@ -22,7 +22,7 @@
 __all__ = ("APP_ID", "IS_WIN", "IS_LINUX", "IS_DARWIN", "APP", "UI_PATH",
            "log", "Gtk", "Gdk", "Adw", "Gio", "GdkPixbuf", "GLib", "Pango", "GObject",
            "Manager", "Provider", "Group", "Channel", "Serie",
-           "translate", "async_function", "idle_function", "get_pixbuf_from_file", "init_logger", "select_path",
+           "tr", "async_function", "idle_function", "get_pixbuf_from_file", "init_logger", "select_path",
            "BADGES", "MOVIES_GROUP", "PROVIDERS_PATH", "EPG_PATH", "SERIES_GROUP", "TV_GROUP")
 
 import gettext
@@ -111,7 +111,7 @@ else:
 
 gettext.bindtextdomain(APP, LOCALE_DIR)
 gettext.textdomain(APP)
-translate = gettext.gettext
+tr = gettext.gettext
 
 # Adding a search path for the application icon.
 theme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default())
