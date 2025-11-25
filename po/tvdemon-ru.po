@@ -28,6 +28,9 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 
+msgid "translator-credits"
+msgstr "Дмитрий Ефремов"
+
 msgid "Keyboard Shortcuts"
 msgstr "Сочетания клавиш"
 
@@ -107,7 +110,6 @@ msgstr "Общие"
 msgid "Codec"
 msgstr "Кодек"
 
-#: usr/lib/tvdemon/app.py:816
 msgid "Channels"
 msgstr "Каналы"
 
@@ -145,13 +147,10 @@ msgid "Сlear"
 msgstr "Очистить"
 
 msgid "Save"
-msgstr "Сохранитьf"
+msgstr "Сохранить"
 
 msgid "M3U Playlists"
 msgstr "Плейлисты M3U"
-
-msgid "Watch TV"
-msgstr "Смотреть ТВ"
 
 msgid "Search"
 msgstr "Поиск"
@@ -173,6 +172,12 @@ msgstr "Воспроизвести все"
 
 msgid "Network"
 msgstr "Сеть"
+
+msgid "User Agent"
+msgstr "User Agent"
+
+msgid "Referrer"
+msgstr "Referrer"
 
 msgid "Add a new provider..."
 msgstr "Добавить поставщика..."
