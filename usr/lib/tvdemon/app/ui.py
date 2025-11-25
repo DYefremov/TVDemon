@@ -105,6 +105,7 @@ class ProviderWidget(Adw.ActionRow):
 class ProviderProperties(Adw.NavigationPage):
     __gtype_name__ = "ProviderProperties"
 
+    provider_group = Gtk.Template.Child()
     save_button = Gtk.Template.Child()
     action_switch_action = Gtk.Template.Child()
     name_entry_row = Gtk.Template.Child()
@@ -117,6 +118,11 @@ class ProviderProperties(Adw.NavigationPage):
     epg_source_entry = Gtk.Template.Child()
     epg_sources_list = Gtk.Template.Child()
     epg_sources_drop_down = Gtk.Template.Child()
+
+    @Gtk.Template.Callback()
+    def on_realize(self, widget: Adw.NavigationPage):
+        self.retranslate()
+        self.get_root().connect("language-changed", self.on_language_changed)
 
     @Gtk.Template.Callback()
     def on_type_activated(self, row: Adw.ComboRow, param: GObject):
@@ -142,6 +148,22 @@ class ProviderProperties(Adw.NavigationPage):
         else:
             [self.epg_sources_list.append(u) for u in urls]
             self.epg_sources_drop_down.set_sensitive(urls_size)
+
+    def on_language_changed(self, window: Adw.ApplicationWindow, lang: Language):
+        self.retranslate()
+
+    @idle_function
+    def retranslate(self):
+        self.set_title(tr("Provider"))
+        self.provider_group.set_title(tr("Provider"))
+        self.save_button.set_tooltip_text(tr("Save"))
+        self.name_entry_row.set_title(tr("Name"))
+        self.type_combo_row.set_title(tr("Type"))
+        self.path_action_row.set_title(tr("Path"))
+        self.user_group.set_title(tr("User"))
+        self.user_entry_row.set_title(tr("Login"))
+        self.password_entry_row.set_title(tr("Password"))
+        self.epg_source_entry.set_title(tr("Source"))
 
 
 @Gtk.Template(filename=f"{UI_PATH}channel_widget.ui")
