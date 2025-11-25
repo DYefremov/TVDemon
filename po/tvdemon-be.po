@@ -264,7 +264,7 @@ msgstr "Інтэрвал перазагрузкі правайдэраў"
 msgid "Hours"
 msgstr "Гадзіны"
 
-msgid "Works when used with light desktop themes which support dark mode."
+msgid "Works when used with light desktop themes that support dark mode."
 msgstr "Працуе толькі з лёгкімі тэмамі афармлення, якія падтрымліваюць цёмны рэжым."
 
 msgid "Prefer dark mode"
