@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with TVDemon  If not, see <http://www.gnu.org/licenses/>.
 #
+
 msgid ""
 msgstr ""
 "Last-Translator: Dmitriy Yefremov <https://github.com/DYefremov>\n"
@@ -83,6 +84,9 @@ msgstr "Настройки"
 msgid "Providers"
 msgstr "Поставщики"
 
+msgid "Provider"
+msgstr "Поставщик"
+
 #, python-format
 msgid "Edit %s"
 msgstr "Изменить %s"
@@ -137,6 +141,12 @@ msgstr "Изменить"
 msgid "Remove"
 msgstr "Удалить"
 
+msgid "Сlear"
+msgstr "Очистить"
+
+msgid "Save"
+msgstr "Сохранитьf"
+
 msgid "M3U Playlists"
 msgstr "Плейлисты M3U"
 
@@ -149,11 +159,17 @@ msgstr "Поиск"
 msgid "Search..."
 msgstr "Поиск..."
 
+msgid "Search in TV, Movies and Series"
+msgstr "Поиск по ТВ, фильмам и сериалам"
+
 msgid "Fullscreen"
 msgstr "На весь экран"
 
 msgid "Playback"
 msgstr "Воспроизведение"
+
+msgid "Play All"
+msgstr "Воспроизвести все"
 
 msgid "Network"
 msgstr "Сеть"
@@ -164,14 +180,14 @@ msgstr "Добавить поставщика..."
 msgid "Reset providers..."
 msgstr "Сброс провайдеров..."
 
-msgid "Name:"
-msgstr "Название:"
+msgid "Name"
+msgstr "Название"
 
-msgid "URL:"
-msgstr "URL адрес:"
+msgid "URL"
+msgstr "URL адрес"
 
-msgid "Path:"
-msgstr "Расположение:"
+msgid "Path"
+msgstr "Расположение"
 
 msgid "Cancel"
 msgstr "Отмена"
@@ -179,18 +195,20 @@ msgstr "Отмена"
 msgid "OK"
 msgstr "OK"
 
-msgid "Username:"
-msgstr "Логин:"
+msgid "Login"
+msgstr "Логин"
 
-msgid "Password:"
-msgstr "Пароль:"
+msgid "User"
+msgstr "Пользователь"
+
+msgid "Password"
+msgstr "Пароль"
 
 msgid "Browse..."
 msgstr "Обзор..."
 
-#: usr/share/tvdemon/app.ui.h:26
-msgid "Type:"
-msgstr "Тип:"
+msgid "Type"
+msgstr "Тип"
 
 msgid "No"
 msgstr "Нет"
@@ -254,3 +272,6 @@ msgstr "Отображать историю просмотра каналов н
 
 msgid "Media library"
 msgstr "Медиа-библиотека"
+
+msgid "Source"
+msgstr "Источник"
