@@ -280,3 +280,36 @@ msgstr "Медиа-библиотека"
 
 msgid "Source"
 msgstr "Источник"
+
+msgid "Logs"
+msgstr "Журнал"
+
+msgid "New Channel"
+msgstr "Новый канал"
+
+msgid "New Group"
+msgstr "Новая группа"
+
+msgid "Active group"
+msgstr "Активная группа"
+
+msgid "Group properties"
+msgstr "Свойства группы"
+
+msgid "Favorites"
+msgstr "Избранное"
+
+msgid "Go to Favorites"
+msgstr "Перейти в избранное"
+
+msgid "Add to favorites"
+msgstr "Добавить в избранное"
+
+msgid "Categories"
+msgstr "Категории"
+
+msgid "Clear"
+msgstr "Очистить"
+
+msgid "Viewing history"
+msgstr "История просмотра"

@@ -282,3 +282,35 @@ msgstr "Медыя-бібліятэка"
 msgid "Source"
 msgstr "Крыніца"
 
+msgid "Logs"
+msgstr "Журнал"
+
+msgid "New Channel"
+msgstr "Новы канал"
+
+msgid "New Group"
+msgstr "Новая група"
+
+msgid "Active group"
+msgstr "Актыўная група"
+
+msgid "Group properties"
+msgstr "Уласцівасці групы"
+
+msgid "Favorites"
+msgstr "Абранае"
+
+msgid "Go to Favorites"
+msgstr "Перайсці ў абранае"
+
+msgid "Add to favorites"
+msgstr "Дадаць у абранае"
+
+msgid "Categories"
+msgstr "Катэгорыі"
+
+msgid "Clear"
+msgstr "Ачысціць"
+
+msgid "Viewing history"
+msgstr "Гісторыя прагляду"

@@ -256,7 +256,7 @@ msgid "Hours"
 msgstr "Std"
 
 msgid "Works when used with light desktop themes that support dark mode."
-msgstr "funktioniert nur in Verbindung mit hellen Schreibtischthemen, "
+msgstr "Funktioniert nur in Verbindung mit hellen Schreibtischthemen, "
 "die den dunklen Modus unterstützen."
 
 msgid "Prefer dark mode"
@@ -273,3 +273,36 @@ msgstr "Medienbibliothek"
 
 msgid "Source"
 msgstr "Quelle"
+
+msgid "Logs"
+msgstr "Logs"
+
+msgid "New Channel"
+msgstr "Neuer Kanal"
+
+msgid "New Group"
+msgstr "Neue Gruppe"
+
+msgid "Active group"
+msgstr "Aktive Gruppe"
+
+msgid "Group properties"
+msgstr "Gruppeneigenschaften"
+
+msgid "Favorites"
+msgstr "Favoriten"
+
+msgid "Go to Favorites"
+msgstr "Zu den Favoriten gehen"
+
+msgid "Add to favorites"
+msgstr "Zu Favoriten hinzufügen"
+
+msgid "Categories"
+msgstr "Kategorien"
+
+msgid "Clear"
+msgstr "Löschen"
+
+msgid "Viewing history"
+msgstr "Wiedergabeverlauf"
