@@ -535,7 +535,7 @@ class AppWindow(Adw.ApplicationWindow):
                 self.settings.reset("providers")
                 self.reload()
 
-        QuestionDialog(self, cls).present()
+        QuestionDialog(cls).present(self)
 
     def on_provider_edit(self, win, widget: ProviderWidget):
         self.provider_properties.action_switch_action.set_active(False)
@@ -550,13 +550,13 @@ class AppWindow(Adw.ApplicationWindow):
                 self.providers_list.remove(widget)
                 self.settings.set_strv("providers", [provider.get_info() for provider in self.providers])
 
-        QuestionDialog(self, clb).present()
+        QuestionDialog(clb).present(self)
 
     def on_provider_save(self, button):
         def cls(confirm=False):
             self.provider_save() if confirm else self.navigation_view.pop()
 
-        QuestionDialog(self, cls).present()
+        QuestionDialog(cls).present(self)
 
     def provider_save(self):
         self.navigation_view.pop()
@@ -968,10 +968,10 @@ class AppWindow(Adw.ApplicationWindow):
                     path = os.path.normpath(os.path.join(self.settings.get_string("recordings-path"), f_name))
                     self.player.start_record(path)
 
-        dlg = QuestionDialog(self, cls)
+        dlg = QuestionDialog(cls)
         if not self.player.is_record():
             dlg.set_body("EXPERIMENTAL!")
-        dlg.present()
+        dlg.present(self)
 
     # ********************** IMDb ********************** #
 
@@ -1053,7 +1053,7 @@ class AppWindow(Adw.ApplicationWindow):
                 self.preferences_page.update_settings(self.settings)
                 self.navigation_view.pop()
 
-        QuestionDialog(self, clb).present()
+        QuestionDialog(clb).present(self)
 
     # ********************** EPG ************************* #
 

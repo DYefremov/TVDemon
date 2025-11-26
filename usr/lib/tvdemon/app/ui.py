@@ -266,7 +266,8 @@ class PreferencesPage(Adw.PreferencesPage):
 
     @property
     def language(self) -> str:
-        return self.language_row.get_selected_item().get_string()
+        item = self.language_row.get_selected_item()
+        return item.get_string() if item else Language.en_US.name
 
     @language.setter
     def language(self, value: str):
@@ -391,12 +392,11 @@ class MediaBar(Gtk.Frame):
 
 
 @Gtk.Template(filename=f"{UI_PATH}question_dialog.ui")
-class QuestionDialog(Adw.MessageDialog):
+class QuestionDialog(Adw.AlertDialog):
     __gtype_name__ = "QuestionDialog"
 
-    def __init__(self, parent, clb=None, **kwargs):
+    def __init__(self, clb=None, **kwargs):
         super().__init__(**kwargs)
-        self.set_transient_for(parent)
         self.clb = clb
 
     @Gtk.Template.Callback()
@@ -550,11 +550,11 @@ class FavoritesPage(Adw.NavigationPage):
 
     @Gtk.Template.Callback()
     def on_group_save(self, button):
-        QuestionDialog(self.get_root(), self.save_group).present()
+        QuestionDialog(self.save_group).present(self.get_root())
 
     @Gtk.Template.Callback()
     def on_channel_save(self, button):
-        QuestionDialog(self.get_root(), self.save_channel).present()
+        QuestionDialog(self.save_channel).present(self.get_root())
 
     @Gtk.Template.Callback()
     def on_channel_page_showing(self, page: Adw.NavigationPage):

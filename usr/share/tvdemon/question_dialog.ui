@@ -24,11 +24,10 @@ Author: Dmitriy Yefremov 2024-2025
   <!-- interface-name question_dialog.ui -->
   <requires lib="gtk" version="4.12"/>
   <requires lib="libadwaita" version="1.5"/>
-  <template class="QuestionDialog" parent="AdwMessageDialog">
+  <template class="QuestionDialog" parent="AdwAlertDialog">
     <property name="heading" translatable="yes">Are you sure?</property>
     <property name="default-response">save</property>
     <property name="close-response">cancel</property>
-    <property name="modal">True</property>
     <signal name="response" handler="on_response"/>
     <responses>
       <response id="cancel" translatable="yes" appearance="destructive">Cancel</response>
