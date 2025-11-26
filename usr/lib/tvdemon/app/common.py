@@ -93,9 +93,6 @@ FAVORITES_PATH = os.path.join(CACHE_PATH, APP, "favorites")
 HISTORY_PATH = os.path.join(CACHE_PATH, APP, "history")
 EPG_PATH = os.path.join(CACHE_PATH, APP, "epg")
 
-lang = Language(Settings.get_instance().get_string("language"))
-os.environ["LANGUAGE"] = lang.name
-
 if not os.path.exists(UI_PATH):
     UI_PATH = f".{UI_PATH}"
     LOCALE_DIR = f".{LOCALE_DIR}"
@@ -108,6 +105,11 @@ elif IS_WIN:
 else:
     st = Gtk.Settings().get_default()
     st.set_property("gtk-decoration-layout", "close,minimize,maximize")
+
+# Translation.
+if not IS_LINUX:
+    lang = Language(Settings.get_instance().get_string("language"))
+    os.environ["LANGUAGE"] = lang.name
 
 gettext.bindtextdomain(APP, LOCALE_DIR)
 gettext.textdomain(APP)
