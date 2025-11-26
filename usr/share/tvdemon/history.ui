@@ -26,7 +26,7 @@ Author: Dmitriy Yefremov 2025
   <requires lib="libadwaita" version="1.5"/>
   <template class="HistoryWidget" parent="AdwPreferencesGroup">
     <property name="visible">False</property>
-    <property name="description">Viewing history</property>
+    <property name="description" translatable="yes">Viewing history</property>
     <property name="margin-start">24</property>
     <property name="margin-end">24</property>
     <property name="margin-top">12</property>

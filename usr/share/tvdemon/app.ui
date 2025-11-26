@@ -87,7 +87,7 @@ Author: Dmitriy Yefremov 2024-2025
                                           <object class="AdwButtonContent" id="fav_button_content">
                                             <property name="icon-name">user-bookmarks-symbolic</property>
                                             <property name="label">0</property>
-                                            <property name="tooltip-text">Favorites</property>
+                                            <property name="tooltip-text" translatable="yes">Favorites</property>
                                           </object>
                                         </property>
                                         <property name="action-name">navigation.push</property>
@@ -333,7 +333,7 @@ Author: Dmitriy Yefremov 2024-2025
                                   <object class="AdwButtonContent">
                                     <property name="icon-name">user-bookmarks-symbolic</property>
                                     <property name="label" bind-source="fav_button_content" bind-property="label">0</property>
-                                    <property name="tooltip-text">Go to Favorites</property>
+                                    <property name="tooltip-text" translatable="yes">Go to Favorites</property>
                                   </object>
                                 </property>
                                 <signal name="clicked" handler="on_to_favorites"/>
@@ -739,27 +739,27 @@ Author: Dmitriy Yefremov 2024-2025
   <menu id="app_menu">
     <section>
       <item>
-        <attribute name="label" translatable="yes">_Preferences</attribute>
+        <attribute name="label" translatable="yes">Preferences</attribute>
         <attribute name="action">app.preferences</attribute>
       </item>
       <item>
-        <attribute name="label" translatable="yes">_Logs</attribute>
+        <attribute name="label" translatable="yes">Logs</attribute>
         <attribute name="action">app.logs</attribute>
         <attribute name="accel">&lt;Primary&gt;L</attribute>
       </item>
       <item>
-        <attribute name="label" translatable="yes">_Quit</attribute>
+        <attribute name="label" translatable="yes">Quit</attribute>
         <attribute name="action">app.quit</attribute>
       </item>
     </section>
     <section>
       <item>
-        <attribute name="label" translatable="yes">_Shortcuts</attribute>
+        <attribute name="label" translatable="yes">Keyboard Shortcuts</attribute>
         <attribute name="action">win.show-help-overlay</attribute>
         <attribute name="accel">&lt;Primary&gt;K</attribute>
       </item>
       <item>
-        <attribute name="label" translatable="yes">_About</attribute>
+        <attribute name="label" translatable="yes">About</attribute>
         <attribute name="action">app.about</attribute>
       </item>
     </section>

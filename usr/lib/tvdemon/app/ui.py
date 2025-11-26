@@ -35,7 +35,7 @@ from html import escape
 
 from .settings import Language, Settings
 from .common import (UI_PATH, Adw, Gtk, Gdk, GObject, GLib, idle_function, tr, select_path, Group,
-                     get_pixbuf_from_file, Channel, LOG_DATE_FORMAT, LOG_FORMAT, LOGGER_NAME)
+                     get_pixbuf_from_file, Channel, LOG_DATE_FORMAT, LOG_FORMAT, LOGGER_NAME, IS_LINUX)
 from .epg import EpgEvent, EPG_START_FMT, EPG_END_FMT
 
 
@@ -121,8 +121,9 @@ class ProviderProperties(Adw.NavigationPage):
 
     @Gtk.Template.Callback()
     def on_realize(self, widget: Adw.NavigationPage):
-        self.retranslate()
-        self.get_root().connect("language-changed", self.on_language_changed)
+        if not IS_LINUX:
+            self.retranslate()
+            self.get_root().connect("language-changed", self.on_language_changed)
 
     @Gtk.Template.Callback()
     def on_type_activated(self, row: Adw.ComboRow, param: GObject):
@@ -248,13 +249,16 @@ class PreferencesPage(Adw.PreferencesPage):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.language_row.set_visible(not IS_LINUX)
+
 
     @Gtk.Template.Callback()
     def on_realize(self, widget: Adw.PreferencesPage):
-        self.retranslate()
-        model = self.language_row.get_model()
-        [model.append(lang) for lang in Language]
-        self.language_row.connect("notify::selected", self.on_lang_selected)
+        if not IS_LINUX:
+            self.retranslate()
+            model = self.language_row.get_model()
+            [model.append(lang) for lang in Language]
+            self.language_row.connect("notify::selected", self.on_lang_selected)
 
     @Gtk.Template.Callback("on_recordings_path_activated")
     def on_recordings_path_select(self, row: Adw.ActionRow):

@@ -109,7 +109,7 @@ Author: Dmitriy Yefremov 2024
                           <object class="AdwPreferencesGroup">
                             <child>
                               <object class="AdwEntryRow" id="group_name_row">
-                                <property name="title">Name</property>
+                                <property name="title" translatable="yes">Name</property>
                               </object>
                             </child>
                           </object>

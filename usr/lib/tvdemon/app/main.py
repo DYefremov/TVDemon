@@ -217,7 +217,8 @@ class AppWindow(Adw.ApplicationWindow):
         self._epg_cache = None
         self.connect("show-channel-epg", self.on_show_channel_epg)
         # Translation.
-        self.connect("language-changed", self.on_language_changed)
+        if not IS_LINUX:
+            self.connect("language-changed", self.on_language_changed)
 
     @GObject.Property(type=bool, default=True)
     def is_tv_mode(self):
@@ -1036,16 +1037,18 @@ class AppWindow(Adw.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_preferences_hiding(self, page: Adw.NavigationPage):
-        os.environ["LANGUAGE"] = Language(self.settings.get_string("language")).name
+        if not IS_LINUX:
+            os.environ["LANGUAGE"] = Language(self.settings.get_string("language")).name
 
     @Gtk.Template.Callback()
     def on_preferences_save(self, button):
         def clb(resp):
             if resp:
-                lang = Language(self.settings.get_string("language"))
-                current_lang = Language(self.preferences_page.language)
-                if lang is not current_lang:
-                    self.emit("language-changed", current_lang)
+                if not IS_LINUX:
+                    lang = Language(self.settings.get_string("language"))
+                    current_lang = Language(self.preferences_page.language)
+                    if lang is not current_lang:
+                        self.emit("language-changed", current_lang)
                 self.history.is_active = self.preferences_page.enable_history
                 self.preferences_page.update_settings(self.settings)
                 self.navigation_view.pop()

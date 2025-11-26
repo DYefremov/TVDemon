@@ -31,7 +31,7 @@ Author: Dmitriy Yefremov 2024-2025
     <!--  Application -->
     <child>
       <object class="AdwPreferencesGroup" id="application_group">
-        <property name="title">Application</property>
+        <property name="title" translatable="yes">Application</property>
         <child>
           <object class="AdwComboRow" id="language_row">
             <property name="title">Language</property>
@@ -42,7 +42,7 @@ Author: Dmitriy Yefremov 2024-2025
         </child>
         <child>
           <object class="AdwSpinRow" id="reload_interval_spin">
-            <property name="title">Providers reload interval</property>
+            <property name="title" translatable="yes">Providers reload interval</property>
             <property name="subtitle" translatable="yes">Hours</property>
             <property name="adjustment">
               <object class="GtkAdjustment">
@@ -57,14 +57,14 @@ Author: Dmitriy Yefremov 2024-2025
         </child>
         <child>
           <object class="AdwSwitchRow" id="dark_mode_switch">
-            <property name="title">Prefer dark mode</property>
-            <property name="subtitle">Works when used with light desktop themes that support dark mode.</property>
+            <property name="title" translatable="yes">Prefer dark mode</property>
+            <property name="subtitle" translatable="yes">Works when used with light desktop themes that support dark mode.</property>
           </object>
         </child>
         <child>
           <object class="AdwSwitchRow" id="enable_history_switch">
-            <property name="title">Channel viewing history</property>
-            <property name="subtitle">Display channel viewing history on the start page.</property>
+            <property name="title" translatable="yes">Channel viewing history</property>
+            <property name="subtitle" translatable="yes">Display channel viewing history on the start page.</property>
           </object>
         </child>
       </object>
@@ -72,15 +72,15 @@ Author: Dmitriy Yefremov 2024-2025
     <!--  Network -->
     <child>
       <object class="AdwPreferencesGroup" id="network_group">
-        <property name="title">Network</property>
+        <property name="title" translatable="yes">Network</property>
         <child>
           <object class="AdwEntryRow" id="useragent_entry">
-            <property name="title">User Agent</property>
+            <property name="title" translatable="yes">User Agent</property>
           </object>
         </child>
         <child>
           <object class="AdwEntryRow" id="referer_entry">
-            <property name="title">Referer</property>
+            <property name="title" translatable="yes">Referer</property>
           </object>
         </child>
       </object>
@@ -88,10 +88,10 @@ Author: Dmitriy Yefremov 2024-2025
     <!--  Playback -->
     <child>
       <object class="AdwPreferencesGroup" id="playback_group">
-        <property name="title">Playback</property>
+        <property name="title" translatable="yes">Playback</property>
         <child>
           <object class="AdwComboRow" id="media_lib_row">
-            <property name="title">Media library</property>
+            <property name="title" translatable="yes">Media library</property>
             <property name="enable-search">True</property>
             <property name="model">
               <object class="GtkStringList">
