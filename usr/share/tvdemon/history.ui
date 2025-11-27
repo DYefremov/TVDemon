@@ -39,7 +39,7 @@ Author: Dmitriy Yefremov 2025
             <property name="spacing">6</property>
             <property name="margin-start">6</property>
             <child>
-              <object class="GtkButton">
+              <object class="GtkButton" id="play_all_button">
                 <property name="has-frame">False</property>
                 <property name="icon-name">edit-select-all-symbolic</property>
                 <property name="tooltip-text" translatable="yes">Play All</property>
@@ -47,7 +47,7 @@ Author: Dmitriy Yefremov 2025
               </object>
             </child>
             <child>
-              <object class="GtkButton">
+              <object class="GtkButton" id="clear_button">
                 <property name="has-frame">False</property>
                 <property name="icon-name">user-trash-symbolic</property>
                 <property name="tooltip-text" translatable="yes">Clear</property>

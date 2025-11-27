@@ -713,6 +713,8 @@ class HistoryWidget(Adw.PreferencesGroup):
     __gtype_name__ = "HistoryWidget"
 
     channels_box = Gtk.Template.Child()
+    play_all_button = Gtk.Template.Child()
+    clear_button = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

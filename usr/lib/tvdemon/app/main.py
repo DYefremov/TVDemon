@@ -1123,6 +1123,12 @@ class AppWindow(Adw.ApplicationWindow):
         self.providers_button.set_tooltip_text(tr("Providers"))
         self.add_provider_button.set_tooltip_text(tr("Add a new provider..."))
         self.reset_providers_button.set_tooltip_text(tr("Reset providers"))
+        # History.
+        self.history.set_description(tr("Viewing history"))
+        self.history.play_all_button.set_tooltip_text(tr("Play All"))
+        self.history.clear_button.set_tooltip_text(tr("Clear"))
+        # Favorites.
+        self.fav_button_content.set_tooltip_text(tr("Favorites"))
 
     # ******************** Additional ******************** #
 
