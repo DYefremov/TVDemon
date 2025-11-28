@@ -110,7 +110,9 @@ msgstr "Агульныя"
 msgid "Codec"
 msgstr "Кодэк"
 
-#: usr/lib/tvdemon/app.py:816
+msgid "Channel"
+msgstr "Канал"
+
 msgid "Channels"
 msgstr "Каналы"
 
@@ -190,7 +192,10 @@ msgid "Name"
 msgstr "Назва"
 
 msgid "URL"
-msgstr "URL"
+msgstr "URL адрас"
+
+msgid "Logo URL"
+msgstr "URL адрас лагатыпа"
 
 msgid "Path"
 msgstr "Шлях"
@@ -305,6 +310,9 @@ msgstr "Перайсці ў абранае"
 
 msgid "Add to favorites"
 msgstr "Дадаць у абранае"
+
+msgid "Favorite groups"
+msgstr "Групы абранага"
 
 msgid "Categories"
 msgstr "Катэгорыі"

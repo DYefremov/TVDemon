@@ -108,6 +108,9 @@ msgstr "Allgemein"
 msgid "Codec"
 msgstr "Kodierer"
 
+msgid "Channel"
+msgstr "Kanal"
+
 msgid "Channels"
 msgstr "Kanäle"
 
@@ -178,7 +181,10 @@ msgid "Name"
 msgstr "Name"
 
 msgid "URL"
-msgstr "Adresse"
+msgstr "URL"
+
+msgid "Logo URL"
+msgstr "Logo-URL"
 
 msgid "Path"
 msgstr "Pfad"
@@ -297,6 +303,9 @@ msgstr "Zu den Favoriten gehen"
 
 msgid "Add to favorites"
 msgstr "Zu Favoriten hinzufügen"
+
+msgid "Favorite groups"
+msgstr "Favoriten-Gruppen"
 
 msgid "Categories"
 msgstr "Kategorien"

@@ -110,6 +110,9 @@ msgstr "Общие"
 msgid "Codec"
 msgstr "Кодек"
 
+msgid "Channel"
+msgstr "Канал"
+
 msgid "Channels"
 msgstr "Каналы"
 
@@ -190,6 +193,9 @@ msgstr "Название"
 
 msgid "URL"
 msgstr "URL адрес"
+
+msgid "Logo URL"
+msgstr "URL адрес логотипа"
 
 msgid "Path"
 msgstr "Расположение"
@@ -304,6 +310,9 @@ msgstr "Перейти в избранное"
 
 msgid "Add to favorites"
 msgstr "Добавить в избранное"
+
+msgid "Favorite groups"
+msgstr "Группы избранного"
 
 msgid "Categories"
 msgstr "Категории"
