@@ -71,9 +71,9 @@ app = BUNDLE(coll,
                  'CFBundleDisplayName': 'TVDemon',
                  'CFBundleGetInfoString': "IPTV Player",
                  'LSApplicationCategoryType': 'public.app-category.video',
-                 'LSMinimumSystemVersion': '14.3.1',
-                 'CFBundleShortVersionString': f"2.0.0.{BUILD_DATE} Alpha2",
-                 'NSHumanReadableCopyright': u"Copyright © 2024, Dmitriy Yefremov",
+                 'LSMinimumSystemVersion': '15.0',
+                 'CFBundleShortVersionString': f"2.0.0.{BUILD_DATE} Beta",
+                 'NSHumanReadableCopyright': u"Copyright © 2025, Dmitriy Yefremov",
                  'NSRequiresAquaSystemAppearance': 'False',
                  'NSHighResolutionCapable': 'True'
              })
