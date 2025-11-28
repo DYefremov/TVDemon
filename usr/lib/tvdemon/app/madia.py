@@ -179,6 +179,8 @@ class GstPlayer(Player):
     def play(self, mrl=None):
         self._player.set_state(self.STATE.READY)
         if not mrl:
+            msg = "Error: Channel URL is missing."
+            self.emit("error", msg) or log(msg)
             return
 
         self._player.set_property("uri", mrl)
@@ -188,8 +190,7 @@ class GstPlayer(Player):
 
         if ret == self.STAT_RETURN.FAILURE:
             msg = f"ERROR: Unable to set the 'PLAYING' state for '{mrl}'."
-            log(msg)
-            self.emit("error", msg)
+            self.emit("error", msg) or log(msg)
 
     def stop(self):
         log("Stop playback...")
