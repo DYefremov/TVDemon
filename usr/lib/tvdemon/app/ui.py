@@ -251,7 +251,6 @@ class PreferencesPage(Adw.PreferencesPage):
         super().__init__(**kwargs)
         self.language_row.set_visible(not IS_LINUX)
 
-
     @Gtk.Template.Callback()
     def on_realize(self, widget: Adw.PreferencesPage):
         if not IS_LINUX:
@@ -491,10 +490,19 @@ class FavoritesPage(Adw.NavigationPage):
 
     navigation_view = Gtk.Template.Child()
     # Group.
+    group_page = Gtk.Template.Child()
+    properties_page = Gtk.Template.Child()
     group_list = Gtk.Template.Child()
     group_channels_box = Gtk.Template.Child()
     group_name_row = Gtk.Template.Child()
+    add_group_button = Gtk.Template.Child()
+    channels_group = Gtk.Template.Child()
+    save_group_button = Gtk.Template.Child()
+    add_channel_button = Gtk.Template.Child()
     # Custom channel.
+    channel_page = Gtk.Template.Child()
+    channel_group = Gtk.Template.Child()
+    channel_save_button = Gtk.Template.Child()
     channel_name_entry_row = Gtk.Template.Child()
     channel_url_entry_row = Gtk.Template.Child()
     channel_logo_url_entry_row = Gtk.Template.Child()
@@ -700,6 +708,22 @@ class FavoritesPage(Adw.NavigationPage):
 
     def is_favorite(self, channel: Channel):
         return channel.url in self.urls
+
+    @idle_function
+    def retranslate(self):
+        self.group_page.set_title(tr("Favorite groups"))
+        self.add_group_button.set_tooltip_text(tr("New Group"))
+        self.properties_page.set_title(tr("Group properties"))
+        self.group_name_row.set_title(tr("Name"))
+        self.channels_group.set_title(tr("Channels"))
+        self.save_group_button.set_tooltip_text(tr("Save"))
+        self.add_channel_button.set_tooltip_text(tr("New Channel"))
+        self.channel_page.set_title(tr("New Channel"))
+        self.channel_group.set_title(tr("Channel"))
+        self.channel_save_button.set_tooltip_text(tr("Save"))
+        self.channel_name_entry_row.set_title(tr("Name"))
+        self.channel_url_entry_row.set_title(tr("URL"))
+        self.channel_logo_url_entry_row.set_title(tr("Logo URL"))
 
 
 # ******************** History ******************** #

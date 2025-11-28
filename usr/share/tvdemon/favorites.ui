@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright (C) 2024 Dmitriy Yefremov <https://github.com/DYefremov>
+Copyright (C) 2024-2025 Dmitriy Yefremov <https://github.com/DYefremov>
 
 This file is part of TVDemon.
 
@@ -17,7 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with TVDemon.  If not, see <http://www.gnu.org/licenses/>.
 
-Author: Dmitriy Yefremov 2024
+Author: Dmitriy Yefremov 2024-2025
 
 -->
 <interface domain="tvdemon">
@@ -30,7 +30,7 @@ Author: Dmitriy Yefremov 2024
       <object class="AdwNavigationView" id="navigation_view">
         <!-- Groups page -->
         <child>
-          <object class="AdwNavigationPage">
+          <object class="AdwNavigationPage" id="group_page">
             <property name="tag">groups-page</property>
             <property name="title" translatable="yes">Favorite groups</property>
             <property name="child">
@@ -38,7 +38,7 @@ Author: Dmitriy Yefremov 2024
                 <child type="top">
                   <object class="AdwHeaderBar">
                     <child type="start">
-                      <object class="GtkButton" id="fav_add_group_button">
+                      <object class="GtkButton" id="add_group_button">
                         <property name="icon-name">document-new-symbolic</property>
                         <property name="tooltip-text" translatable="yes">New Group</property>
                         <signal name="clicked" handler="on_new_group"/>
@@ -71,7 +71,7 @@ Author: Dmitriy Yefremov 2024
         </child>
         <!-- Group properties/edit page -->
         <child>
-          <object class="AdwNavigationPage">
+          <object class="AdwNavigationPage" id="properties_page">
             <property name="tag">properties-page</property>
             <property name="title" translatable="yes">Group properties</property>
             <property name="child">
@@ -86,7 +86,7 @@ Author: Dmitriy Yefremov 2024
                       </object>
                     </child>
                     <child type="start">
-                      <object class="GtkButton" id="add_new_channel_button">
+                      <object class="GtkButton" id="add_channel_button">
                         <property name="icon-name">list-add-symbolic</property>
                         <property name="tooltip-text" translatable="yes">New Channel</property>
                         <property name="action-name">navigation.push</property>
@@ -117,7 +117,7 @@ Author: Dmitriy Yefremov 2024
                       </object>
                     </child>
                     <child>
-                      <object class="AdwPreferencesGroup">
+                      <object class="AdwPreferencesGroup" id="channels_group">
                         <property name="title" translatable="yes">Channels</property>
                         <property name="margin-start">12</property>
                         <property name="margin-end">12</property>
@@ -145,7 +145,7 @@ Author: Dmitriy Yefremov 2024
         </child>
         <!-- New channel page -->
         <child>
-          <object class="AdwNavigationPage">
+          <object class="AdwNavigationPage" id="channel_page">
             <property name="title" translatable="yes">New Channel</property>
             <property name="tag">channel-properties-page</property>
             <signal name="showing" handler="on_channel_page_showing"/>
@@ -154,7 +154,7 @@ Author: Dmitriy Yefremov 2024
                 <child type="top">
                   <object class="AdwHeaderBar">
                     <child type="start">
-                      <object class="GtkButton" id="save_button">
+                      <object class="GtkButton" id="channel_save_button">
                         <property name="icon-name">document-save-symbolic</property>
                         <property name="tooltip-text" translatable="yes">Save</property>
                         <signal name="clicked" handler="on_channel_save"/>
@@ -169,7 +169,7 @@ Author: Dmitriy Yefremov 2024
                     <child>
                       <object class="AdwPreferencesPage">
                         <child>
-                          <object class="AdwPreferencesGroup">
+                          <object class="AdwPreferencesGroup" id="channel_group">
                             <property name="title" translatable="yes">Channel</property>
                             <child>
                               <object class="AdwEntryRow" id="channel_name_entry_row">

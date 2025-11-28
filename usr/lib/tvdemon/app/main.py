@@ -1129,6 +1129,7 @@ class AppWindow(Adw.ApplicationWindow):
         self.history.clear_button.set_tooltip_text(tr("Clear"))
         # Favorites.
         self.fav_button_content.set_tooltip_text(tr("Favorites"))
+        self.favorites.retranslate()
 
     # ******************** Additional ******************** #
 
