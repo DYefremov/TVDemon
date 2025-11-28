@@ -219,6 +219,9 @@ class AppWindow(Adw.ApplicationWindow):
         # Translation.
         if not IS_LINUX:
             self.connect("language-changed", self.on_language_changed)
+        # Observing fullscreen mode (for macOS only).
+        if IS_DARWIN:
+            self.connect("notify::fullscreened", self.on_fullscreened)
 
     @GObject.Property(type=bool, default=True)
     def is_tv_mode(self):
@@ -910,6 +913,10 @@ class AppWindow(Adw.ApplicationWindow):
     def hide_mouse_cursor(self):
         self.is_mouse_cursor_hidden = True
         self.playback_widget.set_cursor(self.blank_cursor)
+
+    def on_fullscreened(self, window: Adw.ApplicationWindow, param: GObject):
+        if self.is_fullscreen() != self.is_full_screen:
+            self.toggle_fullscreen()
 
     def toggle_fullscreen(self, button=None):
         self.is_full_screen = not self.is_full_screen
