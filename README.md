@@ -36,7 +36,8 @@ To create a Debian package, you can use the *build-deb.sh* file from the *build*
 * ### macOS (experimental)  
 To run the program on macOS, you need to install [Homebrew](https://brew.sh/).  
 Then install the required components via terminal:  
-`brew install python3 gtk+4 libadwaita pygobject3 adwaita-icon-theme python-requests gstreamer`
+`brew install python3 gtk+4 libadwaita pygobject3 adwaita-icon-theme gstreamer`  
+`pip3 install requests --break-system-packages`
 
 Launch is similar to Linux.
 
