@@ -11,8 +11,9 @@ excludes = ['youtube_dl',
             'tkinter']
 
 ui_files = [('usr\\share\\tvdemon', 'share\\tvdemon'),
-           ('usr\\share\\icons\\hicolor\\scalable\\apps\\tvdemon.svg',
-            'share\\icons\\hicolor\\scalable\\apps')]
+            ('usr\\share\\icons\\hicolor\\scalable\\apps\\tvdemon.svg',
+            'share\\icons\\hicolor\\scalable\\apps'),
+			('usr\\share\\locale', 'share\\locale')]
 
 
 a = Analysis([EXE_NAME],
@@ -28,6 +29,28 @@ a = Analysis([EXE_NAME],
                     "module-versions": {
                         "Gtk": "4.0"
                     },
+                },
+
+                "gstreamer": {
+                    "exclude_plugins": ["videotestsrc",
+                                        "videosignal",
+                                        "spotify",
+                                        "quinn",
+                                        "monoscope",
+                                        "goom2k1",
+                                        "goom",
+                                        "camerabin",
+                                        "aws",
+                                        "audiovisualizers",
+                                        "audiotestsrc",
+                                        "webrtc",
+                                        "webrtcdsp",
+                                        "webrtchttp",
+                                        "rswebrtc",
+                                        "webp",
+                                        "rswebp",
+                                        "rsvideofx"
+                                        ],
                 },
              },
              excludes=excludes,
@@ -46,7 +69,7 @@ exe = EXE(pyz,
           bootloader_ignore_signals=False,
 		  contents_directory='.',
           strip=False,
-          upx=True,
+          upx=False,
           console=False,
           icon='tvdemon.ico')
 coll = COLLECT(exe,
