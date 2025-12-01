@@ -76,7 +76,7 @@ IS_FROZEN = getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS")
 
 APP = "tvdemon"
 APP_NAME = "TVDemon"
-APP_ID = f"by.{APP}dff.{APP_NAME}"
+APP_ID = f"by.{APP}.{APP_NAME}"
 GLib.set_application_name(APP_NAME)
 
 # Prefix.
