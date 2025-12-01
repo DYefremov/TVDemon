@@ -1137,6 +1137,9 @@ class AppWindow(Adw.ApplicationWindow):
         # Favorites.
         self.fav_button_content.set_tooltip_text(tr("Favorites"))
         self.favorites.retranslate()
+        # App menu.
+        app = self.get_application()
+        self.preferences_button.set_menu_model(app.get_app_menu())
 
     # ******************** Additional ******************** #
 
@@ -1260,6 +1263,8 @@ class Application(Adw.Application):
                 provider.load_from_path(css_path)
                 Gtk.StyleContext.add_provider_for_display(display, provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
+        self.window.preferences_button.set_menu_model(self.get_app_menu())
+
         self.window.present()
 
     def do_command_line(self, command_line):
@@ -1323,6 +1328,39 @@ class Application(Adw.Application):
     def on_close_app(self, action, value):
         self.window.emit("close-request")
         self.quit()
+
+    def get_app_menu(self) -> Gio.MenuModel:
+        app_menu = Gio.Menu()
+        section = Gio.Menu()
+
+        if not IS_DARWIN:
+            section.append_item(self.get_menu_item(tr("Preferences"), "app.preferences", ""))
+
+        section.append_item(self.get_menu_item(tr("Logs"), "app.logs", "<Primary>L"))
+
+        if not IS_DARWIN:
+            section.append_item(self.get_menu_item(tr("Quit"), "app.quit", "<Primary>Q"))
+
+        app_menu.append_section(None, section)
+        if IS_DARWIN:
+            return app_menu
+
+        section = Gio.Menu()
+        section.append_item(self.get_menu_item(tr("Keyboard Shortcuts"), "win.show-help-overlay", "<Primary>K"))
+        section.append_item(self.get_menu_item(tr("About"), "app.about", ""))
+        app_menu.append_section(None, section)
+
+        return app_menu
+
+    @staticmethod
+    def get_menu_item(label: str, action: str, accel: str) -> Gio.MenuItem:
+        item = Gio.MenuItem()
+        item.set_attribute_value("label", GLib.Variant("s", label))
+        item.set_attribute_value("action", GLib.Variant("s", action))
+        if accel:
+            item.set_attribute_value("accel", GLib.Variant("s", accel))
+
+        return item
 
 
 def run_app():
