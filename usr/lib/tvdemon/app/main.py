@@ -1249,12 +1249,15 @@ class Application(Adw.Application):
             prefix = "win" if IS_WIN else "mac"
             is_dark = self.style_manager.get_color_scheme() is Adw.ColorScheme.PREFER_DARK
 
-            if IS_DARWIN and not is_dark:
-                import subprocess
+            if IS_DARWIN:
+                self.set_menubar(self.get_app_menu_bar())
 
-                cmd = ["defaults", "read", "-g", "AppleInterfaceStyle"]
-                p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-                is_dark = "Dark" in str(p[0])
+                if not is_dark:
+                    import subprocess
+
+                    cmd = ["defaults", "read", "-g", "AppleInterfaceStyle"]
+                    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+                    is_dark = "Dark" in str(p[0])
 
             css_path = f"{UI_PATH}{prefix}{'-dark' if is_dark else ''}-style.css"
 
@@ -1351,6 +1354,18 @@ class Application(Adw.Application):
         app_menu.append_section(None, section)
 
         return app_menu
+
+    def get_app_menu_bar(self) -> Gio.MenuModel:
+        menu = Gio.Menu()
+        if IS_DARWIN:
+            sub_menu = Gio.Menu()
+            sub_menu.append_item(self.get_menu_item(tr("Logs"), "app.logs", "<Primary>L"))
+            menu.append_submenu(tr("Tools"), sub_menu)
+            sub_menu = Gio.Menu()
+            sub_menu.append_item(self.get_menu_item(tr("Keyboard Shortcuts"), "win.show-help-overlay", "<Primary>K"))
+            menu.append_submenu(tr("Help"), sub_menu)
+
+        return menu
 
     @staticmethod
     def get_menu_item(label: str, action: str, accel: str) -> Gio.MenuItem:
