@@ -14,7 +14,8 @@ block_cipher = None
 excludes = []
 
 ui_files = [('usr/share/tvdemon', 'share/tvdemon'),
-           ('usr/share/icons/hicolor/scalable/apps/tvdemon.svg',
+            ('usr/share/locale', 'share/locale'),
+            ('usr/share/icons/hicolor/scalable/apps/tvdemon.svg',
             'share/icons/hicolor/scalable/apps')]
 
 a = Analysis([EXE_NAME],
@@ -30,9 +31,33 @@ a = Analysis([EXE_NAME],
                     "module-versions": {
                         "Gtk": "4.0"
                     },
+                },
+
                 "gstreamer": {
-                    "exclude_plugins": ["opencv"],
-                   },
+                    "exclude_plugins": ["videotestsrc",
+                                        "videosignal",
+                                        "spotify",
+                                        "quinn",
+                                        "monoscope",
+                                        "goom2k1",
+                                        "goom",
+                                        "camerabin",
+                                        "aws",
+                                        "audiovisualizers",
+                                        "audiotestsrc",
+                                        "webrtc",
+                                        "webrtcdsp",
+                                        "webrtchttp",
+                                        "rswebrtc",
+                                        "webp",
+                                        "rsvideofx"
+                                        "spacescope",
+                                        "spectrascope",
+                                        "synaescope",
+                                        "wavescope",
+                                        "objectdetectionoverlay",
+
+                                        ],
                 },
              },
              excludes=excludes,
