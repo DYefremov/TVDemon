@@ -7,7 +7,7 @@ if __name__ == "__main__":
         import pyi_splash
         from multiprocessing import freeze_support
 
-        os.environ["GIO_EXTRA_MODULES"] = os.path.join(sys._MEIPASS, "lib", "gio", "modules")
+        os.environ["GST_REGISTRY_UPDATE"] = "no"
         freeze_support()
 
         from usr.lib.tvdemon.app.main import run_app
