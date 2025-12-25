@@ -19,7 +19,7 @@
 # along with TVDemon  If not, see <http://www.gnu.org/licenses/>.
 #
 
-__all__ = ("APP_ID", "IS_WIN", "IS_LINUX", "IS_DARWIN", "APP", "UI_PATH",
+__all__ = ("APP_ID", "IS_WIN", "IS_LINUX", "IS_DARWIN",  "IS_FROZEN", "APP", "UI_PATH",
            "log", "Gtk", "Gdk", "Adw", "Gio", "GdkPixbuf", "GLib", "Pango", "GObject",
            "Manager", "Provider", "Group", "Channel", "Serie",
            "tr", "async_function", "idle_function", "get_pixbuf_from_file", "init_logger", "select_path",

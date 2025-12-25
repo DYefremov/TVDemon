@@ -1226,7 +1226,7 @@ class Application(Adw.Application):
                          flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE,
                          **kwargs)
         self.add_main_option("log", ord("l"), GLib.OptionFlags.NONE, GLib.OptionArg.NONE, "", None)
-        self.add_main_option("debug", ord("d"), GLib.OptionFlags.NONE, GLib.OptionArg.STRING, "", None)
+        self.add_main_option("debug", ord("d"), GLib.OptionFlags.NONE, GLib.OptionArg.NONE, "", None)
 
         self.style_manager = Adw.StyleManager().get_default()
         self.window = None
@@ -1279,7 +1279,12 @@ class Application(Adw.Application):
             init_logger()
 
         if "debug" in options:
-            log(f"Debug mode not implemented yet!")
+            debug_file = f"GST.log"
+            os.environ["GST_DEBUG"] = "*:2"
+            os.environ["GST_DEBUG_FILE"] = debug_file
+
+            if IS_FROZEN:
+                os.environ["GST_DEBUG_FILE"] = os.path.join(sys._MEIPASS, debug_file)
 
         self.activate()
         return 0
