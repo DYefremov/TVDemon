@@ -375,6 +375,8 @@ class AppWindow(Adw.ApplicationWindow):
     def reload_provider(self, provider, provider_type):
         self.load_provider(provider, refresh=provider_type is not ProviderType.LOCAL)
         self.refresh_providers_page()
+        if provider.epg:
+            GLib.timeout_add_seconds(2, self.init_epg)
 
     @async_function
     def update_provider_logo_cache(self, p: Provider):
