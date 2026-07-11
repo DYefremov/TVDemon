@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright © 2022-2025 Dmitriy Yefremov <https://github.com/DYefremov>
+# Copyright © 2022-2026 Dmitriy Yefremov <https://github.com/DYefremov>
 #
 #
 # This file is part of TVDemon.
@@ -29,14 +29,15 @@ import logging
 import os
 import re
 from collections import deque
+from collections.abc import Iterable
 from datetime import datetime
 from enum import StrEnum, IntEnum
 from html import escape
 
-from .settings import Language, Settings
 from .common import (UI_PATH, Adw, Gtk, Gdk, GObject, GLib, idle_function, tr, select_path, Group,
                      get_pixbuf_from_file, Channel, LOG_DATE_FORMAT, LOG_FORMAT, LOGGER_NAME, IS_LINUX)
 from .epg import EpgEvent, EPG_START_FMT, EPG_END_FMT
+from .settings import Language, Settings
 
 
 class Page(StrEnum):
@@ -758,10 +759,7 @@ class HistoryWidget(Adw.PreferencesGroup):
 
     @Gtk.Template.Callback()
     def on_play_all(self, button=None):
-        app = self.get_root()
-        app.show_channels(self._history)
-        list_box = app.channels_list_box
-        list_box.select_row(list_box.get_row_at_index(0))
+        self.play_history(self._history)
 
     @Gtk.Template.Callback()
     def on_clear(self, button=None):
@@ -771,7 +769,17 @@ class HistoryWidget(Adw.PreferencesGroup):
 
     @Gtk.Template.Callback()
     def on_child_activated(self, box: Gtk.FlowBox, child: FlowChannelWidget):
-        child.on_playback()
+        channel = child.channel
+        self.play_history([channel], channel)
+
+    def play_history(self, channels: Iterable[Channel], active_channel: Channel = None):
+        app = self.get_root()
+        app.channels_page.set_title(tr("Channel viewing history"))
+        app.show_channels(channels)
+
+        if active_channel:
+            app.active_channel = active_channel
+            app.play(active_channel)
 
     def append_channel(self, channel: Channel):
         if channel not in self._history:
