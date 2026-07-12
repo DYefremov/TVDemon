@@ -30,6 +30,9 @@ It can support multiple IPTV providers of the following types:
   Depending on your distro, you may need to install additional packages and libraries.
 
 To create a Debian package, you can use the *build-deb.sh* file from the *build* directory.  
+For [Arch Linux](https://archlinux.org/) users available [PKGBUILD](https://github.com/DYefremov/TVDemon/blob/main/build/arch/PKGBUILD) file to create and install your own package.  
+
+Users of **LTS** versions of *Ubuntu* or distributions based on them can use this [PPA](https://launchpad.net/~dmitriy-yefremov/+archive/ubuntu/tvdemon) repository.  
 
 * ### macOS (experimental)  
 To run the program on macOS, you need to install [Homebrew](https://brew.sh/).  
@@ -37,7 +40,6 @@ Then install the required components via terminal:
 `brew install python3 gtk+4 libadwaita pygobject3 adwaita-icon-theme python-requests gstreamer`
 
 Launch is similar to Linux.
-
 
 * ### MS Windows (experimental) 
   Windows users can also run (build) this program.  
