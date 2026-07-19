@@ -1343,20 +1343,22 @@ class Application(Adw.Application):
         app_menu = Gio.Menu()
         section = Gio.Menu()
 
+        mod = "Primary" if MOD_MASK is Gdk.ModifierType.CONTROL_MASK else "Meta"
+
         if not IS_DARWIN:
             section.append_item(self.get_menu_item(tr("Preferences"), "app.preferences", ""))
 
-        section.append_item(self.get_menu_item(tr("Logs"), "app.logs", "<Primary>L"))
+        section.append_item(self.get_menu_item(tr("Logs"), "app.logs", f"<{mod}>L"))
 
         if not IS_DARWIN:
-            section.append_item(self.get_menu_item(tr("Quit"), "app.quit", "<Primary>Q"))
+            section.append_item(self.get_menu_item(tr("Quit"), "app.quit", f"<{mod}>Q"))
 
         app_menu.append_section(None, section)
         if IS_DARWIN:
             return app_menu
 
         section = Gio.Menu()
-        section.append_item(self.get_menu_item(tr("Keyboard Shortcuts"), "win.show-help-overlay", "<Primary>K"))
+        section.append_item(self.get_menu_item(tr("Keyboard Shortcuts"), "win.show-help-overlay", f"<{mod}>K"))
         section.append_item(self.get_menu_item(tr("About"), "app.about", ""))
         app_menu.append_section(None, section)
 
@@ -1366,10 +1368,10 @@ class Application(Adw.Application):
         menu = Gio.Menu()
         if IS_DARWIN:
             sub_menu = Gio.Menu()
-            sub_menu.append_item(self.get_menu_item(tr("Logs"), "app.logs", "<Primary>L"))
+            sub_menu.append_item(self.get_menu_item(tr("Logs"), "app.logs", f"<Meta>L"))
             menu.append_submenu(tr("Tools"), sub_menu)
             sub_menu = Gio.Menu()
-            sub_menu.append_item(self.get_menu_item(tr("Keyboard Shortcuts"), "win.show-help-overlay", "<Primary>K"))
+            sub_menu.append_item(self.get_menu_item(tr("Keyboard Shortcuts"), "win.show-help-overlay", f"<Meta>K"))
             menu.append_submenu(tr("Help"), sub_menu)
 
         return menu
