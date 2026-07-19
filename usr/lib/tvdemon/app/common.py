@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright © 2022-2025 Dmitriy Yefremov <https://github.com/DYefremov>
+# Copyright © 2022-2026 Dmitriy Yefremov <https://github.com/DYefremov>
 #             2020-2022 Linux Mint <root@linuxmint.com>
 #
 # This file is part of TVDemon.
@@ -19,7 +19,7 @@
 # along with TVDemon  If not, see <http://www.gnu.org/licenses/>.
 #
 
-__all__ = ("APP_ID", "IS_WIN", "IS_LINUX", "IS_DARWIN",  "IS_FROZEN", "APP", "UI_PATH",
+__all__ = ("APP_ID", "IS_WIN", "IS_LINUX", "IS_DARWIN", "IS_FROZEN", "APP", "UI_PATH", "MOD_MASK",
            "log", "Gtk", "Gdk", "Adw", "Gio", "GdkPixbuf", "GLib", "Pango", "GObject",
            "Manager", "Provider", "Group", "Channel", "Serie",
            "tr", "async_function", "idle_function", "get_pixbuf_from_file", "init_logger", "select_path",
@@ -74,6 +74,9 @@ IS_DARWIN = sys.platform == "darwin"
 IS_WIN = sys.platform == "win32"
 IS_FROZEN = getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS")
 
+# Modifier key.
+MOD_MASK = Gdk.ModifierType.META_MASK if IS_DARWIN else Gdk.ModifierType.CONTROL_MASK
+
 APP = "tvdemon"
 APP_NAME = "TVDemon"
 APP_ID = f"by.{APP}.{APP_NAME}"
@@ -127,6 +130,7 @@ SERIES = re.compile(r"(?P<series>.*?) S(?P<season>.\d{1,2}).*E(?P<episode>.\d{1,
 TV_GROUP, MOVIES_GROUP, SERIES_GROUP = range(3)
 
 BADGES = {'musik': "music", 'zeland': "newzealand"}
+
 
 def async_function(func):
     """  Used as a decorator to run things in the background.  """

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright © 2022-2025 Dmitriy Yefremov <https://github.com/DYefremov>
+# Copyright © 2022-2026 Dmitriy Yefremov <https://github.com/DYefremov>
 #             2020-2022 Linux Mint <root@linuxmint.com>
 #
 # This file is part of TVDemon.
@@ -1146,7 +1146,7 @@ class AppWindow(Adw.ApplicationWindow):
     # ******************** Additional ******************** #
 
     def on_key_pressed(self, controller: Gtk.EventControllerKey, keyval: int, keycode: int, flags: Gdk.ModifierType):
-        ctrl = flags & Gdk.ModifierType.CONTROL_MASK
+        ctrl = flags & MOD_MASK
 
         if keyval == Gdk.KEY_Left:
             self.on_previous_channel()

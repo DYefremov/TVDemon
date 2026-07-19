@@ -35,7 +35,7 @@ from enum import StrEnum, IntEnum
 from html import escape
 
 from .common import (UI_PATH, Adw, Gtk, Gdk, GObject, GLib, idle_function, tr, select_path, Group,
-                     get_pixbuf_from_file, Channel, LOG_DATE_FORMAT, LOG_FORMAT, LOGGER_NAME, IS_LINUX)
+                     get_pixbuf_from_file, Channel, LOG_DATE_FORMAT, LOG_FORMAT, LOGGER_NAME, IS_LINUX, MOD_MASK)
 from .epg import EpgEvent, EPG_START_FMT, EPG_END_FMT
 from .settings import Language, Settings
 
@@ -405,9 +405,32 @@ class QuestionDialog(Adw.AlertDialog):
             self.clb(dialog.get_default_response() == resp)
 
 
-@Gtk.Template(filename=f"{UI_PATH}shortcuts.ui")
 class ShortcutsWindow(Gtk.ShortcutsWindow):
     __gtype_name__ = "ShortcutsWindow"
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        mod = "Primary" if MOD_MASK is Gdk.ModifierType.CONTROL_MASK else "Meta"
+
+        group = Gtk.ShortcutsGroup(title=tr("Main shortcuts"))
+        group.add_shortcut(Gtk.ShortcutsShortcut(accelerator="Left Right", title=tr("Play previous/next channel")))
+        group.add_shortcut(Gtk.ShortcutsShortcut(accelerator="F11 f", title=tr("Toggle Fullscreen")))
+        group.add_shortcut(Gtk.ShortcutsShortcut(accelerator=f"<{mod}> F", title=tr("Search")))
+        group.add_shortcut(Gtk.ShortcutsShortcut(accelerator=f"<{mod}> I", title=tr("Stream Information")))
+        group.add_shortcut(Gtk.ShortcutsShortcut(accelerator=f"<{mod}> K", title=tr("Keyboard Shortcuts")))
+        group.add_shortcut(Gtk.ShortcutsShortcut(accelerator=f"<{mod}> L", title=tr("Logs")))
+        group.add_shortcut(Gtk.ShortcutsShortcut(accelerator=f"<{mod}> R", title=tr("Reload all providers")))
+        group.add_shortcut(Gtk.ShortcutsShortcut(accelerator=f"<{mod}> Q", title=tr("Quit")))
+
+        section = Gtk.ShortcutsSection(section_name="Shortcuts")
+        section.add_group(group)
+        self.add_section(section)
+
+        title_bar = self.get_titlebar()
+        if title_bar:
+            # -> macOS.
+            title_bar.set_use_native_controls(True)
 
 
 # ******************** Favorites ******************** #
