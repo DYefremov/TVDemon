@@ -428,8 +428,8 @@ class ShortcutsWindow(Gtk.ShortcutsWindow):
         self.add_section(section)
 
         title_bar = self.get_titlebar()
-        if title_bar:
-            # -> macOS.
+        if title_bar and Gtk.get_minor_version() > 17:
+            # -> macOS. Gtk >= 4.18.
             title_bar.set_use_native_controls(True)
 
 
