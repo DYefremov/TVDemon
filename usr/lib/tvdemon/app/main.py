@@ -1320,20 +1320,35 @@ class Application(Adw.Application):
         self.window.navigate_to(Page.PREFERENCES)
 
     def on_about_app(self, action, value):
-        about = Adw.AboutDialog()
-        about.set_presentation_mode(Adw.DialogPresentationMode.FLOATING)
-        about.set_application_name("TVDemon")
-        about.set_application_icon("tvdemon")
-        about.set_version(__version__)
-        about.set_copyright(f"Copyright © 2024-2025 {__author__}")
-        about.set_developer_name(__author__)
-        about.set_license_type(Gtk.License.GPL_3_0)
-        about.set_translator_credits(tr("translator-credits"))
-        about.set_website("https://dyefremov.github.io/TVDemon/")
-        about.set_support_url("https://github.com/DYefremov/TVDemon")
-        about.set_comments(('<b>TVDemon</b> based on <a href="https://github.com/linuxmint/hypnotix">Hypnotix</a>\n\n'
-                            'This is an IPTV streaming application with support for live TV, movies and series.'))
-        about.present(self.window)
+        if IS_DARWIN:
+            about = Gtk.AboutDialog(modal=True)
+            about.set_transient_for(self.window)
+            about.set_version(__version__)
+            about.set_authors([__author__])
+            about.set_translator_credits(tr("translator-credits"))
+            about.set_logo_icon_name("tvdemon")
+            about.set_license_type(Gtk.License.GPL_3_0)
+            about.set_copyright(f"Copyright © 2024-2026 {__author__}")
+            about.set_website("https://dyefremov.github.io/TVDemon/")
+
+            title_bar = about.get_titlebar()
+            if title_bar:
+                title_bar.set_use_native_controls(True)
+
+            about.present()
+        else:
+            about = Adw.AboutDialog()
+            about.set_presentation_mode(Adw.DialogPresentationMode.FLOATING)
+            about.set_application_name("TVDemon")
+            about.set_application_icon("tvdemon")
+            about.set_version(__version__)
+            about.set_copyright(f"Copyright © 2024-2026 {__author__}")
+            about.set_developer_name(__author__)
+            about.set_license_type(Gtk.License.GPL_3_0)
+            about.set_translator_credits(tr("translator-credits"))
+            about.set_website("https://dyefremov.github.io/TVDemon/")
+            about.set_support_url("https://github.com/DYefremov/TVDemon")
+            about.present(self.window)
 
     def on_close_app(self, action, value):
         self.window.emit("close-request")
