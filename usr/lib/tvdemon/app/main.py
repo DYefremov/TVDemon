@@ -924,16 +924,12 @@ class AppWindow(Adw.ApplicationWindow):
         self.is_full_screen = not self.is_full_screen
         if self.is_full_screen:
             self.channels_header.hide()
-            self.channels_paned.set_margin_start(0)
-            self.channels_paned.set_margin_end(0)
             self.status_bar.hide()
             if self._is_tv_mode:
                 self.channels_box.hide()
             self.fullscreen()
         else:
             self.channels_header.show()
-            self.channels_paned.set_margin_start(12)
-            self.channels_paned.set_margin_end(12)
             self.status_bar.show()
             if self._is_tv_mode:
                 self.channels_box.show()

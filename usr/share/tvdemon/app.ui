@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright (C) 2024-2025 Dmitriy Yefremov <https://github.com/DYefremov>
+Copyright (C) 2024-2026 Dmitriy Yefremov <https://github.com/DYefremov>
 
 This file is part of TVDemon.
 
@@ -17,7 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with TVDemon.  If not, see <http://www.gnu.org/licenses/>.
 
-Author: Dmitriy Yefremov 2024-2025
+Author: Dmitriy Yefremov 2024-2026
 
 -->
 <interface domain="tvdemon">
@@ -263,9 +263,10 @@ Author: Dmitriy Yefremov 2024-2025
                         </child>
                         <property name="content">
                           <object class="GtkScrolledWindow">
-                            <property name="margin-start">12</property>
-                            <property name="margin-end">12</property>
-                            <property name="margin-top">12</property>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">6</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
                             <child>
                               <object class="GtkFlowBox" id="categories_flowbox">
                                 <property name="can-focus">False</property>
@@ -292,9 +293,10 @@ Author: Dmitriy Yefremov 2024-2025
                         </child>
                         <property name="content">
                           <object class="GtkScrolledWindow">
-                            <property name="margin-start">12</property>
-                            <property name="margin-end">12</property>
-                            <property name="margin-top">12</property>
+                            <property name="margin-start">6</property>
+                            <property name="margin-end">6</property>
+                            <property name="margin-top">6</property>
+                            <property name="margin-bottom">6</property>
                             <child>
                               <object class="GtkFlowBox" id="overview_flowbox">
                                 <property name="can-focus">False</property>
@@ -342,9 +344,6 @@ Author: Dmitriy Yefremov 2024-2025
                         </child>
                         <property name="content">
                           <object class="GtkPaned" id="channels_paned">
-                            <property name="wide-handle">True</property>
-                            <property name="margin-start">12</property>
-                            <property name="margin-end">12</property>
                             <child>
                               <object class="GtkBox" id="channels_box">
                                 <child>
@@ -645,16 +644,21 @@ Author: Dmitriy Yefremov 2024-2025
             </property>
             <child type="bottom">
               <object class="GtkBox" id="status_bar">
-                <property name="margin-start">6</property>
                 <child>
                   <object class="GtkLabel" id="status_label">
+                    <property name="visible">False</property>
                     <property name="can-focus">False</property>
                     <property name="halign">start</property>
                     <property name="justify">center</property>
+                    <property name="margin-start">12</property>
+                    <property name="margin-bottom">3</property>
                     <attributes>
                       <attribute name="style" value="italic"/>
                       <attribute name="weight" value="thin"/>
                     </attributes>
+                    <style>
+                      <class name="toolbar"/>
+                    </style>
                   </object>
                 </child>
                 <child>
@@ -722,11 +726,12 @@ Author: Dmitriy Yefremov 2024-2025
                         </child>
                       </object>
                     </child>
+                    <style>
+                      <class name="toolbar"/>
+                      <class name="osd"/>
+                    </style>
                   </object>
                 </child>
-                <style>
-                  <class name="toolbar"/>
-                </style>
               </object>
             </child>
           </object>
