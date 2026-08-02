@@ -495,7 +495,7 @@ class AppWindow(Adw.ApplicationWindow):
         for provider in self.providers:
             p_row = ProviderWidget(self, provider)
             p_row.set_title(f"<b>{provider.name}</b>")
-            p_row.set_icon_name("tv-symbolic")
+            p_row.set_icon_name("tvdemon-symbolic")
             labels = []
             num = len(provider.channels)
             if num > 0:
@@ -586,7 +586,7 @@ class AppWindow(Adw.ApplicationWindow):
             p_row = ProviderWidget(self, provider)
             p_row.set_sensitive(False)
             p_row.set_title(f"<b>{provider.name}</b>")
-            p_row.set_icon_name("tv-symbolic")
+            p_row.set_icon_name("tvdemon-symbolic")
             p_row.set_subtitle(f"<i>{tr('Loading playlist...')}</i>")
             self.providers_list.append(p_row)
         else:

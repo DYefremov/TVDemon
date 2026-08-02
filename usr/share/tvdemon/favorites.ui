@@ -195,7 +195,7 @@ Author: Dmitriy Yefremov 2024-2025
                       <object class="GtkImage" id="channel_logo">
                         <property name="can-focus">False</property>
                         <property name="pixel-size">192</property>
-                        <property name="icon-name">tv-symbolic</property>
+                        <property name="icon-name">tvdemon-symbolic</property>
                       </object>
                     </child>
                   </object>

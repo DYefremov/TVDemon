@@ -371,7 +371,8 @@ Author: Dmitriy Yefremov 2024-2026
                                         <property name="name">status</property>
                                         <property name="child">
                                           <object class="AdwStatusPage" id="playback_status_page">
-                                            <property name="icon-name">tv-symbolic</property>
+                                            <property name="title">TVDemon</property>
+                                            <property name="icon-name">tvdemon-symbolic</property>
                                           </object>
                                         </property>
                                       </object>
